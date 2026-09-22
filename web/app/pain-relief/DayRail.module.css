@@ -1,0 +1,140 @@
+.root {
+  width: 100%;
+  padding: var(--space-5) 0 var(--space-2);
+}
+
+.card {
+  position: relative;
+  padding: var(--space-5) 0 var(--space-4);
+  box-sizing: border-box;
+}
+
+.kicker {
+  margin: 0 0 var(--space-5);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.beats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  position: relative;
+}
+
+.beats::before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 12.5%;
+  right: 12.5%;
+  height: 1px;
+  background: color-mix(in srgb, var(--text-primary) 16%, transparent);
+  pointer-events: none;
+}
+
+.beat {
+  min-width: 0;
+}
+
+.link {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  color: inherit;
+  text-decoration: none;
+}
+
+.node {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 10px;
+  height: 10px;
+  color: var(--text-primary);
+  transition: transform 180ms ease;
+}
+
+.node svg {
+  display: block;
+}
+
+.beatLabel {
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: calc(clamp(18px, 2vw, 24px) * var(--font-display-scale) / 1.15);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.when {
+  max-width: 16ch;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover .beatLabel {
+    color: var(--text-primary);
+  }
+
+  .link:hover .node {
+    transform: scale(1.25);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .node {
+    transition: none;
+  }
+}
+
+@media (721px <= width < 1025px) {
+  .kicker {
+    display: none;
+  }
+
+  .link {
+    padding: 0 var(--space-2);
+  }
+}
+
+@media (width < 721px) {
+  .kicker {
+    display: none;
+  }
+
+  .link {
+    gap: 6px;
+    padding: 0 var(--space-1);
+  }
+
+  .name {
+    font-size: calc(16px * var(--font-display-scale) / 1.15);
+  }
+
+  .when {
+    font-size: 11px;
+    max-width: none;
+  }
+}

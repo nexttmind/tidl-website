@@ -1,0 +1,18 @@
+---
+description: Live visual language. Blocks the 2024 restyle kit from being treated as current.
+alwaysApply: true
+---
+
+# Visual language
+
+Canonical tokens are `web/app/globals.css`. Readable mirror: `docs/restyle/tidl/10-target-tokens.md`. Principles: `docs/restyle/tidl/13-target-principles.md`.
+
+The rest of `docs/restyle/tidl/` is a 2024 rebuild archive. Do not implement type, color, or surface from it. If a restyle file and the CSS disagree, the CSS wins.
+
+- Display and UI: Inter. Mono: Space Mono. Do not load Source Serif 4, Questrial, Canela, or Sohne on the consumer site.
+- Page wash: `#f4f6f0` cool bone. Not `#F5F2ED` cream.
+- Primary action: steel `#405774`. Gold is an accent.
+- Do not republish unused peptide ramps on `:root`.
+- `/brand/peptide` and `/emails/*.html` are deleted routes, not a public design system. Do not recreate them. `web/scripts/check-visual-residue.mjs` fails lint if retired fonts or ramps return.
+- Daybreak Fields (Canela / Sohne) is the Figma brand file, not the live site.
+- Desktop layout is locked. Width queries use only 721 and 1025. See `16-responsive.mdc`.

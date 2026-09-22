@@ -1,0 +1,17 @@
+.heroChrome {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.heroChrome :global(header) {
+  pointer-events: auto;
+  background: transparent;
+}
+
+.sessionSlot {
+  pointer-events: auto;
+}

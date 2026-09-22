@@ -1,0 +1,134 @@
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 78;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  animation: pricingFadeIn 180ms ease-out;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  background: rgba(18, 22, 28, 0.48);
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  width: min(40rem, 100%);
+  max-height: min(88vh, 760px);
+  overflow: hidden;
+  border-radius: 24px;
+  background: var(--surface-page-raised);
+  box-shadow:
+    0 0 0 1px rgba(26, 26, 26, 0.04),
+    0 24px 64px rgba(18, 22, 28, 0.28),
+    0 8px 20px rgba(18, 22, 28, 0.12);
+  animation: pricingCardIn 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--surface-page-raised);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.close:hover,
+.close:focus-visible {
+  color: var(--text-primary);
+  border-color: var(--border-default);
+  outline: none;
+}
+
+.body {
+  max-height: min(88vh, 760px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-8) var(--space-7) var(--space-7);
+  box-sizing: border-box;
+}
+
+.title {
+  margin: 0 44px var(--space-3) 0;
+  font-family: var(--font-display);
+  font-size: calc(clamp(28px, 4vw, 36px) * var(--font-display-scale));
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.intro {
+  margin: 0 0 var(--space-3);
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.intro + .intro {
+  margin-bottom: var(--space-6);
+}
+
+.disclaimer {
+  margin: var(--space-7) 0 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+@keyframes pricingFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pricingCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 720px) {
+  .root {
+    padding: 16px 12px;
+  }
+
+  .body {
+    padding: var(--space-7) var(--space-5) var(--space-6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root,
+  .card {
+    animation: none;
+  }
+}

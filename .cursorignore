@@ -1,0 +1,12 @@
+# Keep the index clean and the context window useful.
+out/
+assets/
+reference/prescriberx/*.pdf
+node_modules/
+.venv/
+*.mp4
+*.mov
+*.png
+*.jpg
+*.psd
+*.aep

@@ -1,0 +1,444 @@
+/*
+ * Sticky left pin / page-scroll right metrics.
+ * Full-bleed 50/50 seam — pen plate, no green wash, no thumbnail stack.
+ */
+
+.root {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(280px, 1fr);
+  gap: 0;
+  width: 100%;
+  min-width: 0;
+  align-items: stretch;
+  background: var(--surface-page-raised);
+}
+
+.pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: var(--space-6);
+  padding: clamp(40px, 6vw, 72px) clamp(28px, 4vw, 56px);
+  box-sizing: border-box;
+  background: #e8e4dc;
+  color: var(--text-primary);
+  overflow: hidden;
+  align-self: start;
+}
+
+.pinField,
+.pinGrain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pinField {
+  z-index: 0;
+  background:
+    radial-gradient(
+      ellipse 49% 54% at 84% 89%,
+      rgba(196, 144, 128, 0.55) 0%,
+      rgba(196, 144, 128, 0.28) 30%,
+      rgba(196, 144, 128, 0.08) 62%,
+      transparent 100%
+    ),
+    radial-gradient(
+      ellipse 49% 54% at 20% 80%,
+      rgba(224, 200, 160, 0.52) 0%,
+      rgba(224, 200, 160, 0.28) 30%,
+      rgba(224, 200, 160, 0.08) 62%,
+      transparent 100%
+    ),
+    linear-gradient(180deg, #1c1a1e 0%, #c49080 100%);
+}
+
+.pinGrain {
+  z-index: 2;
+  background-image: var(--section-bg-grain);
+  background-size: 128px 128px;
+  mix-blend-mode: overlay;
+  opacity: 0.42;
+}
+
+.pinGrain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: var(--section-bg-grain);
+  background-size: 64px 64px;
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
+.pin[data-wash] {
+  background: #1c1a1e;
+  color: var(--text-inverse);
+}
+
+.pin[data-wash] .title {
+  color: var(--text-inverse);
+}
+
+.pin[data-wash] .body {
+  color: var(--text-inverse-secondary);
+}
+
+.pin[data-plate] {
+  --plate-w: min(78%, 520px);
+  --vial-keepout: calc(var(--plate-w) * 0.19);
+  --callout-span: min(11rem, calc(50% - var(--vial-keepout) - 20px));
+  padding: 0;
+  background: #131922;
+  color: var(--text-inverse);
+}
+
+.plateField {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: blur(10px);
+  transform: scale(1.18);
+  transform-origin: center center;
+  pointer-events: none;
+}
+
+.plateStage {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  width: var(--plate-w);
+  aspect-ratio: 1;
+  overflow: visible;
+  transform: translate(-50%, -50%);
+}
+
+.plateVial {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: transparent;
+  pointer-events: none;
+}
+
+.plateCallouts {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: var(--plate-w);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.plateCallout {
+  position: absolute;
+  display: grid;
+  align-items: center;
+  column-gap: 0;
+  transform: translateY(-50%);
+}
+
+.plateCallout[data-side="left"] {
+  left: auto;
+  right: calc(50% + var(--vial-keepout));
+  width: var(--callout-span);
+  grid-template-columns: max-content minmax(20px, 1fr);
+}
+
+.plateCallout[data-side="right"] {
+  left: calc(50% + var(--vial-keepout));
+  right: auto;
+  width: var(--callout-span);
+  grid-template-columns: minmax(20px, 1fr) max-content;
+}
+
+.plateCallout[data-side="left"] .plateChip {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.plateCallout[data-side="left"] .plateStem {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.plateCallout[data-side="left"] .plateCalloutBody {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  text-align: left;
+}
+
+.plateCallout[data-side="right"] .plateStem {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.plateCallout[data-side="right"] .plateChip {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.plateCallout[data-side="right"] .plateCalloutBody {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  text-align: right;
+  justify-self: end;
+}
+
+.plateCallout[data-anchor="cap"] {
+  top: 27%;
+}
+
+.plateCallout[data-anchor="label"] {
+  top: 43%;
+}
+
+.plateCallout[data-anchor="base"] {
+  top: 76%;
+}
+
+.pin[data-theme="sexual-health"][data-plate] {
+  --vial-keepout: calc(var(--plate-w) * 0.25);
+}
+
+.pin[data-theme="sexual-health"] .plateVial {
+  filter: url(#tidl-pill-defringe);
+}
+
+
+.pin[data-theme="sexual-health"] .plateCallout[data-anchor="cap"] {
+  top: 34%;
+}
+
+.pin[data-theme="sexual-health"] .plateCallout[data-anchor="label"] {
+  top: 50%;
+}
+
+.pin[data-theme="sexual-health"] .plateCallout[data-anchor="base"] {
+  top: 66%;
+}
+
+.plateChip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 6px 14px;
+  overflow: hidden;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-white) 40%, transparent);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: var(--text-inverse);
+}
+
+.plateStem {
+  width: 100%;
+  height: 0;
+  border-top: 1px dashed color-mix(in srgb, var(--color-white) 70%, transparent);
+}
+
+.plateCalloutBody {
+  margin: 8px 0 0;
+  max-width: 14rem;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  color: color-mix(in srgb, var(--color-white) 86%, transparent);
+}
+
+.metricsIntro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 36rem;
+  margin-bottom: var(--space-5);
+}
+
+.pinMedia {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: saturate(1.12) contrast(1.02);
+  pointer-events: none;
+}
+
+.pinMedia:not(.pinMediaContain)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(19, 25, 34, 0.58) 0%,
+    rgba(19, 25, 34, 0.22) 42%,
+    rgba(19, 25, 34, 0.12) 100%
+  );
+}
+
+.pinMediaContain {
+  z-index: 3;
+  background-size: contain;
+  background-position: center bottom;
+  filter: none;
+}
+
+.copy {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 36rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: calc(clamp(22px, 2.8vw, 36px) * var(--font-display-scale) / 1.4);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  scroll-margin-top: 88px;
+}
+
+.titleLine {
+  display: block;
+  white-space: nowrap;
+}
+
+.body {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.metricsCol {
+  min-width: 0;
+  width: 100%;
+  min-height: 100svh;
+  padding: clamp(40px, 6vw, 72px) clamp(28px, 4vw, 56px);
+  box-sizing: border-box;
+  background: var(--surface-page-raised);
+}
+
+.metrics {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+  max-width: 36rem;
+}
+
+.metric {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: var(--space-3);
+  align-items: start;
+  width: 100%;
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.metric:has(.icon) {
+  grid-template-columns: 28px minmax(0, 1fr);
+}
+
+.metric:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.metric:last-child {
+  padding-bottom: 0;
+}
+
+.icon {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 4px;
+  color: var(--text-primary);
+}
+
+.metricCopy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  min-width: 0;
+}
+
+.metricName {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: calc(22px * var(--font-display-scale) / 1.15);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.metricBody {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.45;
+  max-width: none;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+@media (721px <= width < 1025px) {
+  .root {
+    display: none;
+  }
+}
+
+@media (width < 721px) {
+  .root {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pin {
+    position: relative;
+    height: auto;
+    min-height: min(100svh, 720px);
+  }
+}

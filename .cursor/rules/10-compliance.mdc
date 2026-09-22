@@ -1,0 +1,20 @@
+---
+description: TIDL compliance, naming, and PHI rules. Non negotiable.
+alwaysApply: true
+---
+
+- No molecule or drug names on any consumer facing surface. Goal framed, stack
+  named language only. Named molecules appear only behind the logged in patient
+  portal, inside clinical intake, and on the prescription itself.
+- No compoundable molecule appears on any surface until PrescribeRx has
+  confirmed its status in writing.
+- No celebrity or partner names in any deliverable, internal or external. Use
+  partner UGC or celebrity partnership instead.
+- No outcome claims. Aspirational copy carries implied outcome risk and needs
+  legal and medical review before launch. Conditional statements carry
+  "if prescribed".
+- Practitioner framed, never vendor framed.
+- Write GLP 1 with a space, no dash.
+- No PHI in this repo. Ever. PHI stays inside PrescribeRx.
+- LegitScript is required only for Google and Meta paid ads, not for the site.
+  FDA and FTC promotional rules govern the site regardless.

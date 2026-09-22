@@ -1,0 +1,114 @@
+.stackName {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.sectionEyebrow {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.facts {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.fact {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: 0.75rem 0;
+  border-bottom: 1px dashed var(--border-subtle);
+  font-size: 0.95rem;
+}
+
+.fact dt {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.fact dd {
+  margin: 0;
+  font-weight: 500;
+  text-align: right;
+}
+
+.agentList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.agentRow {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+  border-top: 1px dashed var(--border-subtle);
+}
+
+.agentRow:last-child {
+  border-bottom: 1px dashed var(--border-subtle);
+}
+
+.agentName {
+  margin: 0 0 0.2rem;
+  font-weight: 600;
+}
+
+.agentDesc {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.agentDose {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.cta {
+  min-width: 10.5rem;
+  min-height: 44px;
+  padding-inline: 32px;
+  color: var(--text-inverse);
+  background-color: var(--footer-bg-base);
+  background-image: var(--footer-bg-image);
+  background-size: 140% 140%;
+  background-position: 30% 40%;
+  box-shadow:
+    0 1px 2px rgba(26, 26, 26, 0.06),
+    0 10px 24px rgba(33, 43, 56, 0.28);
+}
+
+.cta:focus-visible:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cta:hover:not(:disabled) {
+    background-color: var(--footer-bg-base);
+    background-image: var(--footer-bg-image);
+    filter: brightness(1.08);
+  }
+}

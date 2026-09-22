@@ -1,0 +1,117 @@
+.hero {
+  position: relative;
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+.heroChrome {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.heroChrome :global(header) {
+  pointer-events: auto;
+  background: transparent;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: transparent;
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+
+.main > * {
+  scroll-margin-top: 88px;
+}
+
+.pairingWrap {
+  padding: var(--space-8) var(--layout-gutter) var(--layout-section-y);
+  max-width: var(--layout-max);
+  margin-inline: auto;
+  width: 100%;
+  box-sizing: border-box;
+  scroll-margin-top: 88px;
+}
+
+@media (721px <= width < 1025px) {
+  .main {
+    padding-bottom: 0;
+  }
+
+  .pairingWrap {
+    padding-top: 0;
+    padding-bottom: var(--space-5);
+  }
+}
+
+@media (width < 721px) {
+  .main {
+    padding-bottom: 0;
+  }
+
+  .pairingWrap {
+    padding-top: 0;
+    padding-bottom: var(--space-5);
+  }
+}
+
+@media (width < 721px), (721px <= width < 1025px) {
+
+  /* Opaque night field on the load screen. Inverse the overlay wordmark
+   * only. Do not invert menu vials, and drop inverse chrome while the
+   * catalog sheet is open. */
+  .hero:has([data-theme]) .heroChrome :global(
+      header[data-overlay="true"]:not([data-pinned="true"]):not([data-mobile-open="true"]) [class*="logo"] img
+    ) {
+    filter: brightness(0) invert(1);
+  }
+
+  .hero:has([data-theme]) .heroChrome :global(
+      header[data-overlay="true"]:not([data-pinned="true"]):not([data-mobile-open="true"]) button
+    ),
+  .hero:has([data-theme]) .heroChrome :global(
+      header[data-overlay="true"]:not([data-pinned="true"]):not([data-mobile-open="true"]) a
+    ) {
+    color: var(--text-inverse);
+  }
+
+  .hero:has([data-theme]) .heroChrome :global(
+      header[data-overlay="true"]:not([data-pinned="true"]):not([data-mobile-open="true"])
+    )
+    :global([class*="aiIcon"]) {
+    --ask-ai-from: var(--color-white);
+    --ask-ai-mid: var(--color-white);
+    --ask-ai-to: var(--color-white);
+  }
+
+  .hero:has([data-theme]) .heroChrome :global(header[data-overlay="true"]:not([data-pinned="true"])) {
+    transform-origin: top center;
+    animation: pdpGlassIn 880ms cubic-bezier(0.4, 0, 0.2, 1) 380ms both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero:has([data-theme]) .heroChrome :global(header[data-overlay="true"]:not([data-pinned="true"])) {
+      animation: none;
+    }
+  }
+}
+
+@keyframes pdpGlassIn {
+  from {
+    opacity: 0;
+    transform: scale(0.12);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

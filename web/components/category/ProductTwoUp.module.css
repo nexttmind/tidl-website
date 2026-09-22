@@ -1,0 +1,33 @@
+.root {
+  padding: var(--space-9) 0;
+}
+
+.title {
+  margin: 0 auto var(--space-6);
+  font-family: var(--font-display);
+  font-size: calc(clamp(26px, 5vw, 48px) * var(--font-display-scale));
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  max-width: 16ch;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-6);
+}
+
+@media (max-width: 767px) {
+  .root {
+    padding: var(--space-8) 0;
+  }
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8);
+  }
+}

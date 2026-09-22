@@ -1,0 +1,223 @@
+Top-5 Integration Flows — PrescribeRx API\nTop-5 Integration Flows\n← Back to API reference\nFive end-to-end recipes that cover ~95% of integration cases — from new-patient
+        onboarding to webhook-driven status sync. Each flow is multi-call: copy the steps
+        in order, swap in your real token, and run them against\nhttps://demo.prescribe-rx.com/api/v1\n. Switch the language tab on each step to see
+        cURL / PHP / JavaScript / Python equivalents.\nNeed a token? Open\nthe token matrix\nto learn
+        about token types, or grab a sandbox token from\nGET https://demo.prescribe-rx.com/api/docs/tokens\nto follow along live in the\nplayground\n.\nFlows\nCatalog discovery → unified intake → status poll\nPatient lookup → create encounter → prescribe\nBulk-orders for B2B clients\nWebhook subscribe + signature verify\nTest-data flow with\nis_sandbox\n1\nCatalog discovery → unified intake → status poll\nWhen you're: a sales org or client onboarding patients programmatically (the 1200-client onboarding use case)\nThree calls. Discover what your tenant can sell, submit an intake, then poll for status
+            until the encounter is prescribed. For real-time status, replace the poll loop with a webhook
+            subscription (Flow 4).\nStep 1 — pull catalog\nReturns products, packages (with plans + items), all scoped to your token's tenant. Pricing fields are visibility-gated.\ncURL\nPHP\nJavaScript\nPython\n# Pulls products + packages scoped to your token's tenant.\ncurl -X GET\n"https://demo.prescribe-rx.com/api/v1/catalog"\n\
+  -H\n"Authorization: Bearer $TOKEN"\n\
+  -H\n"Accept: application/json"\n$res = Http::withToken($token)
+    ->acceptJson()
+    ->get('https://demo.prescribe-rx.com/api/v1/catalog');
+
+$products = $res->json('products');
+$packages = $res->json('packages');\nconst res = await fetch('https://demo.prescribe-rx.com/api/v1/catalog', {
+  headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' }
+});
+const { products, packages } = await res.json();\nres = requests.get(
+    'https://demo.prescribe-rx.com/api/v1/catalog',
+    headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'},
+)
+products, packages = res.json()['products'], res.json()['packages']\nStep 2 — submit intake\nOne call creates the user (or matches by email), patient chart, encounter, intake answers, optional payment record, and links the selected product/package. Returns\nencounter_id\n+\nencounter_number\nfor follow-up calls.\ncURL\nPHP\nJavaScript\nPython\ncurl -X POST\n"https://demo.prescribe-rx.com/api/v1/telehealth/intake/unified"\n\
+  -H\n"Authorization: Bearer $TOKEN"\n\
+  -H\n"Content-Type: application/json"\n\
+  -H\n"Accept: application/json"\n\
+  -d\n'{
+    "encounter_type_slug": "weight-management",
+    "patient": {
+      "first_name": "Jane",
+      "last_name": "Smith",
+      "email": "jane.smith@example.com",
+      "date_of_birth": "1988-03-22",
+      "phone": "555-555-9876",
+      "shipping_address": {
+        "street": "456 Oak Ave", "city": "Marietta",
+        "state": "GA", "zip": "30060", "country": "US"
+      },
+      "billing_same_as_shipping": true
+    },
+    "vitals": { "height_inches": 64, "weight_lbs": 185 },
+    "answers": { "current_weight_lbs": 185, "weight_goal": "lose_15_lbs" },
+    "products": [
+      { "product_type_slug": "tirzepatide", "quantity": 1 }
+    ],
+    "payment": {
+      "mode": "reference_captured",
+      "gateway": "your_gateway",
+      "transaction": { "transaction_id": "ext-txn-123", "amount": 299.00 }
+    },
+    "consents": [
+      { "consent_type": 6, "consent_text": "I consent to telehealth.", "signature_method": "click" }
+    ]
+  }'\n$res = Http::withToken($token)->acceptJson()->post(
+    'https://demo.prescribe-rx.com/api/v1/telehealth/intake/unified',
+    [
+        'encounter_type_slug' => 'weight-management',
+        'patient' => [
+            'first_name' => 'Jane',
+            'last_name'  => 'Smith',
+            'email'      => 'jane.smith@example.com',
+            'date_of_birth' => '1988-03-22',
+            'phone'      => '555-555-9876',
+            'shipping_address' => [
+                'street' => '456 Oak Ave', 'city' => 'Marietta',
+                'state' => 'GA', 'zip' => '30060', 'country' => 'US',
+            ],
+            'billing_same_as_shipping' => true,
+        ],
+        'vitals' => ['height_inches' => 64, 'weight_lbs' => 185],
+        'answers' => ['current_weight_lbs' => 185, 'weight_goal' => 'lose_15_lbs'],
+        'products' => [
+            ['product_type_slug' => 'tirzepatide', 'quantity' => 1],
+        ],
+        'payment' => [
+            'mode' => 'reference_captured',
+            'gateway' => 'your_gateway',
+            'transaction' => ['transaction_id' => 'ext-txn-123', 'amount' => 299.00],
+        ],
+        'consents' => [[
+            'consent_type' => 6,
+            'consent_text' => 'I consent to telehealth.',
+            'signature_method' => 'click',
+        ]],
+    ],
+);
+
+$encounterId = $res->json('data.encounter_id');\nconst res = await fetch('https://demo.prescribe-rx.com/api/v1/telehealth/intake/unified', {
+  method: 'POST',
+  headers: {
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  },
+  body: JSON.stringify({
+    encounter_type_slug: 'weight-management',
+    patient: {
+      first_name: 'Jane', last_name: 'Smith',
+      email: 'jane.smith@example.com',
+      date_of_birth: '1988-03-22', phone: '555-555-9876',
+      shipping_address: { street: '456 Oak Ave', city: 'Marietta', state: 'GA', zip: '30060', country: 'US' },
+      billing_same_as_shipping: true,
+    },
+    vitals: { height_inches: 64, weight_lbs: 185 },
+    answers: { current_weight_lbs: 185, weight_goal: 'lose_15_lbs' },
+    products: [{ product_type_slug: 'tirzepatide', quantity: 1 }],
+    payment: {
+      mode: 'reference_captured',
+      gateway: 'your_gateway',
+      transaction: { transaction_id: 'ext-txn-123', amount: 299.00 },
+    },
+    consents: [{ consent_type: 6, consent_text: 'I consent to telehealth.', signature_method: 'click' }],
+  }),
+});
+const { data } = await res.json();
+const encounterId = data.encounter_id;\npayload = {
+    'encounter_type_slug': 'weight-management',
+    'patient': {
+        'first_name': 'Jane', 'last_name': 'Smith',
+        'email': 'jane.smith@example.com',
+        'date_of_birth': '1988-03-22', 'phone': '555-555-9876',
+        'shipping_address': {'street':'456 Oak Ave','city':'Marietta','state':'GA','zip':'30060','country':'US'},
+        'billing_same_as_shipping': True,
+    },
+    'vitals': {'height_inches': 64, 'weight_lbs': 185},
+    'answers': {'current_weight_lbs': 185, 'weight_goal': 'lose_15_lbs'},
+    'products': [{'product_type_slug': 'tirzepatide', 'quantity': 1}],
+    'payment': {
+        'mode': 'reference_captured',
+        'gateway': 'your_gateway',
+        'transaction': {'transaction_id': 'ext-txn-123', 'amount': 299.00},
+    },
+    'consents': [{'consent_type': 6, 'consent_text': 'I consent to telehealth.', 'signature_method': 'click'}],
+}
+res = requests.post('https://demo.prescribe-rx.com/api/v1/telehealth/intake/unified',
+    headers={'Authorization': f'Bearer {token}', 'Accept': 'application/json'}, json=payload)
+encounter_id = res.json()['data']['encounter_id']\nStep 3 — poll status (or subscribe to webhook — see Flow 4)\nStatus transitions:\npending_intake → unassigned → pending_provider_review → provider_in_progress → prescribed → completed\n. The poll endpoint also surfaces the linked order's payment + shipping status once the encounter is prescribed.\ncURL\nPHP\nJavaScript\nPython\n# Poll every 30–60 seconds until status reaches a terminal state\ncurl -X GET\n"https://demo.prescribe-rx.com/api/v1/telehealth/encounters/$ENCOUNTER_ID/status"\n\
+  -H\n"Authorization: Bearer $TOKEN"\n\
+  -H\n"Accept: application/json"\ndo {
+    sleep(30);
+    $res = Http::withToken($token)->acceptJson()
+        ->get(\n"https://demo.prescribe-rx.com/api/v1/telehealth/encounters/{$encounterId}/status"\n);
+    $status = $res->json('data.status');
+} while (! in_array($status, ['prescribed', 'completed', 'cancelled', 'rejected']));\nconst terminal = ['prescribed','completed','cancelled','rejected'];
+let status;
+do {
+  await new Promise(r => setTimeout(r, 30000));
+  const res = await fetch(`https://demo.prescribe-rx.com/api/v1/telehealth/encounters/${encounterId}/status`, {
+    headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+  });
+  status = (await res.json()).data.status;
+} while (!terminal.includes(status));\nimport time
+terminal = {'prescribed','completed','cancelled','rejected'}
+while True:
+    time.sleep(30)
+    res = requests.get(f'https://demo.prescribe-rx.com/api/v1/telehealth/encounters/{encounter_id}/status',
+        headers={'Authorization': f'Bearer {token}'})
+    status = res.json()['data']['status']
+    if status in terminal: break\n2\nPatient lookup → create encounter → prescribe\nWhen you're: a CLIENTPROVIDER who already has the patient on file and just needs to write a prescription\nFor client-provider tokens (token type 9). Skip the unified intake and use the encounter +
+            prescription endpoints directly. The provider must have\nprescription:sign\non the
+            token to complete step 3.\nStep 1 — find or create the patient\n# Search by email (returns 0–N matches)\ncurl\n"https://demo.prescribe-rx.com/api/v1/patients/search?email=jane.smith@example.com"\n\
+  -H\n"Authorization: Bearer $TOKEN"\n-H\n"Accept: application/json"\n# If no match, create:\ncurl -X POST\n"https://demo.prescribe-rx.com/api/v1/patients"\n\
+  -H\n"Authorization: Bearer $TOKEN"\n\
+  -H\n"Content-Type: application/json"\n\
+  -d\n'{ "first_name":"Jane","last_name":"Smith","email":"...","date_of_birth":"1988-03-22","phone":"..." }'\nStep 2 — open an encounter\ncurl -X POST\n"https://demo.prescribe-rx.com/api/v1/encounters"\n\
+  -H\n"Authorization: Bearer $TOKEN"\n\
+  -H\n"Content-Type: application/json"\n\
+  -d\n'{
+    "patient_chart_id": "$CHART_ID",
+    "encounter_type_id": "$ENCOUNTER_TYPE_ID",
+    "reason_for_visit": "GLP-1 follow-up"
+  }'\nStep 3 — prescribe + sign\nPOST .../prescribe\nvalidates the proposed Rx against the encounter's preclusions, then signs + locks it. Requires\nprescription:sign\n.\ncurl -X POST\n"https://demo.prescribe-rx.com/api/v1/encounters/$ENCOUNTER_ID/prescribe"\n\
+  -H\n"Authorization: Bearer $TOKEN"\n\
+  -H\n"Content-Type: application/json"\n\
+  -d\n'{
+    "products": [
+      { "product_id": "...", "dose_product_id": "...", "quantity": 1, "directions": "Inject 0.25 mg subcutaneously once weekly." }
+    ],
+    "compounding_reason_id": "..."
+  }'\nGLP-1 prescriptions require a\ncompounding_reason_id\nreferencing the patient's
+            documented medical-necessity rationale (controlled-substance + compliance enforcement).
+            See\ndocs/dev/COMPOUNDING_REASONS_DEVELOPER_GUIDE.md\n.\n3\nBulk-orders for B2B clients\nWhen you're: a clinic / wholesale buyer placing one big order against your client account, not creating individual encounters per patient\nBulk orders skip the encounter system entirely and ship products to the\nclient\n(not patients). Used for clinic stock orders, wholesale shipments,
+            and B2B sample programs. Asynchronous — the API returns a\nrequest_id\nimmediately;
+            poll\n/bulk-orders/{requestId}/status\nfor processing state.\nStep 1 — submit the bulk order\ncurl -X POST\n"https://demo.prescribe-rx.com/api/v1/bulk-orders"\n\
+  -H\n"Authorization: Bearer $TOKEN"\n\
+  -H\n"Content-Type: application/json"\n\
+  -d\n'{
+    "external_order_id": "PO-2026-0042",
+    "shipping_address": { "street":"...","city":"...","state":"GA","zip":"30303","country":"US" },
+    "lines": [
+      { "product_id": "...", "quantity": 50 },
+      { "product_id": "...", "quantity": 25 }
+    ]
+  }'\nStep 2 — poll for processing status\ncurl\n"https://demo.prescribe-rx.com/api/v1/bulk-orders/$REQUEST_ID/status"\n\
+  -H\n"Authorization: Bearer $TOKEN"\nStep 3 — fetch the resulting order\nOnce processing completes, the response includes an\norder_id\n. Use the standard\nGET /orders/{id}\nfor full details.\ncurl\n"https://demo.prescribe-rx.com/api/v1/orders/$ORDER_ID?include=fulfillments,transactions"\n\
+  -H\n"Authorization: Bearer $TOKEN"\n4\nWebhook subscribe + signature verify\nWhen you're: replacing the status-poll loop in Flow 1 with real-time push\nWebhooks fire on 27+ events (\nencounter.prescribed\n,\norder.placed\n,\nfulfillment.shipped\n, etc — full list at\nwebhooks guide\n). Each delivery
+            includes\nX-PrescribeRx-Signature: sha256=<hex>\n— verify with HMAC-SHA256
+            of the raw body using your subscription secret.\nStep 1 — discover available event slugs\ncurl\n"https://demo.prescribe-rx.com/api/v1/webhooks/event-types"\n\
+  -H\n"Authorization: Bearer $TOKEN"\nStep 2 — create a subscription\nThe response includes a one-time\nsecret\nused to sign every delivery. Store it server-side; it's never returned again.\ncurl -X POST\n"https://demo.prescribe-rx.com/api/v1/webhooks"\n\
+  -H\n"Authorization: Bearer $TOKEN"\n\
+  -H\n"Content-Type: application/json"\n\
+  -d\n'{
+    "name": "Prod integration",
+    "url": "https://yourapp.example.com/webhooks/prescribe-rx",
+    "events": ["encounter.prescribed", "order.placed", "fulfillment.shipped"],
+    "is_active": true
+  }'\nStep 3 — verify incoming deliveries\nEvery webhook delivery includes\nX-PrescribeRx-Signature: sha256=<hex>\n. Compute HMAC-SHA256 of the raw body bytes (not parsed JSON) keyed by your subscription secret and compare.\nPHP\nJavaScript\nPython\nfunction\nverifyWebhook(\nstring\n$rawBody,\nstring\n$signatureHeader,\nstring\n$secret):\nbool\n{\nif\n(! str_starts_with($signatureHeader,\n'sha256='\n))\nreturn\nfalse\n;
+    $provided = substr($signatureHeader, 7);
+    $expected = hash_hmac(\n'sha256'\n, $rawBody, $secret);\nreturn\nhash_equals($expected, $provided);
+}\nimport\ncrypto\nfrom\n'crypto'\n;\nfunction\nverifyWebhook(rawBody, signatureHeader, secret) {\nif\n(!signatureHeader.startsWith(\n'sha256='\n))\nreturn\nfalse\n;\nconst\nprovided = signatureHeader.slice(7);\nconst\nexpected = crypto.createHmac(\n'sha256'\n, secret).update(rawBody).digest(\n'hex'\n);\nreturn\ncrypto.timingSafeEqual(Buffer.from(provided), Buffer.from(expected));
+}\nimport\nhmac, hashlib\ndef\nverify_webhook(raw_body: bytes, signature_header: str, secret: str) -> bool:\nif not\nsignature_header.startswith(\n'sha256='\n):\nreturn\nFalse\nprovided = signature_header[7:]
+    expected = hmac.new(secret.encode(), raw_body, hashlib.sha256).hexdigest()\nreturn\nhmac.compare_digest(provided, expected)\nTest before going live.\nPOST /webhooks/{subscription}/test\ntriggers a synthetic delivery to your endpoint with the same signature shape as real
+            events.\nGET /webhooks/{subscription}/delivery-logs\nshows per-attempt
+            success/failure for production debugging.\n5\nTest-data flow with\nis_sandbox\nWhen you're: building / staging integration code without polluting production reports or paging on-call providers\nSetting\n"is_sandbox": true\non the unified intake (or letting the auto-detector
+            do it via a\n"Test"\n-named patient) flags the encounter + any resulting order
+            as sandbox data. The flag cascades through the whole stack:\n✅ Encounter created — provider auto-assignment\nskipped\n(capacity preserved)\n✅ Order created — fulfillment dispatch\nskipped\n(no carriers / pharmacies hit)\n✅ Excluded from commission + billing-statement reports\n✅ Webhooks\nstill fire\n(so you can test your handler end-to-end)\nExplicit flag (recommended for CI / automated tests)\ncurl -X POST\n"https://demo.prescribe-rx.com/api/v1/telehealth/intake/unified"\n\
+  -H\n"Authorization: Bearer $TOKEN"\n-H\n"Content-Type: application/json"\n\
+  -d\n'{
+    "is_sandbox": true,
+    "encounter_type_slug": "weight-management",
+    "patient": { "first_name":"QA","last_name":"Smoke","email":"qa+'$(date +%s)'@example.com", ... }
+  }'\nAuto-detect via test-name regex\nWhen the patient's first or last name matches\n/\btest(ing|er)?\b/i\n,\nis_sandbox=true\nis auto-applied. Useful for one-off manual tests where you want the same effect without remembering the flag.\n# All of these auto-flag as sandbox:\n"first_name": "Test"\n"last_name": "Tester"\n"first_name": "Testing"\n"first_name": "John", "last_name": "Test"\nSome tenants opt OUT of test-data via the org-level\nblock_test_intakes\nsetting —
+            in that case auto-detection promotes to a 422 reject instead. Use the explicit\n"is_sandbox": true\nflag for production parity testing across all tenants.\nWhat's next\nThese five cover the high-traffic flows. For everything else — patient self-service, vital
+        history queries, prescription cancellation, lab orders, scheduling — see the full\ninteractive API reference\nor the\nfield-mapping page\nfor what each payload
+        field actually does on the server.

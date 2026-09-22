@@ -1,0 +1,27 @@
+---
+description: Lock desktop layout. Mobile and tablet edits stay in exclusive width ranges.
+alwaysApply: true
+---
+
+# Responsive lock
+
+Desktop is locked. Unscoped CSS is the desktop design (1728 hims frame).
+
+Canonical cuts, from `web/app/globals.css`: `--bp-tablet` `721px`, `--bp-desktop` `1025px`. `var()` is invalid in `@media` conditions. Write the literals.
+
+```css
+@media (width < 721px) { }                 /* phone */
+@media (721px <= width < 1025px) { }       /* tablet */
+@media (width >= 1025px) { }               /* desktop only, if you must */
+```
+
+During a mobile or tablet pass:
+
+- Do not edit unscoped layout, type, space, or visibility unless the user says the change is shared or should transfer to desktop.
+- Do not invent other width cuts (520, 640, 720, 768, 860, 900, 980, 1024, 1100).
+- One DOM. Restyle with CSS. Do not rewrite JSX to fix a phone layout.
+- `hover`, `pointer`, and `prefers-*` queries are not width cuts. They stay allowed.
+- `matchMedia` width queries use the same two strings.
+- When you touch a component for responsive work, migrate that file's width queries to these ranges. Do not boil the ocean.
+
+Verify at about 390, 768, and 1440 or 1728. If desktop moved, the edit was unscoped or the range was too wide.

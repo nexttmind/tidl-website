@@ -1,0 +1,135 @@
+.root {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0;
+  width: 100%;
+  box-sizing: border-box;
+  align-items: start;
+  background: var(--surface-page);
+}
+
+.copy {
+  padding: var(--layout-section-y) clamp(28px, 5vw, 72px);
+  max-width: none;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.inner {
+  max-width: 36rem;
+  margin-left: auto;
+  width: 100%;
+}
+
+.title {
+  margin: 0 0 var(--space-7);
+  font-family: var(--font-display);
+  font-size: calc(clamp(32px, 4vw, 44px) * var(--font-display-scale));
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-4);
+  padding-block: var(--space-5);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.item:last-child {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.index {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+  padding-top: 4px;
+}
+
+.itemCopy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.stepTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: calc(22px * var(--font-display-scale));
+  font-weight: 600;
+}
+
+.body {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.mediaCol {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  align-self: start;
+  background: #1a222a;
+  display: flex;
+  overflow: hidden;
+}
+
+.media {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  border-radius: 0;
+  border: none;
+  flex: 1;
+}
+
+@media (max-width: 1023px) {
+  .root {
+    grid-template-columns: 1fr;
+  }
+
+  .copy {
+    padding: var(--space-8) var(--layout-gutter);
+  }
+
+  .inner {
+    max-width: none;
+    margin: 0;
+  }
+
+  .mediaCol {
+    position: relative;
+    top: auto;
+    height: auto;
+    min-height: 280px;
+  }
+
+  .media {
+    min-height: 280px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mediaCol {
+    position: relative;
+    height: auto;
+    min-height: 420px;
+  }
+}

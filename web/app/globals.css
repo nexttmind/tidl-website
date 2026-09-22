@@ -1,0 +1,285 @@
+/* Live site tokens. Display and UI are Inter. Do not load unused families. */
+
+:root {
+  /* Primitive (subset) */
+  --color-ink: #1a1a1a;
+  --color-white: #ffffff;
+  --color-paper: #fbf9f6;
+  --color-night: #212b38;
+  --color-slate: #405774;
+  --color-gold: #ebbb3e;
+  --color-rule: #e5e5e5;
+  --color-rule-soft: rgba(26, 26, 26, 0.12);
+
+  /* Semantic · Surface */
+  --surface-page: var(--color-paper);
+  --surface-page-raised: var(--color-white);
+  --surface-sunken: #f0ebe4;
+  --surface-inverse: #1a1a1a;
+  --surface-glass: rgba(255, 255, 255, 0.1);
+  --surface-overlay: rgba(0, 0, 0, 0.5);
+  --surface-brand: #405774;
+
+  /* Semantic · Text */
+  --text-primary: var(--color-ink);
+  --text-secondary: rgba(26, 26, 26, 0.65);
+  --text-tertiary: rgba(26, 26, 26, 0.45);
+  --text-inverse: var(--color-white);
+  --text-inverse-secondary: rgba(255, 255, 255, 0.6);
+  --text-disabled: rgba(26, 26, 26, 0.35);
+  --text-link: var(--color-slate);
+  --action-primary-text: var(--color-white);
+
+  /* Semantic · Border */
+  --border-default: rgba(26, 26, 26, 0.2);
+  --border-subtle: #e5e5e5;
+  --border-strong: rgba(26, 26, 26, 0.45);
+  --border-focus: rgba(115, 140, 178, 0.8);
+
+  /* Semantic · Action */
+  --action-primary: #405774;
+  --action-primary-hover: #384d66;
+  --action-primary-pressed: #304259;
+  --action-primary-disabled: rgba(64, 87, 116, 0.4);
+  --action-secondary-border: #405774;
+
+  /* Status */
+  --status-success: #2f6b4f;
+  --status-warning: #9a6b2f;
+  --status-danger: #8b3a3a;
+  --status-info: #40618c;
+
+  /* Space (4/8 grid) */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 40px;
+  --space-8: 48px;
+  --space-9: 64px;
+  --space-10: 80px;
+  --space-11: 96px;
+
+  /* Radius */
+  --radius-control: 50px;
+  --radius-card: 20px;
+  --radius-media: 12px;
+  --radius-pill: 9999px;
+
+  /* Layout — matched to hims.com homepage-frame */
+  --layout-frame: 1728px;
+  --layout-max: 1728px;
+  --layout-gutter: 16px;
+  --layout-section-y: var(--space-10);
+
+  /*
+   * Width bands. var() is invalid in @media conditions; write the literals.
+   * Phone:    width < 721px
+   * Tablet:   721px <= width < 1025px
+   * Desktop:  width >= 1025px (unscoped default; locked)
+   */
+  --bp-tablet: 721px;
+  --bp-desktop: 1025px;
+
+  /* Type families (set by next/font variables) */
+  --font-display: var(--font-inter), Inter, system-ui, sans-serif;
+  --font-display-scale: 1.4;
+  --font-ui: var(--font-inter), Inter, system-ui, sans-serif;
+  --font-mono: var(--font-space-mono), "Space Mono", ui-monospace, monospace;
+
+  /* Elevation */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  /* Decorative motif (Care Dial radial) — staging Circle.svg copper */
+  --decorative-warm: rgb(175, 124, 84);
+  --decorative-warm-muted: rgba(175, 124, 84, 0.35);
+
+  --peptide-field: #070709;
+  --peptide-champagne: #f4e6c8;
+
+  /* Section light fill stack — cool bone paper, layered diffusion */
+  --section-bg-base: #f4f6f0;
+  --section-bg-image:
+    radial-gradient(ellipse 78% 68% at 6% 12%, rgba(226, 232, 220, 0.95) 0%, transparent 64%),
+    radial-gradient(ellipse 72% 76% at 96% 8%, rgba(216, 226, 220, 0.72) 0%, transparent 60%),
+    radial-gradient(ellipse 58% 52% at 88% 78%, rgba(204, 216, 208, 0.58) 0%, transparent 56%),
+    radial-gradient(ellipse 64% 58% at 12% 92%, rgba(220, 228, 218, 0.7) 0%, transparent 62%),
+    radial-gradient(ellipse 42% 48% at 52% 44%, rgba(236, 238, 232, 0.55) 0%, transparent 52%),
+    radial-gradient(ellipse 36% 40% at 38% 22%, rgba(208, 218, 210, 0.32) 0%, transparent 50%),
+    radial-gradient(ellipse 30% 34% at 70% 58%, rgba(198, 210, 202, 0.26) 0%, transparent 46%);
+  --section-bg-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  --footer-bg-base: #212b38;
+  --footer-bg-image:
+    radial-gradient(ellipse 60% 70% at -5% -10%, rgba(64, 97, 140, 0.4) 0%, transparent 100%),
+    radial-gradient(ellipse 50% 60% at 70% 70%, rgba(191, 115, 46, 0.3) 0%, transparent 100%),
+    radial-gradient(ellipse 40% 40% at 35% 60%, rgba(51, 128, 140, 0.15) 0%, transparent 100%);
+}
+
+@media (width >= 1025px) {
+  :root {
+    --layout-gutter: 20px;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/*
+ * Page wash: one fixed viewport layer. Never size/repeat against section or
+ * document boxes — that tiled every ~100vh and read as full-width seams.
+ */
+html {
+  min-height: 100%;
+  background-color: var(--section-bg-base);
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: clip;
+}
+
+body {
+  position: relative;
+  isolation: isolate;
+  min-height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  color: var(--text-primary);
+  background: transparent;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--section-bg-base);
+  background-image: var(--section-bg-image);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+/* Soft film grain over the wash — quiet texture, no hard edges */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.32;
+  mix-blend-mode: multiply;
+  background-image: var(--section-bg-grain);
+  background-size: 180px 180px;
+  background-repeat: repeat;
+}
+
+/*
+ * Page frame — hims homepage-frameutils Section:
+ * max-width 1728px, width 100%, centered. No extra outer gutter.
+ * Below 1728, content rides the viewport. Above it, equal side margins.
+ */
+.layout-frame {
+  width: 100%;
+  max-width: var(--layout-frame);
+  margin-inline: auto;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Top chrome breakout (hims promo banner): true viewport bleed */
+.layout-bleed {
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  position: relative;
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* Transparent — html wash shows through; never re-paint per section (seams). */
+.section-bg {
+  background: transparent;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/*
+ * Content rail (hims pattern):
+ * - .layout-frame: outer page width (hero + shells)
+ * - .layout-container: rail + horizontal gutters
+ * - .layout-rail: rail flush (media / cards that hit the rail edge)
+ */
+.layout-container,
+.layout-rail {
+  width: 100%;
+  max-width: var(--layout-max);
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+
+.layout-container {
+  padding-inline: var(--layout-gutter);
+}
+
+/* Local Next overlay covers the whole phone. Production has no portal. */
+@media (width < 1025px) {
+  nextjs-portal {
+    display: none !important;
+  }
+}

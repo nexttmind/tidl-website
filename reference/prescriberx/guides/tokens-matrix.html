@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Token Types &amp; Abilities — PrescribeRx</title>
+    <style>
+        :root {
+            --header-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --ink: #1a1a1a;
+            --muted: #666;
+            --accent: #2196f3;
+            --pill-bg: #eef2ff;
+            --pill-fg: #3949ab;
+        }
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--ink);
+            background: #fafafa;
+        }
+        .topbar {
+            background: var(--header-bg);
+            color: white;
+            padding: 16px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .topbar h1 { margin: 0; font-size: 1.3em; font-weight: 600; }
+        .topbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9em;
+            opacity: 0.9;
+            border-bottom: 1px dotted rgba(255,255,255,0.5);
+        }
+        .topbar a:hover { opacity: 1; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px 28px 60px; }
+        h2 { margin: 36px 0 14px; font-size: 1.4em; border-bottom: 2px solid #eee; padding-bottom: 6px; }
+        h3 { margin: 24px 0 10px; font-size: 1.1em; color: var(--accent); }
+        p { line-height: 1.55; color: var(--ink); }
+        .lead { color: var(--muted); margin-bottom: 22px; }
+        .pill {
+            display: inline-block;
+            background: var(--pill-bg);
+            color: var(--pill-fg);
+            padding: 2px 10px;
+            border-radius: 11px;
+            font-size: 0.8em;
+            margin-right: 6px;
+            font-family: monospace;
+        }
+        .token-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 18px 22px;
+            margin: 16px 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .token-card h3 { margin-top: 0; }
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            gap: 8px 14px;
+            font-size: 0.92em;
+            margin: 12px 0;
+        }
+        .meta-grid > .k { color: var(--muted); }
+        .meta-grid > .v code {
+            background: #f3f4f6;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 0.95em;
+        }
+        .ability-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 4px 12px;
+            margin: 8px 0 4px;
+            font-family: monospace;
+            font-size: 0.82em;
+            color: #444;
+        }
+        .ability-list .full { grid-column: 1 / -1; color: #c62828; font-weight: 600; }
+        details { margin-top: 8px; }
+        summary {
+            cursor: pointer;
+            font-size: 0.85em;
+            color: var(--muted);
+            padding: 4px 0;
+        }
+        summary:hover { color: var(--accent); }
+        .example-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 8px 0;
+            font-family: monospace;
+            font-size: 0.82em;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+        .example-block .c { color: #94a3b8; }
+        .example-block .h { color: #f59e0b; }
+        .example-block .s { color: #4ade80; }
+        table.scope-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.9em;
+        }
+        table.scope-table th,
+        table.scope-table td {
+            border: 1px solid #e5e7eb;
+            padding: 10px 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+        table.scope-table th {
+            background: #f3f4f6;
+            font-weight: 600;
+        }
+        .yes { color: #15803d; font-weight: 600; }
+        .no { color: #b91c1c; }
+        .partial { color: #c2410c; }
+        .callout {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 10px 14px;
+            margin: 14px 0;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.9em;
+        }
+        .callout-info {
+            background: #dbeafe;
+            border-left: 4px solid #2563eb;
+            padding: 10px 14px;
+            margin: 14px 0;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.9em;
+        }
+    </style>
+<script id="browser-logger-active">
+(function() {
+    const ENDPOINT = 'https://demo.prescribe-rx.com/_boost/browser-logs';
+    const logQueue = [];
+    let flushTimeout = null;
+
+    console.log('🔍 Browser logger active (MCP server detected). Posting to: ' + ENDPOINT);
+
+    // Store original console methods
+    const originalConsole = {
+        log: console.log,
+        info: console.info,
+        error: console.error,
+        warn: console.warn,
+        table: console.table
+    };
+
+    // Helper to safely stringify values
+    function safeStringify(obj) {
+        const seen = new WeakSet();
+        return JSON.stringify(obj, (key, value) => {
+            if (typeof value === 'object' && value !== null) {
+                if (seen.has(value)) return '[Circular]';
+                seen.add(value);
+            }
+            if (value instanceof Error) {
+                return {
+                    name: value.name,
+                    message: value.message,
+                    stack: value.stack
+                };
+            }
+            return value;
+        });
+    }
+
+    // Batch and send logs
+    function flushLogs() {
+        if (logQueue.length === 0) return;
+
+        const batch = logQueue.splice(0, logQueue.length);
+
+        fetch(ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ logs: batch })
+        }).catch(err => {
+            // Silently fail to avoid infinite loops
+            originalConsole.error('Failed to send logs:', err);
+        });
+    }
+
+    // Debounced flush (100ms)
+    function scheduleFlush() {
+        if (flushTimeout) clearTimeout(flushTimeout);
+        flushTimeout = setTimeout(flushLogs, 100);
+    }
+
+    // Intercept console methods
+    ['log', 'info', 'error', 'warn', 'table'].forEach(method => {
+        console[method] = function(...args) {
+            // Call original method
+            originalConsole[method].apply(console, args);
+
+            // Capture log data
+            try {
+                logQueue.push({
+                    type: method,
+                    timestamp: new Date().toISOString(),
+                    data: args.map(arg => {
+                        try {
+                            return typeof arg === 'object' ? JSON.parse(safeStringify(arg)) : arg;
+                        } catch (e) {
+                            return String(arg);
+                        }
+                    }),
+                    url: window.location.href,
+                    userAgent: navigator.userAgent
+                });
+
+                scheduleFlush();
+            } catch (e) {
+                // Fail silently
+            }
+        };
+    });
+
+    // Global error handlers for uncaught errors
+    const originalOnError = window.onerror;
+    window.onerror = function boostErrorHandler(errorMsg, url, lineNumber, colNumber, error) {
+        try {
+            logQueue.push({
+                type: 'uncaught_error',
+                timestamp: new Date().toISOString(),
+                data: [{
+                    message: errorMsg,
+                    filename: url,
+                    lineno: lineNumber,
+                    colno: colNumber,
+                    error: error ? {
+                        name: error.name,
+                        message: error.message,
+                        stack: error.stack
+                    } : null
+                }],
+                url: window.location.href,
+                userAgent: navigator.userAgent
+            });
+
+            scheduleFlush();
+        } catch (e) {
+            // Fail silently
+        }
+
+        // Call original handler if it exists
+        if (originalOnError && typeof originalOnError === 'function') {
+            return originalOnError(errorMsg, url, lineNumber, colNumber, error);
+        }
+
+        // Let the error continue to propagate
+        return false;
+    }
+    window.addEventListener('error', (event) => {
+        try {
+            logQueue.push({
+                type: 'window_error',
+                timestamp: new Date().toISOString(),
+                data: [{
+                    message: event.message,
+                    filename: event.filename,
+                    lineno: event.lineno,
+                    colno: event.colno,
+                    error: event.error ? {
+                        name: event.error.name,
+                        message: event.error.message,
+                        stack: event.error.stack
+                    } : null
+                }],
+                url: window.location.href,
+                userAgent: navigator.userAgent
+            });
+
+            scheduleFlush();
+        } catch (e) {
+            // Fail silently
+        }
+
+        // Let the error continue to propagate
+        return false;
+    });
+    window.addEventListener('unhandledrejection', (event) => {
+        try {
+            logQueue.push({
+                type: 'error',
+                timestamp: new Date().toISOString(),
+                data: [{
+                    message: 'Unhandled Promise Rejection',
+                    reason: event.reason instanceof Error ? {
+                        name: event.reason.name,
+                        message: event.reason.message,
+                        stack: event.reason.stack
+                    } : event.reason
+                }],
+                url: window.location.href,
+                userAgent: navigator.userAgent
+            });
+
+            scheduleFlush();
+        } catch (e) {
+            // Fail silently
+        }
+
+        // Let the rejection continue to propagate
+        return false;
+    });
+
+    // Flush on page unload
+    window.addEventListener('beforeunload', () => {
+        if (logQueue.length > 0) {
+            navigator.sendBeacon(ENDPOINT, JSON.stringify({ logs: logQueue }));
+        }
+    });
+})();
+</script>
+</head>
+<body>
+    <div class="topbar">
+        <h1>API Token Types &amp; Abilities</h1>
+        <a href="https://demo.prescribe-rx.com/api/docs">← Back to API reference</a>
+    </div>
+
+    <div class="container">
+        <p class="lead">
+            Every PrescribeRx API request must carry a Sanctum bearer token. The token's <strong>type</strong>
+            determines which endpoints it can hit, the data scope (single tenant vs. hierarchy), and which
+            payload fields are honoured. This page lists the four production token types, how to provision each,
+            and what they're allowed to do.
+        </p>
+
+        <div class="callout-info">
+            <strong>How to authenticate:</strong> All tokens are passed as
+            <code>Authorization: Bearer {token}</code>. Tokens are generated by an
+            authenticated user (or admin) and inherit that user's <code>UserType</code>.
+            Token abilities are computed from <code>TokenAbility::forUserType()</code> at
+            issue time — see "Updating abilities" at the bottom for what happens when the
+            mapping changes.
+        </div>
+
+        
+                                <div class="token-card">
+                <h3>🏢 Sales Organization Token</h3>
+                <span class="pill">UserType::2</span>
+
+                <div class="meta-grid">
+                    <div class="k">Who uses it</div>
+                    <div class="v">A sales organization integrating PrescribeRx into their own product (white-label, partner site, or back-office portal).</div>
+
+                    <div class="k">How to provision</div>
+                    <div class="v">Provisioned by the sales-org owner from /sales-organization/api-tokens, OR by an admin attaching a token to any user with UserType::SALESORGANIZATION.</div>
+
+                    <div class="k">Data scope</div>
+                    <div class="v">Tenant-scoped to the org and all its hierarchical descendants (child orgs + clients + their patients/encounters/orders). Cannot read other orgs.</div>
+
+                    <div class="k">Common use cases</div>
+                    <div class="v">
+                        <ul style="margin: 4px 0 0 16px;">
+                                                            <li>Submitting telehealth intakes from a partner-branded site</li>
+                                                            <li>Querying products + packages available to the org</li>
+                                                            <li>Reading orders + encounters across the org hierarchy</li>
+                                                            <li>Managing webhook subscriptions for org-wide events</li>
+                                                    </ul>
+                    </div>
+                </div>
+
+                <details>
+                    <summary>Token abilities (26)</summary>
+                    <div class="ability-list">
+                                                                                    <code>sales-org:read</code>
+                                                                                                                <code>sales-org:update</code>
+                                                                                                                <code>client:read</code>
+                                                                                                                <code>client:create</code>
+                                                                                                                <code>client:pricing:write</code>
+                                                                                                                <code>order:read</code>
+                                                                                                                <code>order:create</code>
+                                                                                                                <code>order:update</code>
+                                                                                                                <code>product:read</code>
+                                                                                                                <code>patient:read</code>
+                                                                                                                <code>patient:create</code>
+                                                                                                                <code>patient:update</code>
+                                                                                                                <code>patient:issue-token</code>
+                                                                                                                <code>prescription:read</code>
+                                                                                                                <code>telehealth:read</code>
+                                                                                                                <code>telehealth:submit</code>
+                                                                                                                <code>encounter:read</code>
+                                                                                                                <code>encounter:create</code>
+                                                                                                                <code>encounter:update</code>
+                                                                                                                <code>webhook:read</code>
+                                                                                                                <code>webhook:create</code>
+                                                                                                                <code>webhook:update</code>
+                                                                                                                <code>webhook:delete</code>
+                                                                                                                <code>scheduling:read</code>
+                                                                                                                <code>scheduling:write</code>
+                                                                                                                <code>lab:read</code>
+                                                                        </div>
+                </details>
+
+                <details>
+                    <summary>Example: cURL request</summary>
+                    <div class="example-block">
+<span class="c"># Sales Organization Token — submitting a unified intake</span>
+<span class="h">curl</span> -X POST <span class="s">"https://demo.prescribe-rx.com/api/v1/telehealth/intake/unified"</span> \
+  -H <span class="s">"Authorization: Bearer YOUR_TOKEN"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -H <span class="s">"Accept: application/json"</span> \
+  -d <span class="s">'{"encounter_type_id":"019d...uuid","patient":{"first_name":"Test","last_name":"Patient","email":"test@example.com","date_of_birth":"1990-01-15","phone":"5551234567"},"vitals":{"height_in":68,"weight_lb":180},"answers":{"primary_concern":"GLP-1 weight management"}}'</span>
+                    </div>
+                </details>
+            </div>
+                                <div class="token-card">
+                <h3>🏥 Client Token (CLIENT / CLIENTMANAGER / CLIENTPROVIDER)</h3>
+                <span class="pill">UserType::6</span>
+
+                <div class="meta-grid">
+                    <div class="k">Who uses it</div>
+                    <div class="v">A client (clinic, pharmacy partner, individual practice) using PrescribeRx APIs from their own EHR / portal / PMS.</div>
+
+                    <div class="k">How to provision</div>
+                    <div class="v">Provisioned by the client owner from /client/settings/api-tokens, OR by a sales-org admin on behalf of the client.</div>
+
+                    <div class="k">Data scope</div>
+                    <div class="v">Tenant-scoped to a single client. Sees only their patients, encounters, orders, prescriptions. CLIENTPROVIDER variant adds prescription:create + prescription:sign for client-side providers signing Rx.</div>
+
+                    <div class="k">Common use cases</div>
+                    <div class="v">
+                        <ul style="margin: 4px 0 0 16px;">
+                                                            <li>Submitting a telehealth intake on behalf of a patient</li>
+                                                            <li>Reading a patient chart + visit history</li>
+                                                            <li>Creating client-to-patient and bulk-to-client orders</li>
+                                                            <li>Subscribing to webhooks for client-scoped events</li>
+                                                    </ul>
+                    </div>
+                </div>
+
+                <details>
+                    <summary>Token abilities (23)</summary>
+                    <div class="ability-list">
+                                                                                    <code>client:read</code>
+                                                                                                                <code>client:update</code>
+                                                                                                                <code>order:create</code>
+                                                                                                                <code>order:read</code>
+                                                                                                                <code>order:update</code>
+                                                                                                                <code>prescription:read</code>
+                                                                                                                <code>patient:read</code>
+                                                                                                                <code>patient:create</code>
+                                                                                                                <code>patient:update</code>
+                                                                                                                <code>patient:issue-token</code>
+                                                                                                                <code>product:read</code>
+                                                                                                                <code>telehealth:read</code>
+                                                                                                                <code>telehealth:submit</code>
+                                                                                                                <code>encounter:read</code>
+                                                                                                                <code>encounter:create</code>
+                                                                                                                <code>encounter:update</code>
+                                                                                                                <code>webhook:read</code>
+                                                                                                                <code>webhook:create</code>
+                                                                                                                <code>webhook:update</code>
+                                                                                                                <code>webhook:delete</code>
+                                                                                                                <code>scheduling:read</code>
+                                                                                                                <code>scheduling:write</code>
+                                                                                                                <code>lab:read</code>
+                                                                        </div>
+                </details>
+
+                <details>
+                    <summary>Example: cURL request</summary>
+                    <div class="example-block">
+<span class="c"># Client Token (CLIENT / CLIENTMANAGER / CLIENTPROVIDER) — submitting a unified intake</span>
+<span class="h">curl</span> -X POST <span class="s">"https://demo.prescribe-rx.com/api/v1/telehealth/intake/unified"</span> \
+  -H <span class="s">"Authorization: Bearer YOUR_TOKEN"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -H <span class="s">"Accept: application/json"</span> \
+  -d <span class="s">'{"encounter_type_id":"019d...uuid","patient":{"first_name":"Test","last_name":"Patient","email":"test@example.com","date_of_birth":"1990-01-15","phone":"5551234567"},"vitals":{"height_in":68,"weight_lb":180},"answers":{"primary_concern":"GLP-1 weight management"}}'</span>
+                    </div>
+                </details>
+            </div>
+                                <div class="token-card">
+                <h3>👤 User Token (PATIENT / PROVIDER / etc.)</h3>
+                <span class="pill">UserType::1</span>
+
+                <div class="meta-grid">
+                    <div class="k">Who uses it</div>
+                    <div class="v">An individual user (patient, provider, sales-org employee) authenticating from a mobile app or first-party SPA.</div>
+
+                    <div class="k">How to provision</div>
+                    <div class="v">Issued via /api/v1/auth/login (mobile) or via the user&#039;s portal &quot;Generate API Token&quot; button. Scoped to that user&#039;s UserType.</div>
+
+                    <div class="k">Data scope</div>
+                    <div class="v">User-scoped. Sees only their own data (patient sees own chart, provider sees their own assigned encounters). Cannot impersonate other users.</div>
+
+                    <div class="k">Common use cases</div>
+                    <div class="v">
+                        <ul style="margin: 4px 0 0 16px;">
+                                                            <li>Mobile app login flows</li>
+                                                            <li>A provider reviewing their own assigned encounters</li>
+                                                            <li>A patient pulling their own chart from their own integration</li>
+                                                    </ul>
+                    </div>
+                </div>
+
+                <details>
+                    <summary>Token abilities (13)</summary>
+                    <div class="ability-list">
+                                                                                    <code>patient:read</code>
+                                                                                                                <code>patient:update</code>
+                                                                                                                <code>patient:approve-charge</code>
+                                                                                                                <code>patient:vitals</code>
+                                                                                                                <code>order:read</code>
+                                                                                                                <code>telehealth:read</code>
+                                                                                                                <code>telehealth:submit</code>
+                                                                                                                <code>encounter:read</code>
+                                                                                                                <code>prescription:read</code>
+                                                                                                                <code>product:read</code>
+                                                                                                                <code>scheduling:read</code>
+                                                                                                                <code>scheduling:write</code>
+                                                                                                                <code>lab:read</code>
+                                                                        </div>
+                </details>
+
+                <details>
+                    <summary>Example: cURL request</summary>
+                    <div class="example-block">
+<span class="c"># User Token (PATIENT / PROVIDER / etc.) — submitting a unified intake</span>
+<span class="h">curl</span> -X POST <span class="s">"https://demo.prescribe-rx.com/api/v1/telehealth/intake/unified"</span> \
+  -H <span class="s">"Authorization: Bearer YOUR_TOKEN"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -H <span class="s">"Accept: application/json"</span> \
+  -d <span class="s">'{"encounter_type_id":"019d...uuid","patient":{"first_name":"Test","last_name":"Patient","email":"test@example.com","date_of_birth":"1990-01-15","phone":"5551234567"},"vitals":{"height_in":68,"weight_lb":180},"answers":{"primary_concern":"GLP-1 weight management"}}'</span>
+                    </div>
+                </details>
+            </div>
+                                <div class="token-card">
+                <h3>📋 Embed Form Token</h3>
+                <span class="pill">UserType::3</span>
+
+                <div class="meta-grid">
+                    <div class="k">Who uses it</div>
+                    <div class="v">A public embed form (web widget on a partner site) that submits intakes anonymously without authenticating an end-user first.</div>
+
+                    <div class="k">How to provision</div>
+                    <div class="v">Generated when an embed code is created from /admin/embeds. Tied to a specific encounter type + embed instance + sales-org. Lower-privilege than a sales-org token.</div>
+
+                    <div class="k">Data scope</div>
+                    <div class="v">Locked to the single embed_code. Can only submit intakes that match that embed&#039;s encounter type and any product allow-list. Cannot read existing data.</div>
+
+                    <div class="k">Common use cases</div>
+                    <div class="v">
+                        <ul style="margin: 4px 0 0 16px;">
+                                                            <li>A weight-loss page on a partner site that drops a single embed widget</li>
+                                                            <li>Lead-gen funnels that collect intake then redirect to PRX-hosted checkout</li>
+                                                            <li>Quick-deploy partner integrations that need zero auth-server work</li>
+                                                    </ul>
+                    </div>
+                </div>
+
+                <details>
+                    <summary>Token abilities (1)</summary>
+                    <div class="ability-list">
+                                                                                    <span class="full">* (all abilities — admin-class only)</span>
+                                                                        </div>
+                </details>
+
+                <details>
+                    <summary>Example: cURL request</summary>
+                    <div class="example-block">
+<span class="c"># Embed Form Token — submitting a unified intake</span>
+<span class="h">curl</span> -X POST <span class="s">"https://demo.prescribe-rx.com/api/v1/telehealth/intake/unified"</span> \
+  -H <span class="s">"Authorization: Bearer YOUR_TOKEN"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -H <span class="s">"Accept: application/json"</span> \
+  -d <span class="s">'{"embed_code":"emb-abc123","patient":{"first_name":"Test","last_name":"Patient","email":"test@example.com","date_of_birth":"1990-01-15","phone":"5551234567"},"vitals":{"height_in":68,"weight_lb":180},"answers":{"primary_concern":"GLP-1 weight management"}}'</span>
+                    </div>
+                </details>
+            </div>
+        
+        <h2>Capability matrix</h2>
+        <table class="scope-table">
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>sales-org</th>
+                    <th>client</th>
+                    <th>user</th>
+                    <th>embed</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Submit telehealth intake</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓ (own)</td><td class="yes">✓ (single embed)</td></tr>
+                <tr><td>Query products / packages</td><td class="yes">✓ scoped</td><td class="yes">✓ scoped</td><td class="yes">✓ public catalog</td><td class="yes">✓ embed catalog</td></tr>
+                <tr><td>Create orders</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+                <tr><td>Read encounters</td><td class="yes">✓ org tree</td><td class="yes">✓ client only</td><td class="yes">✓ assigned</td><td class="no">✗</td></tr>
+                <tr><td>Sign prescriptions</td><td class="no">✗</td><td class="partial">CLIENTPROVIDER only</td><td class="partial">PROVIDER only</td><td class="no">✗</td></tr>
+                <tr><td>Manage webhooks</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+                <tr><td>Read other tenants</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+                <tr><td>Admin operations</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td><td class="no">✗</td></tr>
+            </tbody>
+        </table>
+
+        <h2>Picking the right token</h2>
+        <table class="scope-table">
+            <thead>
+                <tr>
+                    <th>Scenario</th>
+                    <th>Use this token</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Building a partner-branded telehealth site that lists products and submits intakes</td><td><code>sales-org</code></td></tr>
+                <tr><td>EHR / clinic PMS submitting intakes for their own patients</td><td><code>client</code> (CLIENTMANAGER variant for clinic admin)</td></tr>
+                <tr><td>Provider EHR signing prescriptions back into PRX</td><td><code>client</code> (CLIENTPROVIDER variant)</td></tr>
+                <tr><td>Mobile app a patient logs into</td><td><code>user</code> (PATIENT)</td></tr>
+                <tr><td>Drop a single intake widget on a marketing page</td><td><code>embed</code></td></tr>
+                <tr><td>Internal admin tooling / cron / sysadmin</td><td><code>API</code> (full ability — request from sysadmin)</td></tr>
+            </tbody>
+        </table>
+
+        <h2>Updating abilities</h2>
+        <div class="callout">
+            <strong>Tokens are frozen at issue time.</strong> If <code>TokenAbility::forUserType()</code> changes
+            (new ability added, retired ability removed), <em>existing</em> tokens keep their old ability list
+            until they're rotated or until an admin runs <code>php artisan api:sync-token-abilities</code>.
+            This is by design (auditability) but means you should always run the sync command after any
+            change to <code>TokenAbility</code>.
+        </div>
+
+        <h2>Authentication errors</h2>
+        <table class="scope-table">
+            <thead>
+                <tr><th>Status</th><th>Meaning</th><th>What to check</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>401</code></td><td>Missing or invalid bearer token</td><td>Header format <code>Authorization: Bearer ...</code>; token hasn't been revoked</td></tr>
+                <tr><td><code>403</code></td><td>Token is valid but lacks the ability for this endpoint</td><td>Confirm token type matches the action — see the matrix above</td></tr>
+                <tr><td><code>422</code></td><td>Payload validation failed</td><td>Per-field errors in the response body. Common causes: wrong format (UUID vs. prod-XXX), missing required dependent fields</td></tr>
+                <tr><td><code>429</code></td><td>Rate-limited</td><td>Default 60 req/min per token. Back off + retry with Retry-After</td></tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

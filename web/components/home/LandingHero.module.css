@@ -1,0 +1,939 @@
+/*
+ * Hero scroll morph:
+ * p=0 → full-bleed viewport takeover
+ * p=1 → Programs-matched notecard (radius, rail width, condensed height)
+ */
+
+.scrollRoot {
+  --hero-p: 0;
+  --bleed-w: 100%;
+  --hero-card-h: clamp(480px, 52vw, 720px);
+  --hero-end-h: calc(var(--hero-card-h) + var(--space-3));
+  /* Morph distance. Pin height shrinks with --hero-p so the shop meets the
+   * condensed card as sticky releases, instead of sliding under it. */
+  --hero-travel: 55vh;
+  --sheet-foot-radius: calc(20px + var(--layout-gutter));
+  position: relative;
+  /* Break out of layout-frame using the true client width (not 100vw / scrollbar). */
+  width: var(--bleed-w);
+  max-width: none;
+  margin-left: calc(50% - (var(--bleed-w) / 2));
+  margin-top: calc(-1 * var(--sheet-foot-radius));
+  height: calc(
+    var(--hero-travel) + var(--hero-end-h) +
+      (100svh - var(--hero-end-h)) * (1 - var(--hero-p))
+  );
+  overflow-anchor: none;
+  /* Contain the sticky card so it cannot paint over the shop. */
+  z-index: 0;
+  box-sizing: border-box;
+}
+
+.scrollRoot.flush {
+  margin-top: 0;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  /* Collapse with the card so condensed state does not leave empty viewport. */
+  height: calc(100svh - (100svh - var(--hero-end-h)) * var(--hero-p));
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: visible;
+  z-index: 2;
+}
+
+.card {
+  --p: var(--hero-p);
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  /* Full bleed → shop notecard width, always centered in the bleed plane */
+  width: calc(
+    var(--bleed-w) - (2 * var(--shop-notecard-inset, 0px)) * var(--p)
+  );
+  max-width: 100%;
+  margin-inline: auto;
+  height: calc(100svh - (100svh - var(--hero-card-h)) * var(--p));
+  max-height: 100%;
+  margin-top: calc(var(--space-3) * var(--p));
+  margin-bottom: 0;
+  box-sizing: border-box;
+  color: var(--text-inverse);
+  overflow: hidden;
+  border-radius: calc(40px * var(--p));
+  background: #1a222a;
+  will-change: width, height, border-radius, margin;
+}
+
+.viewport {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.track {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.track[data-instant="true"] {
+  transition: none;
+}
+
+.reduceMotion .track,
+.reduceMotion .card {
+  transition: none;
+  will-change: auto;
+}
+
+.slide {
+  position: relative;
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  background: #1a222a;
+}
+
+.media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  background: #1a222a;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(20, 28, 36, 0.18) 0%,
+      rgba(20, 28, 36, 0.08) 42%,
+      rgba(20, 28, 36, 0.55) 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(20, 28, 36, 0.22) 0%,
+      rgba(20, 28, 36, 0.08) 40%,
+      rgba(20, 28, 36, 0) 62%
+    );
+  pointer-events: none;
+  opacity: calc(1 - (0.15 * var(--hero-p)));
+}
+
+.mediaHit {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.mediaHit:disabled {
+  cursor: default;
+  pointer-events: none;
+}
+
+.stage {
+  --hero-inline: clamp(28px, 5.5vw, 72px);
+  --hero-bottom: clamp(56px, 11vh, 112px);
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: block;
+  padding: 0;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.copy {
+  pointer-events: auto;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: max-content;
+  max-width: min(92%, calc(100% - (var(--hero-inline) * 2)));
+  min-width: 0;
+  text-align: center;
+  transform: translate3d(-50%, -50%, 0) scale(calc(1 - 0.08 * var(--hero-p)));
+  transform-origin: center center;
+}
+
+.copyInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  min-width: 0;
+  width: 100%;
+}
+
+.copyText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.headline {
+  margin: 0;
+  max-width: 100%;
+  font-family: var(--font-display);
+  font-size: calc(clamp(28px, 3.8vw, 52px) * var(--font-display-scale, 1));
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  color: var(--text-inverse);
+  white-space: nowrap;
+  text-align: center;
+  animation: headlineSettle 1700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes headlineSettle {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.ctaWrap {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  animation: headlineSettle 1400ms cubic-bezier(0.16, 1, 0.3, 1) 200ms both;
+}
+
+/* Desktop: wrapper is transparent to flex. Phone/tablet hide the slot. */
+.ctaSecondarySlot {
+  display: contents;
+}
+
+.rail {
+  --rail-mark-col: 16px;
+  --rail-item-h: 42px;
+  --rail-visible: 5;
+  --rail-pad: 2;
+  --rail-index: 0;
+  --rail-dot: rgba(255, 255, 255, 0.34);
+  --rail-active: rgba(255, 255, 255, 0.98);
+  --arc-r: 200px;
+  --arc-step: 0.34;
+  /* Room for neighbors tucked left on the arc so overflow:hidden does not clip labels. */
+  --arc-inset: calc(
+    var(--arc-r) *
+      (1 - cos(calc(((var(--rail-visible) - 1) / 2) * var(--arc-step) * 1rad)))
+  );
+  pointer-events: auto;
+  position: absolute;
+  left: calc(var(--hero-inline) - var(--arc-inset));
+  top: 50%;
+  z-index: 2;
+  display: block;
+  width: max-content;
+  max-width: min(520px, calc(100% - var(--hero-inline) + var(--arc-inset)));
+  height: calc(var(--rail-item-h) * var(--rail-visible));
+  margin: 0;
+  padding: 0;
+  padding-right: 28px;
+  box-sizing: content-box;
+  transform: translate3d(0, -50%, 0);
+  opacity: calc(1 - 0.92 * var(--hero-p));
+  transition: opacity 180ms ease;
+}
+
+.rail[data-condensed="true"] {
+  pointer-events: none;
+}
+
+.railViewport {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    #000 10px,
+    #000 calc(100% - 10px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    #000 10px,
+    #000 calc(100% - 10px),
+    transparent 100%
+  );
+}
+
+.railTrack {
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  min-width: 100%;
+  padding-block: calc(var(--rail-item-h) * var(--rail-pad));
+  padding-left: var(--arc-inset);
+  padding-right: 36px;
+  box-sizing: border-box;
+  transform: translate3d(
+    0,
+    calc(var(--rail-index) * var(--rail-item-h) * -1),
+    0
+  );
+  transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.rail[data-instant="true"] .railTrack {
+  transition: none;
+}
+
+.railItem {
+  --rail-arc: 0;
+  --arc-x: calc(
+    var(--arc-r) * (cos(calc(var(--rail-arc) * var(--arc-step) * 1rad)) - 1)
+  );
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--rail-mark-col) max-content;
+  align-items: center;
+  column-gap: 12px;
+  width: max-content;
+  max-width: none;
+  height: var(--rail-item-h);
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.42);
+  cursor: pointer;
+  text-align: left;
+  transform: translate3d(var(--arc-x), 0, 0);
+  transition:
+    color 360ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 480ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.railItem[data-distance="2"],
+.railItem[data-distance="3"],
+.railItem[data-distance="4"] {
+  color: rgba(255, 255, 255, 0.34);
+}
+
+.railItem[data-distance="1"] {
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.railItem:focus-visible {
+  color: rgba(255, 255, 255, 0.88);
+  outline: none;
+}
+
+.railItem[data-active="true"] {
+  color: rgba(255, 255, 255, 0.98);
+}
+
+.railMarkTrack {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: var(--rail-mark-col);
+  height: 100%;
+  overflow: visible;
+}
+
+.railDot {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--rail-dot);
+  transform: scale(1);
+  transition:
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 360ms ease,
+    width 360ms ease,
+    height 360ms ease;
+}
+
+.railItem:focus-visible .railDot {
+  background: rgba(255, 255, 255, 0.78);
+  transform: scale(1.25);
+}
+
+.railItem[data-active="true"] .railDot {
+  width: 7px;
+  height: 7px;
+  background: var(--rail-active);
+  transform: scale(1);
+}
+
+.railCard {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  width: max-content;
+  max-width: none;
+  min-height: 30px;
+  padding: 6px 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  box-sizing: border-box;
+  transform: scale(1);
+  transform-origin: left center;
+  transition:
+    transform 380ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 320ms ease,
+    box-shadow 320ms ease,
+    padding 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    backdrop-filter 320ms ease;
+}
+
+.railItem[data-active="true"] .railCard {
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 6px 18px rgba(0, 0, 0, 0.16);
+}
+
+.railItem:focus-visible:not([data-active="true"]) .railCard {
+  transform: scale(1.1);
+}
+
+.railLabel {
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  transform: scale(1);
+  transform-origin: left center;
+  transition:
+    transform 380ms cubic-bezier(0.22, 1, 0.36, 1),
+    font-size 320ms ease,
+    font-weight 280ms ease;
+}
+
+.railItem[data-distance="1"] .railLabel {
+  transform: scale(0.96);
+}
+
+.railItem[data-distance="2"] .railLabel,
+.railItem[data-distance="3"] .railLabel,
+.railItem[data-distance="4"] .railLabel {
+  transform: scale(0.9);
+}
+
+.railItem[data-active="true"] .railLabel {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  transform: scale(1);
+}
+
+.railItem:focus-visible:not([data-active="true"]) .railLabel {
+  transform: scale(1);
+  font-weight: 500;
+}
+
+.catalogSlot {
+  pointer-events: auto;
+  position: absolute;
+  left: 50%;
+  top: clamp(108px, 16vh, 148px);
+  width: min(760px, calc(100% - (var(--hero-inline) * 2)));
+  z-index: 3;
+  transform: translate3d(-50%, calc(8px * var(--hero-p)), 0)
+    scale(calc(1 - 0.06 * var(--hero-p)));
+  transform-origin: center top;
+  opacity: calc(1 - 0.95 * var(--hero-p));
+}
+
+.catalogSlot[data-condensed="true"] {
+  pointer-events: none;
+}
+
+.cta {
+  pointer-events: auto;
+  min-width: 0;
+  min-height: 44px;
+  padding-inline: 22px;
+  background: rgba(255, 255, 255, 0.94);
+  border: none;
+  border-width: 0;
+  color: #1a1a1a;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  transform: translateY(0);
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.cta:focus-visible {
+  background: #fff;
+  color: #1a1a1a;
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.cta:active {
+  transform: translateY(0);
+  transition-duration: 90ms;
+}
+
+.ctaSecondary {
+  pointer-events: auto;
+  min-width: 0;
+  min-height: 44px;
+  padding-inline: 22px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-width: 1px;
+  color: var(--text-inverse);
+  backdrop-filter: blur(12px) saturate(1.15);
+  -webkit-backdrop-filter: blur(12px) saturate(1.15);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  font-weight: 500;
+  transform: translateY(0);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.ctaSecondary:focus-visible {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: var(--text-inverse);
+  outline: none;
+}
+
+.ctaSecondary:active {
+  transform: translateY(0);
+  transition-duration: 90ms;
+}
+
+.controls {
+  pointer-events: auto;
+  position: absolute;
+  right: var(--hero-inline);
+  bottom: var(--hero-bottom);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(26, 26, 26, 0.55);
+  color: var(--color-white);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.control:active:not(:disabled) {
+  background: rgba(26, 26, 26, 0.7);
+}
+
+.control:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.control:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 2px;
+}
+
+/* Desktop keeps arrows only. Phone and tablet reveal pause + progress. */
+.playPause,
+.progressPill {
+  display: none;
+}
+
+.progressPill:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 2px;
+}
+
+.progressSeg {
+  display: block;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 3px;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.28);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.progressFill {
+  display: block;
+  flex: 1 1 auto;
+  width: 100%;
+  height: 3px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--color-white) 70%, transparent);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .scrollRoot {
+    height: auto;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .sticky {
+    position: relative;
+    height: auto;
+  }
+
+  .card {
+    width: calc(100% - 2 * var(--shop-notecard-inset, 0px));
+    max-width: var(--layout-max);
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: var(--space-3);
+    height: var(--hero-card-h);
+    border-radius: 40px;
+  }
+
+  .copy {
+    transform: none;
+  }
+
+  .copyInner,
+  .headline,
+  .ctaWrap {
+    animation: none;
+  }
+
+  .railDot,
+  .railTrack,
+  .railLabel,
+  .railCard,
+  .railItem {
+    transition: none;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .railItem:hover {
+    color: rgba(255, 255, 255, 0.88);
+  }
+
+  .railItem:hover .railDot {
+    background: rgba(255, 255, 255, 0.78);
+    transform: scale(1.25);
+  }
+
+  .railItem:hover:not([data-active="true"]) .railCard {
+    transform: scale(1.1);
+  }
+
+  .railItem:hover:not([data-active="true"]) .railLabel {
+    transform: scale(1);
+    font-weight: 500;
+  }
+
+  .cta:hover {
+    background: #fff;
+    color: #1a1a1a;
+    border: none;
+    box-shadow: none;
+    transform: translateY(-1px);
+  }
+
+  .ctaSecondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: var(--text-inverse);
+    transform: translateY(-1px);
+  }
+
+  .control:hover:not(:disabled) {
+    background: rgba(26, 26, 26, 0.7);
+  }
+}
+
+@media (721px <= width < 1025px) {
+  .rail {
+    display: none;
+  }
+
+  .copy {
+    top: 34%;
+    width: 100%;
+    max-width: min(36rem, calc(100% - (var(--hero-inline) * 2)));
+  }
+
+  .headline {
+    white-space: normal;
+    text-wrap: balance;
+  }
+
+  .copyInner {
+    gap: 32px;
+  }
+
+  .ctaWrap {
+    flex-wrap: wrap;
+  }
+
+  .ctaWrap .ctaSecondarySlot {
+    display: none;
+  }
+
+  .scrollRoot {
+    --hero-card-h: 100svh;
+    --hero-end-h: 100svh;
+    --hero-travel: 0px;
+    height: 100svh;
+    height: 100dvh;
+  }
+
+  .sticky {
+    height: 100svh;
+    height: 100dvh;
+  }
+
+  .card {
+    height: 100svh;
+    height: 100dvh;
+    max-height: none;
+    border-radius: 0;
+  }
+
+  .viewport {
+    touch-action: pan-y;
+  }
+
+  .playPause,
+  .progressPill {
+    display: inline-flex;
+  }
+
+  .progressPill {
+    align-items: center;
+    gap: 3px;
+    min-width: 0;
+    flex: 1 1 auto;
+    max-width: 220px;
+    height: 18px;
+    padding: 0 10px;
+    border-radius: 9999px;
+    background: rgba(26, 26, 26, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    touch-action: none;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .stage {
+    --hero-bottom: 20px;
+  }
+
+  .controls {
+    left: var(--hero-inline);
+    right: var(--hero-inline);
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+}
+
+@media (width < 721px) {
+  .rail {
+    display: none;
+  }
+
+  .scrollRoot {
+    --hero-card-h: 100svh;
+    --hero-end-h: 100svh;
+    --hero-travel: 0px;
+    width: 100%;
+    margin-top: 0;
+    margin-left: 0;
+    height: 100svh;
+    height: 100dvh;
+  }
+
+  .sticky {
+    height: 100svh;
+    height: 100dvh;
+  }
+
+  .card {
+    height: 100svh;
+    height: 100dvh;
+    max-height: none;
+    border-radius: 0;
+  }
+
+  .stage {
+    --hero-inline: clamp(16px, 5vw, 28px);
+    --hero-bottom: 16px;
+  }
+
+  .copy {
+    max-width: calc(100% - (var(--hero-inline) * 2));
+  }
+
+  .copyInner {
+    gap: 32px;
+  }
+
+  .ctaWrap {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .cta {
+    width: 100%;
+    max-width: 20rem;
+  }
+
+  .ctaWrap .ctaSecondarySlot {
+    display: none;
+  }
+
+  .viewport {
+    touch-action: pan-y;
+  }
+
+  .playPause,
+  .progressPill {
+    display: inline-flex;
+  }
+
+  .progressPill {
+    align-items: center;
+    gap: 2px;
+    min-width: 0;
+    flex: 1 1 auto;
+    height: 18px;
+    padding: 0 8px;
+    border-radius: 9999px;
+    background: rgba(26, 26, 26, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    touch-action: none;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .controls {
+    left: var(--hero-inline);
+    right: var(--hero-inline);
+    bottom: calc(var(--hero-bottom) + env(safe-area-inset-bottom, 0px));
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .catalogSlot {
+    top: clamp(96px, 14vh, 128px);
+    width: min(420px, calc(100% - (var(--hero-inline) * 2)));
+  }
+
+  .headline {
+    white-space: normal;
+    text-wrap: balance;
+    font-size: calc(clamp(22px, 6vw, 32px) * var(--font-display-scale, 1));
+  }
+}
+
+/* iOS Reduce Motion was forcing the short rounded notecard. */
+@media (prefers-reduced-motion: reduce) and (width < 1025px) {
+  .scrollRoot {
+    height: 100svh;
+    height: 100dvh;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .sticky {
+    position: relative;
+    height: 100svh;
+    height: 100dvh;
+  }
+
+  .card {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    height: 100svh;
+    height: 100dvh;
+    border-radius: 0;
+  }
+}

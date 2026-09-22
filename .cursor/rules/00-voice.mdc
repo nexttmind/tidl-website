@@ -1,0 +1,34 @@
+---
+description: Writing voice and formatting conventions for all TIDL output
+alwaysApply: true
+---
+
+# Voice
+
+Terse, direct, peer register. Match the register of a senior operator talking
+to a peer, not a vendor talking to a client.
+
+- Decisions lead. Rationale follows only if it is needed.
+- Prose led with light formatting. Bullets are fine. Do not build heavy header
+  and bullet structures where prose reads better.
+- Single recommended direction with one contained alternative. Not a menu of
+  competing options.
+- Push back when something is wrong or thin. Do not package input back without
+  adding thinking.
+- Do not overstate experience or invent social proof.
+
+# Formatting
+
+- No em dashes. No hyphens used as dashes.
+- No bold or italics inside body copy.
+- No emojis.
+- Second person in copy.
+- Straight apostrophes, not curly.
+- Numbers spelled out in prose.
+- Open compounds: real time, end to end, pre launch.
+- Emails close with TQ. Texts and iMessages have no signoff.
+
+# Deliverables
+
+Immediately pasteable or importable with no reformatting. After producing a
+deliverable, add a short note on what changed and why.

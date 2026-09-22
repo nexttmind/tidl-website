@@ -1,0 +1,84 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 45px;
+  padding: 14px 28px;
+  border-radius: var(--radius-pill);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  line-height: 1;
+  text-decoration: none;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.root:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.primary {
+  background: var(--action-primary);
+  color: var(--action-primary-text);
+}
+
+.primary:focus-visible:not(:disabled) {
+  background: var(--action-primary-hover);
+}
+
+.primary:active:not(:disabled) {
+  background: var(--action-primary-pressed);
+}
+
+.secondary {
+  background: transparent;
+  color: var(--action-primary);
+  border: 1.5px solid var(--action-secondary-border);
+}
+
+.secondary:focus-visible:not(:disabled) {
+  background: rgba(64, 87, 116, 0.08);
+}
+
+.tertiary {
+  background: transparent;
+  color: var(--action-primary);
+  padding-inline: 12px;
+}
+
+.tertiary:focus-visible:not(:disabled) {
+  background: rgba(64, 87, 116, 0.06);
+}
+
+.ghost {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-inverse);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  font-weight: 500;
+}
+
+.ghost:focus-visible:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .primary:hover:not(:disabled) {
+    background: var(--action-primary-hover);
+  }
+
+  .secondary:hover:not(:disabled) {
+    background: rgba(64, 87, 116, 0.08);
+  }
+
+  .tertiary:hover:not(:disabled) {
+    background: rgba(64, 87, 116, 0.06);
+  }
+
+  .ghost:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}

@@ -1,0 +1,106 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  min-width: 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  min-width: 0;
+}
+
+.heading {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.rows {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.row,
+.total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.row dt,
+.total dt,
+.row dd,
+.total dd {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.row dt,
+.total dt {
+  color: var(--text-secondary);
+}
+
+.row dd,
+.total dd {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.total dt,
+.total dd {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.none,
+.commitment {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.commitmentLabel {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.root[data-tone="field"] .heading,
+.root[data-tone="field"] .row dt,
+.root[data-tone="field"] .none,
+.root[data-tone="field"] .commitment,
+.root[data-tone="field"] .commitmentLabel {
+  color: var(--text-inverse-secondary);
+}
+
+.root[data-tone="field"] .row dd,
+.root[data-tone="field"] .total dt,
+.root[data-tone="field"] .total dd {
+  color: var(--text-inverse);
+}
+
+@media (width < 1025px) {
+  .commitmentLabel {
+    display: none;
+  }
+}

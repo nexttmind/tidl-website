@@ -1,0 +1,260 @@
+.root {
+  height: 36px;
+  overflow: hidden;
+  background: #1a2838;
+  color: var(--text-inverse);
+}
+
+.promo {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  overflow: hidden;
+  color: var(--text-primary);
+  background-color: #c5daf0;
+  background-image: linear-gradient(
+    125deg,
+    #b7d4ef 0%,
+    #e8f3fb 36%,
+    #8eb5d4 68%,
+    #c5daf0 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 220% 200%;
+  background-position: 0% 40%;
+  animation: promo-shift 28s ease-in-out infinite;
+}
+
+.promo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.22;
+  mix-blend-mode: multiply;
+  background-image: var(--section-bg-grain);
+  background-size: 160px 160px;
+  background-repeat: repeat;
+}
+
+.promoSand {
+  background-color: #edd9c4;
+  background-image:
+    radial-gradient(
+      ellipse 70% 120% at 12% 50%,
+      rgba(255, 255, 255, 0.5) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 55% 100% at 88% 40%,
+      rgba(175, 124, 84, 0.22) 0%,
+      transparent 60%
+    ),
+    linear-gradient(90deg, #e4c9a8 0%, #f0ddc4 48%, #e2c4a0 100%);
+  background-size: cover;
+  animation: none;
+}
+
+.promoParents {
+  color: var(--text-inverse);
+  background-repeat: no-repeat;
+  background-size: cover;
+  animation: none;
+}
+
+.promoParents::before {
+  content: "";
+  position: absolute;
+  inset: -12px 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("/landing/shop/blooms/parents.png");
+  background-repeat: no-repeat;
+  background-size: auto 640%;
+  background-position: 68% 46%;
+  mix-blend-mode: screen;
+  opacity: 0.92;
+}
+
+.promoParents::after {
+  mix-blend-mode: overlay;
+  opacity: 0.28;
+}
+
+.promoParents .promoText {
+  color: var(--text-inverse);
+}
+
+.promoExecutive {
+  color: var(--text-inverse);
+  background-color: #1a2824;
+  background-image: linear-gradient(
+    125deg,
+    #386c5f 0%,
+    #1a2824 36%,
+    #386c5f 68%,
+    #1a2824 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 220% 200%;
+  background-position: 0% 40%;
+  animation: promo-shift 28s ease-in-out infinite;
+}
+
+.promoExecutive::after {
+  mix-blend-mode: overlay;
+  opacity: 0.22;
+}
+
+.promoExecutive .promoText {
+  color: var(--text-inverse);
+}
+
+.promoViewport {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.promoTrack {
+  display: flex;
+  flex-direction: column;
+  height: 200%;
+  animation: promo-copy-swap 11.4s linear infinite;
+}
+
+.promoText {
+  flex: 0 0 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  height: 100%;
+  align-items: center;
+  animation: ticker-scroll var(--ticker-duration, 40s) linear infinite;
+}
+
+.segment {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  height: 100%;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.sep {
+  padding: 0 1.25rem;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--text-inverse);
+}
+
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    /* Shift exactly one segment so the loop stays seamless at any copy count. */
+    transform: translateX(calc(-100% / var(--ticker-copies, 2)));
+  }
+}
+
+@keyframes promo-shift {
+  0%,
+  100% {
+    background-position: 0% 40%;
+  }
+  40% {
+    background-position: 80% 15%;
+  }
+  70% {
+    background-position: 35% 85%;
+  }
+}
+
+@keyframes promo-copy-swap {
+  0% {
+    transform: translateY(-50%);
+  }
+  43.86% {
+    transform: translateY(-50%);
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  50% {
+    transform: translateY(0);
+  }
+  93.86% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo,
+  .promoExecutive {
+    animation: none;
+    background-size: cover;
+    background-position: 0% 40%;
+  }
+
+  .promoTrack {
+    animation: none;
+    transform: translateY(-50%);
+  }
+
+  .track {
+    animation: none;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .segment:last-child {
+    display: none;
+  }
+
+  .segment {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+}

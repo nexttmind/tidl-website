@@ -1,0 +1,12 @@
+.main {
+  flex: 1;
+}
+
+.main :is(h1, h2) {
+  scroll-margin-top: 88px;
+}
+
+.heroShell {
+  position: relative;
+  background: #262e38;
+}

@@ -1,0 +1,59 @@
+.bar {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 0.7rem 0.45rem 0.95rem;
+  border-radius: var(--radius-pill);
+  background: rgba(18, 18, 18, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+  color: #fff;
+  pointer-events: auto;
+}
+
+.email {
+  margin: 0;
+  font-size: 0.8rem;
+  max-width: 14rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logout {
+  appearance: none;
+  border: none;
+  background: rgba(255, 255, 255, 0.14);
+  color: inherit;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-height: 36px;
+  padding: 0 0.85rem;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+
+.logout:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+@media (max-width: 720px) {
+  .bar {
+    top: auto;
+    bottom: 1rem;
+    right: 1rem;
+    left: 1rem;
+    justify-content: space-between;
+  }
+
+  .email {
+    max-width: none;
+  }
+}

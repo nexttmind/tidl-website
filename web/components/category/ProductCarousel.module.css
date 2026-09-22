@@ -1,0 +1,60 @@
+.root {
+  padding: var(--space-8) 0;
+}
+
+.header {
+  padding: 0 0 var(--space-5);
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.title {
+  margin: 0 auto;
+  font-family: var(--font-display);
+  font-size: calc(clamp(26px, 5vw, 48px) * var(--font-display-scale));
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  max-width: 18ch;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(200px, 280px);
+  gap: var(--space-5);
+  overflow-x: auto;
+  padding: 0 0 var(--space-2);
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.card {
+  scroll-snap-align: start;
+  min-width: 0;
+}
+
+@media (min-width: 1025px) {
+  .track {
+    grid-auto-columns: minmax(240px, 1fr);
+  }
+}

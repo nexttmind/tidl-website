@@ -1,0 +1,413 @@
+/*
+ * Header scroll morph (same as the vial still):
+ * p=0 → full-bleed viewport takeover
+ * p=1 → rail-width notecard
+ */
+
+.scrollRoot {
+  --hero-p: 0;
+  --bleed-w: 100%;
+  --hero-card-h: clamp(480px, 52vw, 720px);
+  --hero-end-h: calc(var(--hero-card-h) + var(--space-3));
+  --hero-travel: 55vh;
+  --stack-w: min(464px, 48vw);
+  --stack-inset: var(--space-6);
+  --chrome-clear: 118px;
+  position: relative;
+  width: var(--bleed-w);
+  max-width: none;
+  margin-left: calc(50% - (var(--bleed-w) / 2));
+  height: calc(100svh + var(--hero-travel));
+  z-index: auto;
+  box-sizing: border-box;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  height: calc(100svh - (100svh - var(--hero-end-h)) * var(--hero-p));
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: visible;
+  z-index: 2;
+}
+
+.frame {
+  --p: var(--hero-p);
+  position: relative;
+  isolation: isolate;
+  width: calc(
+    var(--bleed-w) - (var(--bleed-w) - min(var(--bleed-w), var(--layout-max))) *
+      var(--p)
+  );
+  max-width: 100%;
+  margin-inline: auto;
+  height: calc(100svh - (100svh - var(--hero-card-h)) * var(--p));
+  max-height: 100%;
+  margin-top: calc(var(--space-3) * var(--p));
+  margin-bottom: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: calc(var(--radius-card) * var(--p));
+  color: var(--text-inverse);
+  background: #0c1014;
+  will-change: width, height, border-radius, margin;
+}
+
+.field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: blur(12px) saturate(1.08);
+  transform: scale(1.04);
+  pointer-events: none;
+}
+
+.wash {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(12, 16, 20, 0.62) 0%,
+      rgba(12, 16, 20, 0.22) 42%,
+      transparent 64%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(12, 16, 20, 0.18) 0%,
+      transparent 22%,
+      transparent 78%,
+      rgba(12, 16, 20, 0.18) 100%
+    );
+}
+
+.layout {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  padding: 0;
+  box-sizing: border-box;
+  opacity: calc(1 - var(--p));
+}
+
+.scrollRoot[data-condensed="true"] .layout {
+  pointer-events: none;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: calc(var(--chrome-clear) + var(--space-4))
+    calc(var(--stack-w) + var(--stack-inset) + var(--space-8))
+    var(--space-10) var(--layout-gutter);
+}
+
+.menuItem {
+  display: block;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: calc(clamp(28px, 3.6vw, 52px) * var(--font-display-scale) / 1.15);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  color: var(--text-inverse);
+  text-decoration: none;
+  white-space: nowrap;
+  opacity: 0.72;
+  transform-origin: left center;
+  transition:
+    opacity 220ms ease,
+    transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.menuItem:focus-visible {
+  opacity: 1;
+  transform: scale(1.08);
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 4px;
+}
+
+.stack {
+  position: absolute;
+  top: 0;
+  right: var(--stack-inset);
+  bottom: 0;
+  z-index: 2;
+  box-sizing: border-box;
+  width: var(--stack-w);
+  padding-inline: var(--space-6);
+  overflow: visible;
+  clip-path: inset(-80px -180px);
+}
+
+.track {
+  display: flex;
+  flex-direction: column;
+  animation: stackScroll 180s linear infinite;
+}
+
+.stack:focus-within .track {
+  animation-play-state: paused;
+}
+
+.segment {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-bottom: 0;
+}
+
+.card {
+  --settle: 800ms cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  width: 100%;
+  min-height: 0;
+  margin-block: -28px;
+  padding-block: 0;
+  color: var(--text-inverse);
+  text-decoration: none;
+  transition:
+    margin-block var(--settle),
+    padding-block var(--settle);
+}
+
+.card:focus-visible,
+.card:focus-within {
+  z-index: 4;
+  margin-block: -16px;
+  padding-block: 8px;
+}
+
+.card[data-bloom="weight-loss"]:focus-visible,
+.card[data-bloom="weight-loss"]:focus-within {
+  padding-block: 16px;
+}
+
+.cardKicker {
+  position: absolute;
+  left: 50%;
+  top: 24%;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  transform: translate(-50%, calc(-100% - 20px));
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-inverse);
+  white-space: nowrap;
+}
+
+.cardIcon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  overflow: clip;
+  flex: none;
+}
+
+.cardIcon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cardBloom {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 285px);
+  aspect-ratio: 330 / 440;
+  overflow: visible;
+  pointer-events: none;
+}
+
+a.card:focus-visible :global(img[data-bloom-vial]),
+a.card:focus-within :global(img[data-bloom-vial]) {
+  transform: rotate(5deg);
+}
+
+@keyframes stackScroll {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .menuItem:has(~ .menuItem:hover) {
+    transform: translateY(-6px);
+  }
+
+  .menuItem:has(+ .menuItem:hover) {
+    transform: translateY(-14px);
+  }
+
+  .menuItem:hover {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+
+  .menuItem:hover ~ .menuItem {
+    transform: translateY(6px);
+  }
+
+  .menuItem:hover + .menuItem {
+    transform: translateY(14px);
+  }
+
+  .stack:hover .track {
+    animation-play-state: paused;
+  }
+
+  .card:hover {
+    z-index: 4;
+    margin-block: -16px;
+    padding-block: 8px;
+  }
+
+  .card[data-bloom="weight-loss"]:hover {
+    padding-block: 16px;
+  }
+
+  a.card:hover :global(img[data-bloom-vial]) {
+    transform: rotate(5deg);
+  }
+}
+
+@media (max-width: 1100px) {
+  .scrollRoot {
+    --stack-w: min(340px, 38vw);
+    --hero-card-h: clamp(440px, 58vw, 640px);
+  }
+
+  .menuItem {
+    white-space: normal;
+    max-width: 16ch;
+  }
+}
+
+@media (max-width: 860px) {
+  .scrollRoot {
+    --chrome-clear: 100px;
+    --hero-card-h: min(100svh, 780px);
+    --hero-travel: 36vh;
+  }
+
+  .menu {
+    justify-content: flex-start;
+    gap: 4px;
+    padding: calc(var(--chrome-clear) + var(--space-3)) var(--layout-gutter)
+      var(--space-7);
+  }
+
+  .menuItem {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    max-width: none;
+    font-size: calc(clamp(22px, 6.4vw, 32px) * var(--font-display-scale) / 1.15);
+  }
+
+  .stack {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrollRoot,
+  .reduceMotion {
+    height: auto;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .reduceMotion .sticky,
+  .sticky {
+    position: relative;
+    height: auto;
+  }
+
+  .reduceMotion .frame,
+  .frame {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    height: auto;
+    min-height: 100svh;
+    border-radius: 0;
+    will-change: auto;
+  }
+
+  .layout {
+    opacity: 1;
+  }
+
+  .field {
+    filter: blur(8px) saturate(1.04);
+    transform: none;
+  }
+
+  .track {
+    animation: none;
+  }
+
+  .menuItem,
+  .menuItem:hover,
+  .menuItem:focus-visible {
+    transform: none;
+    transition: opacity 160ms ease;
+  }
+
+  a.card:hover :global(img[data-bloom-vial]),
+  a.card:focus-visible :global(img[data-bloom-vial]),
+  a.card:focus-within :global(img[data-bloom-vial]) {
+    transform: none;
+  }
+
+  .card,
+  .card:hover,
+  .card:focus-visible,
+  .card:focus-within,
+  .card[data-bloom="weight-loss"]:hover,
+  .card[data-bloom="weight-loss"]:focus-visible,
+  .card[data-bloom="weight-loss"]:focus-within {
+    transition: none;
+  }
+
+  .stack {
+    overflow: auto;
+    clip-path: none;
+  }
+
+  .segment:last-child {
+    display: none;
+  }
+}

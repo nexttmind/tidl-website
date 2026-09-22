@@ -1,0 +1,110 @@
+External Telehealth API — PrescribeRx\nExternal Telehealth API\n← Back to API reference\n← Back to API reference\nIntegration surface for 3rd-party telehealth companies that prescribe in their
+            own e-Rx system and route fulfillment through PrescribeRx. Two endpoints to
+            register prescribers + look them up, one to submit fully-formed prescription
+            orders. Webhook subscribers receive status callbacks back as orders progress.\nAt a glance\nEndpoint\nPurpose\nAbility\nPOST /api/v1/external-telehealth/providers\nRegister prescriber (idempotent on NPI+client)\nexternal-telehealth:providers:write\nGET  /api/v1/external-telehealth/providers/{npi}\nLook up provider(s) — poll for admin approval state\nexternal-telehealth:providers:read\nPOST /api/v1/external-telehealth/orders\nSubmit a fully-formed prescription order\nexternal-telehealth:orders:write\nThe interactive Try-It client for all three endpoints is on the main\nAPI reference\n, under the\nExternalTelehealth\ntag.\n1 — How tenancy works\nThe effective sales-org id resolves from either side of the user identity graph:\neffective_sales_org_id = user.sales_organization_id
+                       ?? user.client.sales_organization_id\nBoth token shapes are supported:\nToken shape\nWhat it can do\nSales-org\nSubmit orders / register providers against any\nclient_id\nunder its sales org. Use this when a 3rd-party telehealth company serves multiple of your clinics.\nClient\nEffectively pinned to its own\nclient_id\n— the only payload value that resolves to its sales org's client tree. Use this when a single clinic / practice integrates directly.\nCross-tenant\nclient_id\n→\nHTTP 403\nwith:\n"API user must belong to a sales organization (directly, or via their client)."\n2 — Onboarding (one-time)\nYour account rep creates either a SalesOrganization (multi-clinic integrator) or a Client (single-clinic) for you, plus an API user.\nThe rep issues a Sanctum bearer token for that API user with these abilities, which are granted manually (NOT in any default ability set):\nexternal-telehealth:providers:write\nexternal-telehealth:providers:read\nexternal-telehealth:orders:write\nWebhook abilities (\nwebhook:*\n) are already in the default set for both sales-org and client user types.\nSave the token securely — it's not retrievable from our side once issued.\nTest against\nhttps://demo.prescribe-rx.com\nfirst. Production is\nhttps://prescribe-rx.com\nwith identical shapes.\nPayments & merchant accounts (one-time — required for on-system billing)\nIf you process the patient's payment on\nyour own\ngateway
+            (outside PrescribeRx) but want PrescribeRx to handle any\nfuture\nbilling on that card — subscription rebills, refills, deferred captures,
+            refunds — you must\nadd that merchant account inside PrescribeRx first\n.
+            Without it, the transaction you report is recorded audit-only (no merchant
+            attached) and any card you send is stored display-only (not chargeable).\nIn the PrescribeRx portal as your sales org, go to\nSettings → Payments → Merchant Accounts\nand add an
+                account for the\nsame gateway\nyou charge on
+                (\nauthorize_net\n,\nstripe\n,\nnmi\n, or\nsquare\n), with that gateway's credentials. Mark it active.\nCopy its\nmerchant account UUID\n.\nOn each intake you submit, include the\npayment\nblock with\nmode: "reference_captured"\n(or\nreference_preauth\n),
+                your\nmerchant_account_id\n, the\ntransaction\ndetails (id + amount), and — to make the card rechargeable — the\ndurable\ncard_token\nrefs from your gateway's
+                vault (e.g. Stripe\ncustomer_id\n+\npayment_method_id\n;
+                Auth.Net\ncustomer_profile_id\n+\npayment_profile_id\n;
+                NMI\ncustomer_vault_id\n; Square\ncustomer_id\n+\ncard_id\n). See the\npayment\nblock on\nPOST /telehealth/intake/unified\nin the API reference for the
+                full field-by-field contract and a complete example.\nThe merchant's gateway must match your\ncard_token\nrefs and the
+            account must belong to your org — PrescribeRx validates both and, on a
+            mismatch, records the transaction without a merchant rather than charging the
+            wrong account. Collected payment in person / out of band with no electronic
+            record? Omit\npayment\nor use\nmode: "prepaid"\n.\n3 — Register a provider\nEvery prescriber must exist + be admin-approved before any order can reference them by NPI.\ncURL\ncurl -X POST https://demo.prescribe-rx.com/api/v1/external-telehealth/providers \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "client_id": "<your client UUID>",
+    "npi": "1234567890",
+    "dea": "BX1234567",
+    "first_name": "Alex",
+    "last_name": "Smith",
+    "prefix": "DR",
+    "suffix": "MD",
+    "designation": "MD",
+    "dob": "1980-01-15",
+    "gender": 1,
+    "email": "alex.smith@example-clinic.com",
+    "state_licenses": [
+      {"state": "GA", "license_type": "MD", "license_number": "GA-12345", "expiration_date": "2027-01-01"},
+      {"state": "FL", "license_type": "MD", "license_number": "FL-67890", "expiration_date": "2027-06-01"}
+    ]
+  }'\nResponse codes\nStatus\nMeaning\n201\nNew provider registered.\ndata.status = "PENDING"\n. Wait for admin approval before submitting orders.\n409\nA provider with this\n(npi, client_id)\nalready exists. Response includes the existing\ndata.provider_profile_id\n.\n403\nThe\nclient_id\ndoes not belong to your sales org tree.\n422\nValidation error. Check\nerrors[]\nfor field-level details.\nPoll for approval\ncurl https://demo.prescribe-rx.com/api/v1/external-telehealth/providers/1234567890 \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Accept: application/json"\nReturns an array (same NPI can have multiple rows when the prescriber works at multiple of your clients). Loop until\ndata[].status === "ACTIVE"\n.\n4 — Submit an order\nIdempotency-Key header is REQUIRED.\nAny unique string per order (UUID v4 recommended). Re-POSTing the same key within 24h returns the original order as\nHTTP 200\n(not 201). Keys are scoped to the caller's sales org.\ncURL — happy path (non-compounded SKU)\ncurl -X POST https://demo.prescribe-rx.com/api/v1/external-telehealth/orders \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "client_id": "<your client UUID>",
+    "provider_npi": "1234567890",
+    "external_order_id": "ACME-2026-05-14-00042",
+    "patient": {
+      "first_name": "Jane",
+      "last_name": "Doe",
+      "email": "jane.doe@example.com",
+      "date_of_birth": "1985-03-12",
+      "phone": "+15555550100",
+      "gender": 2,
+      "address": {"line1": "123 Main St", "city": "Atlanta", "state": "GA", "postal_code": "30301"}
+    },
+    "shipping_address": {"line1": "123 Main St", "city": "Atlanta", "state": "GA", "postal_code": "30301"},
+    "prescription": {
+      "pdf_base64": "JVBERi0xLjcKJWZha2UgcGRmCg==",
+      "signed_at": "2026-05-14T14:00:00Z",
+      "signed_by_name": "Dr. Alex Smith, MD"
+    },
+    "lines": [
+      {
+        "sku": "GLPSEMA-12-TABLET",
+        "quantity": 1,
+        "sig": "Take one 12 mg tablet by mouth once weekly",
+        "days_supply": 28,
+        "dose_amount": "12",
+        "dose_unit": "mg",
+        "frequency": "weekly",
+        "refills": 0
+      }
+    ]
+  }'\ncURL — compounded SKU (requires\ncompounding_reason_slug\n)\n...
+    "lines": [
+      {
+        "sku": "COMP-SEMA-2.5",
+        "quantity": 1,
+        "sig": "Inject 2.5 mg subcutaneously once weekly",
+        "days_supply": 28,
+        "dose_amount": "2.5",
+        "dose_unit": "mg",
+        "frequency": "weekly",
+        "refills": 2,
+        "compounding_reason_slug": "dose-not-commercially-available"
+      }
+    ]
+...\nCommon compounding-reason slugs (ask your account rep for the current full list, since admins can add new ones):\nSlug\nWhen to use\ndose-not-commercially-available\nStrength/dose not sold commercially\ncommercial-shortage\nCommercial product on shortage\ncommercial-excipient-allergy\nPatient allergic to a commercial excipient\ncombination-not-commercial\nCustom multi-ingredient compound\ntitration-flexibility\nProvider titrating dose up/down\nb-complex-metabolic-support\nB3/B6/B12 metabolic support add-on\nIdempotency replay test\nRe-send the same payload with the same\nIdempotency-Key\n. The second response is\nHTTP 200\n(not 201) and the body matches the original — regardless of what the payload says. No duplicate order is created. Use this to safely retry on network failures.\n5 — Response codes\nStatus\nMeaning\n201 Created\nOrder accepted, routed to fulfillment. Includes\norder_id\n,\norder_number\n,\nprescription_id\n,\nprescription_pdf_path\n.\n200 OK\nIdempotency replay\n— same key was used within 24h. Body matches the original 201.\n404 Not Found\nThe NPI isn't registered at this client. Call\nPOST /providers\nfirst.\n403 Forbidden\nProvider exists but is still PENDING admin approval, OR\nclient_id\nis not in your sales org tree.\n422 Unprocessable Entity\nValidation error: unknown SKU, malformed PDF, missing\ncompounding_reason_slug\non a compounded product, NPI doesn't normalize to 10 digits, missing Idempotency-Key header.\n401 Unauthorized\nMissing / invalid token.\n6 — Webhook callbacks\nStatus updates flow back via the standard webhook subscription system. Subscribe once for your sales-org / client; you'll receive events for every order it owns. See the dedicated\nWebhooks Guide\nfor HMAC signature verification + retry policy.\nSubscribe\ncurl -X POST https://demo.prescribe-rx.com/api/v1/webhooks \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://your-platform.com/webhooks/prescribe-rx",
+    "events": [
+      "order.placed",
+      "order.status_changed",
+      "order.cancelled",
+      "fulfillment.shipped",
+      "fulfillment.delivered",
+      "fulfillment.cancelled"
+    ],
+    "subscriber_type": "sales_organization",
+    "subscriber_id": "<your sales-org UUID>"
+  }'\nUse\n"subscriber_type": "client"\n+ your client UUID instead for client-token integrators.\nThe response's\ndata.secret\n(starts with\nwhsec_\n) signs every outgoing payload — store it securely. Outgoing requests carry the signature in\nX-PrescribeRx-Signature\n(HMAC-SHA256 of the raw body).\nEvents you'll receive (External Telehealth orders)\nEvent\nWhen\nPayload key\norder.placed\nImmediately after our 201 to your\nPOST /orders\norder_id\n,\norder_number\n,\ntotal_amount\n,\nexternal_order_id\norder.status_changed\nworkflow_status\ntransitions\nold_status\n,\nnew_status\n,\nexternal_order_id\norder.cancelled\nAdmin or system cancels\nreason\n,\ncancelled_at\n,\nexternal_order_id\nfulfillment.shipped\nFC reports the order shipped\ntracking_number\n,\ntracking_url\n,\ncarrier\n,\nshipped_at\n,\nexternal_order_id\nfulfillment.delivered\nCarrier reports delivered\ntracking_number\n,\ndelivered_at\n,\nexternal_order_id\nfulfillment.cancelled\nFC cancellation (rare; usually inventory)\nreason\n,\ncancelled_at\n,\nexternal_order_id\nEvery payload includes your supplied\ndata.external_order_id\nwhen the order originated from this API — use it to correlate with your internal records.\n7 — Troubleshooting\nSymptom\nLikely cause\nFix\n401 Unauthorized\nToken expired or wrong header\nReissue. Header is\nAuthorization: Bearer <token>\nwith the full\n<id>|<random>\nstring.\n403 "missing ability"\nToken issued without the right abilities\nAsk your rep to re-issue with\nexternal-telehealth:*\nabilities.\n403 "client_id does not belong to your sales organization"\nWrong client UUID or cross-tenant\nVerify the UUID against the list your rep provided. Client-token integrators must use their own client_id.\n404 "No provider found for this NPI at the given client"\nNot yet registered, OR registered at a different client\nCall\nPOST /providers\nfirst, or fix the\nclient_id\nin your payload.\n403 "Provider is registered but not yet ACTIVE"\nAdmin hasn't approved yet\nWait; poll\nGET /providers/{npi}\n.\n422 "Unknown product SKU"\nSKU isn't in our catalog or was retired\nAsk your rep for the current SKU list. Case-sensitive.\n422 "is compounded and requires `compounding_reason_slug`"\nCompounded product without a slug\nAdd\ncompounding_reason_slug\nto the line.\n422 "Header `Idempotency-Key` is required"\nForgot the header\nAdd\nIdempotency-Key: <uuid>\nto every order POST.\n422 "prescription.pdf_base64 does not contain a valid PDF"\nDecoded bytes don't start with\n%PDF-\nRe-export from your e-Rx. Common cause: double base64 encoding, or sending raw text.\n200 OK instead of 201 on a fresh POST\nReused an Idempotency-Key from a prior order\nGenerate a fresh UUID per distinct order.\nNeed a sandbox-ready token?\nThe sandbox tokens panel on the\nmain API reference\nauto-rotates one every 12h.
+            Look for the\nSALESORGANIZATION\nentry, or ask an admin to issue an explicit
+            External Telehealth token via tinker (procedure documented internally).\n← Back to API reference

@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>External Telehealth API — PrescribeRx</title>
+    <style>
+        :root {
+            --header-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --ink: #1a1a1a;
+            --muted: #666;
+            --accent: #2196f3;
+        }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: #fafafa; }
+        .topbar { background: var(--header-bg); color: white; padding: 16px 28px; display: flex; align-items: center; justify-content: space-between; }
+        .topbar h1 { margin: 0; font-size: 1.3em; font-weight: 600; }
+        .topbar a { color: white; text-decoration: none; font-size: 0.9em; opacity: 0.9; border-bottom: 1px dotted rgba(255,255,255,0.5); }
+        .topbar a:hover { opacity: 1; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px 28px 60px; }
+        h2 { margin: 36px 0 14px; font-size: 1.4em; border-bottom: 2px solid #eee; padding-bottom: 6px; }
+        h3 { margin: 24px 0 10px; font-size: 1.1em; color: var(--accent); }
+        p { line-height: 1.55; }
+        .lead { color: var(--muted); margin-bottom: 22px; font-size: 1.05em; }
+        .pill { display: inline-block; background: #eef2ff; color: #3949ab; padding: 2px 10px; border-radius: 11px; font-size: 0.8em; margin-right: 6px; font-family: monospace; }
+        .card { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px 20px; margin: 12px 0; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+        .card h3 { margin-top: 0; }
+        pre { background: #1f2937; color: #f3f4f6; padding: 14px 16px; border-radius: 6px; overflow-x: auto; font-size: 0.85em; line-height: 1.5; }
+        code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+        p code, li code, table code { background: #f3f4f6; color: #be123c; padding: 1px 6px; border-radius: 3px; font-size: 0.9em; }
+        table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 0.94em; }
+        th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+        th { background: #f9fafb; font-weight: 600; }
+        .callout { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 10px 14px; border-radius: 4px; margin: 14px 0; font-size: 0.95em; }
+        .callout.ok { background: #d1fae5; border-left-color: #10b981; }
+        .back { font-size: 0.9em; color: var(--muted); margin-bottom: 18px; display: inline-block; }
+    </style>
+<script id="browser-logger-active">
+(function() {
+    const ENDPOINT = 'https://demo.prescribe-rx.com/_boost/browser-logs';
+    const logQueue = [];
+    let flushTimeout = null;
+
+    console.log('🔍 Browser logger active (MCP server detected). Posting to: ' + ENDPOINT);
+
+    // Store original console methods
+    const originalConsole = {
+        log: console.log,
+        info: console.info,
+        error: console.error,
+        warn: console.warn,
+        table: console.table
+    };
+
+    // Helper to safely stringify values
+    function safeStringify(obj) {
+        const seen = new WeakSet();
+        return JSON.stringify(obj, (key, value) => {
+            if (typeof value === 'object' && value !== null) {
+                if (seen.has(value)) return '[Circular]';
+                seen.add(value);
+            }
+            if (value instanceof Error) {
+                return {
+                    name: value.name,
+                    message: value.message,
+                    stack: value.stack
+                };
+            }
+            return value;
+        });
+    }
+
+    // Batch and send logs
+    function flushLogs() {
+        if (logQueue.length === 0) return;
+
+        const batch = logQueue.splice(0, logQueue.length);
+
+        fetch(ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ logs: batch })
+        }).catch(err => {
+            // Silently fail to avoid infinite loops
+            originalConsole.error('Failed to send logs:', err);
+        });
+    }
+
+    // Debounced flush (100ms)
+    function scheduleFlush() {
+        if (flushTimeout) clearTimeout(flushTimeout);
+        flushTimeout = setTimeout(flushLogs, 100);
+    }
+
+    // Intercept console methods
+    ['log', 'info', 'error', 'warn', 'table'].forEach(method => {
+        console[method] = function(...args) {
+            // Call original method
+            originalConsole[method].apply(console, args);
+
+            // Capture log data
+            try {
+                logQueue.push({
+                    type: method,
+                    timestamp: new Date().toISOString(),
+                    data: args.map(arg => {
+                        try {
+                            return typeof arg === 'object' ? JSON.parse(safeStringify(arg)) : arg;
+                        } catch (e) {
+                            return String(arg);
+                        }
+                    }),
+                    url: window.location.href,
+                    userAgent: navigator.userAgent
+                });
+
+                scheduleFlush();
+            } catch (e) {
+                // Fail silently
+            }
+        };
+    });
+
+    // Global error handlers for uncaught errors
+    const originalOnError = window.onerror;
+    window.onerror = function boostErrorHandler(errorMsg, url, lineNumber, colNumber, error) {
+        try {
+            logQueue.push({
+                type: 'uncaught_error',
+                timestamp: new Date().toISOString(),
+                data: [{
+                    message: errorMsg,
+                    filename: url,
+                    lineno: lineNumber,
+                    colno: colNumber,
+                    error: error ? {
+                        name: error.name,
+                        message: error.message,
+                        stack: error.stack
+                    } : null
+                }],
+                url: window.location.href,
+                userAgent: navigator.userAgent
+            });
+
+            scheduleFlush();
+        } catch (e) {
+            // Fail silently
+        }
+
+        // Call original handler if it exists
+        if (originalOnError && typeof originalOnError === 'function') {
+            return originalOnError(errorMsg, url, lineNumber, colNumber, error);
+        }
+
+        // Let the error continue to propagate
+        return false;
+    }
+    window.addEventListener('error', (event) => {
+        try {
+            logQueue.push({
+                type: 'window_error',
+                timestamp: new Date().toISOString(),
+                data: [{
+                    message: event.message,
+                    filename: event.filename,
+                    lineno: event.lineno,
+                    colno: event.colno,
+                    error: event.error ? {
+                        name: event.error.name,
+                        message: event.error.message,
+                        stack: event.error.stack
+                    } : null
+                }],
+                url: window.location.href,
+                userAgent: navigator.userAgent
+            });
+
+            scheduleFlush();
+        } catch (e) {
+            // Fail silently
+        }
+
+        // Let the error continue to propagate
+        return false;
+    });
+    window.addEventListener('unhandledrejection', (event) => {
+        try {
+            logQueue.push({
+                type: 'error',
+                timestamp: new Date().toISOString(),
+                data: [{
+                    message: 'Unhandled Promise Rejection',
+                    reason: event.reason instanceof Error ? {
+                        name: event.reason.name,
+                        message: event.reason.message,
+                        stack: event.reason.stack
+                    } : event.reason
+                }],
+                url: window.location.href,
+                userAgent: navigator.userAgent
+            });
+
+            scheduleFlush();
+        } catch (e) {
+            // Fail silently
+        }
+
+        // Let the rejection continue to propagate
+        return false;
+    });
+
+    // Flush on page unload
+    window.addEventListener('beforeunload', () => {
+        if (logQueue.length > 0) {
+            navigator.sendBeacon(ENDPOINT, JSON.stringify({ logs: logQueue }));
+        }
+    });
+})();
+</script>
+</head>
+<body>
+    <div class="topbar">
+        <h1>External Telehealth API</h1>
+        <a href="https://demo.prescribe-rx.com/api/docs">← Back to API reference</a>
+    </div>
+
+    <div class="container">
+        <a class="back" href="https://demo.prescribe-rx.com/api/docs">← Back to API reference</a>
+
+        <p class="lead">
+            Integration surface for 3rd-party telehealth companies that prescribe in their
+            own e-Rx system and route fulfillment through PrescribeRx. Two endpoints to
+            register prescribers + look them up, one to submit fully-formed prescription
+            orders. Webhook subscribers receive status callbacks back as orders progress.
+        </p>
+
+        <div class="card">
+            <h3>At a glance</h3>
+            <table>
+                <tr><th>Endpoint</th><th>Purpose</th><th>Ability</th></tr>
+                <tr><td><code>POST /api/v1/external-telehealth/providers</code></td><td>Register prescriber (idempotent on NPI+client)</td><td><code>external-telehealth:providers:write</code></td></tr>
+                <tr><td><code>GET&nbsp; /api/v1/external-telehealth/providers/{npi}</code></td><td>Look up provider(s) — poll for admin approval state</td><td><code>external-telehealth:providers:read</code></td></tr>
+                <tr><td><code>POST /api/v1/external-telehealth/orders</code></td><td>Submit a fully-formed prescription order</td><td><code>external-telehealth:orders:write</code></td></tr>
+            </table>
+            <p>The interactive Try-It client for all three endpoints is on the main <a href="https://demo.prescribe-rx.com/api/docs">API reference</a>, under the <strong>ExternalTelehealth</strong> tag.</p>
+        </div>
+
+        <h2>1 — How tenancy works</h2>
+        <p>The effective sales-org id resolves from either side of the user identity graph:</p>
+        <pre><code>effective_sales_org_id = user.sales_organization_id
+                       ?? user.client.sales_organization_id</code></pre>
+        <p>Both token shapes are supported:</p>
+        <table>
+            <tr><th>Token shape</th><th>What it can do</th></tr>
+            <tr>
+                <td><span class="pill">Sales-org</span></td>
+                <td>Submit orders / register providers against any <code>client_id</code> under its sales org. Use this when a 3rd-party telehealth company serves multiple of your clinics.</td>
+            </tr>
+            <tr>
+                <td><span class="pill">Client</span></td>
+                <td>Effectively pinned to its own <code>client_id</code> — the only payload value that resolves to its sales org's client tree. Use this when a single clinic / practice integrates directly.</td>
+            </tr>
+        </table>
+        <p>Cross-tenant <code>client_id</code> → <strong>HTTP 403</strong> with: <em>"API user must belong to a sales organization (directly, or via their client)."</em></p>
+
+        <h2>2 — Onboarding (one-time)</h2>
+        <ol>
+            <li>Your account rep creates either a SalesOrganization (multi-clinic integrator) or a Client (single-clinic) for you, plus an API user.</li>
+            <li>The rep issues a Sanctum bearer token for that API user with these abilities, which are granted manually (NOT in any default ability set):
+                <ul>
+                    <li><code>external-telehealth:providers:write</code></li>
+                    <li><code>external-telehealth:providers:read</code></li>
+                    <li><code>external-telehealth:orders:write</code></li>
+                </ul>
+                Webhook abilities (<code>webhook:*</code>) are already in the default set for both sales-org and client user types.
+            </li>
+            <li>Save the token securely — it's not retrievable from our side once issued.</li>
+            <li>Test against <code>https://demo.prescribe-rx.com</code> first. Production is <code>https://prescribe-rx.com</code> with identical shapes.</li>
+        </ol>
+
+        <h3>Payments &amp; merchant accounts (one-time — required for on-system billing)</h3>
+        <p>
+            If you process the patient's payment on <strong>your own</strong> gateway
+            (outside PrescribeRx) but want PrescribeRx to handle any <strong>future</strong>
+            billing on that card — subscription rebills, refills, deferred captures,
+            refunds — you must <strong>add that merchant account inside PrescribeRx first</strong>.
+            Without it, the transaction you report is recorded audit-only (no merchant
+            attached) and any card you send is stored display-only (not chargeable).
+        </p>
+        <ol>
+            <li>In the PrescribeRx portal as your sales org, go to
+                <strong>Settings → Payments → Merchant Accounts</strong> and add an
+                account for the <strong>same gateway</strong> you charge on
+                (<code>authorize_net</code>, <code>stripe</code>, <code>nmi</code>, or
+                <code>square</code>), with that gateway's credentials. Mark it active.</li>
+            <li>Copy its <strong>merchant account UUID</strong>.</li>
+            <li>On each intake you submit, include the <code>payment</code> block with
+                <code>mode: "reference_captured"</code> (or <code>reference_preauth</code>),
+                your <code>merchant_account_id</code>, the <code>transaction</code>
+                details (id + amount), and — to make the card rechargeable — the
+                <strong>durable</strong> <code>card_token</code> refs from your gateway's
+                vault (e.g. Stripe <code>customer_id</code> + <code>payment_method_id</code>;
+                Auth.Net <code>customer_profile_id</code> + <code>payment_profile_id</code>;
+                NMI <code>customer_vault_id</code>; Square <code>customer_id</code> +
+                <code>card_id</code>). See the <code>payment</code> block on
+                <code>POST /telehealth/intake/unified</code> in the API reference for the
+                full field-by-field contract and a complete example.</li>
+        </ol>
+        <p>
+            The merchant's gateway must match your <code>card_token</code> refs and the
+            account must belong to your org — PrescribeRx validates both and, on a
+            mismatch, records the transaction without a merchant rather than charging the
+            wrong account. Collected payment in person / out of band with no electronic
+            record? Omit <code>payment</code> or use <code>mode: "prepaid"</code>.
+        </p>
+
+        <h2>3 — Register a provider</h2>
+        <p>Every prescriber must exist + be admin-approved before any order can reference them by NPI.</p>
+
+        <h3>cURL</h3>
+        <pre><code>curl -X POST https://demo.prescribe-rx.com/api/v1/external-telehealth/providers \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "client_id": "&lt;your client UUID&gt;",
+    "npi": "1234567890",
+    "dea": "BX1234567",
+    "first_name": "Alex",
+    "last_name": "Smith",
+    "prefix": "DR",
+    "suffix": "MD",
+    "designation": "MD",
+    "dob": "1980-01-15",
+    "gender": 1,
+    "email": "alex.smith@example-clinic.com",
+    "state_licenses": [
+      {"state": "GA", "license_type": "MD", "license_number": "GA-12345", "expiration_date": "2027-01-01"},
+      {"state": "FL", "license_type": "MD", "license_number": "FL-67890", "expiration_date": "2027-06-01"}
+    ]
+  }'</code></pre>
+
+        <h3>Response codes</h3>
+        <table>
+            <tr><th>Status</th><th>Meaning</th></tr>
+            <tr><td><strong>201</strong></td><td>New provider registered. <code>data.status = "PENDING"</code>. Wait for admin approval before submitting orders.</td></tr>
+            <tr><td><strong>409</strong></td><td>A provider with this <code>(npi, client_id)</code> already exists. Response includes the existing <code>data.provider_profile_id</code>.</td></tr>
+            <tr><td><strong>403</strong></td><td>The <code>client_id</code> does not belong to your sales org tree.</td></tr>
+            <tr><td><strong>422</strong></td><td>Validation error. Check <code>errors[]</code> for field-level details.</td></tr>
+        </table>
+
+        <h3>Poll for approval</h3>
+        <pre><code>curl https://demo.prescribe-rx.com/api/v1/external-telehealth/providers/1234567890 \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Accept: application/json"</code></pre>
+        <p>Returns an array (same NPI can have multiple rows when the prescriber works at multiple of your clients). Loop until <code>data[].status === "ACTIVE"</code>.</p>
+
+        <h2>4 — Submit an order</h2>
+
+        <div class="callout">
+            <strong>Idempotency-Key header is REQUIRED.</strong> Any unique string per order (UUID v4 recommended). Re-POSTing the same key within 24h returns the original order as <code>HTTP 200</code> (not 201). Keys are scoped to the caller's sales org.
+        </div>
+
+        <h3>cURL — happy path (non-compounded SKU)</h3>
+        <pre><code>curl -X POST https://demo.prescribe-rx.com/api/v1/external-telehealth/orders \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "client_id": "&lt;your client UUID&gt;",
+    "provider_npi": "1234567890",
+    "external_order_id": "ACME-2026-05-14-00042",
+    "patient": {
+      "first_name": "Jane",
+      "last_name": "Doe",
+      "email": "jane.doe@example.com",
+      "date_of_birth": "1985-03-12",
+      "phone": "+15555550100",
+      "gender": 2,
+      "address": {"line1": "123 Main St", "city": "Atlanta", "state": "GA", "postal_code": "30301"}
+    },
+    "shipping_address": {"line1": "123 Main St", "city": "Atlanta", "state": "GA", "postal_code": "30301"},
+    "prescription": {
+      "pdf_base64": "JVBERi0xLjcKJWZha2UgcGRmCg==",
+      "signed_at": "2026-05-14T14:00:00Z",
+      "signed_by_name": "Dr. Alex Smith, MD"
+    },
+    "lines": [
+      {
+        "sku": "GLPSEMA-12-TABLET",
+        "quantity": 1,
+        "sig": "Take one 12 mg tablet by mouth once weekly",
+        "days_supply": 28,
+        "dose_amount": "12",
+        "dose_unit": "mg",
+        "frequency": "weekly",
+        "refills": 0
+      }
+    ]
+  }'</code></pre>
+
+        <h3>cURL — compounded SKU (requires <code>compounding_reason_slug</code>)</h3>
+        <pre><code>...
+    "lines": [
+      {
+        "sku": "COMP-SEMA-2.5",
+        "quantity": 1,
+        "sig": "Inject 2.5 mg subcutaneously once weekly",
+        "days_supply": 28,
+        "dose_amount": "2.5",
+        "dose_unit": "mg",
+        "frequency": "weekly",
+        "refills": 2,
+        "compounding_reason_slug": "dose-not-commercially-available"
+      }
+    ]
+...</code></pre>
+
+        <p>Common compounding-reason slugs (ask your account rep for the current full list, since admins can add new ones):</p>
+        <table>
+            <tr><th>Slug</th><th>When to use</th></tr>
+            <tr><td><code>dose-not-commercially-available</code></td><td>Strength/dose not sold commercially</td></tr>
+            <tr><td><code>commercial-shortage</code></td><td>Commercial product on shortage</td></tr>
+            <tr><td><code>commercial-excipient-allergy</code></td><td>Patient allergic to a commercial excipient</td></tr>
+            <tr><td><code>combination-not-commercial</code></td><td>Custom multi-ingredient compound</td></tr>
+            <tr><td><code>titration-flexibility</code></td><td>Provider titrating dose up/down</td></tr>
+            <tr><td><code>b-complex-metabolic-support</code></td><td>B3/B6/B12 metabolic support add-on</td></tr>
+        </table>
+
+        <h3>Idempotency replay test</h3>
+        <p>Re-send the same payload with the same <code>Idempotency-Key</code>. The second response is <code>HTTP 200</code> (not 201) and the body matches the original — regardless of what the payload says. No duplicate order is created. Use this to safely retry on network failures.</p>
+
+        <h2>5 — Response codes</h2>
+        <table>
+            <tr><th>Status</th><th>Meaning</th></tr>
+            <tr><td><strong>201 Created</strong></td><td>Order accepted, routed to fulfillment. Includes <code>order_id</code>, <code>order_number</code>, <code>prescription_id</code>, <code>prescription_pdf_path</code>.</td></tr>
+            <tr><td><strong>200 OK</strong></td><td><strong>Idempotency replay</strong> — same key was used within 24h. Body matches the original 201.</td></tr>
+            <tr><td><strong>404 Not Found</strong></td><td>The NPI isn't registered at this client. Call <code>POST /providers</code> first.</td></tr>
+            <tr><td><strong>403 Forbidden</strong></td><td>Provider exists but is still PENDING admin approval, OR <code>client_id</code> is not in your sales org tree.</td></tr>
+            <tr><td><strong>422 Unprocessable Entity</strong></td><td>Validation error: unknown SKU, malformed PDF, missing <code>compounding_reason_slug</code> on a compounded product, NPI doesn't normalize to 10 digits, missing Idempotency-Key header.</td></tr>
+            <tr><td><strong>401 Unauthorized</strong></td><td>Missing / invalid token.</td></tr>
+        </table>
+
+        <h2>6 — Webhook callbacks</h2>
+        <p>Status updates flow back via the standard webhook subscription system. Subscribe once for your sales-org / client; you'll receive events for every order it owns. See the dedicated <a href="https://demo.prescribe-rx.com/api/docs/webhooks-guide">Webhooks Guide</a> for HMAC signature verification + retry policy.</p>
+
+        <h3>Subscribe</h3>
+        <pre><code>curl -X POST https://demo.prescribe-rx.com/api/v1/webhooks \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://your-platform.com/webhooks/prescribe-rx",
+    "events": [
+      "order.placed",
+      "order.status_changed",
+      "order.cancelled",
+      "fulfillment.shipped",
+      "fulfillment.delivered",
+      "fulfillment.cancelled"
+    ],
+    "subscriber_type": "sales_organization",
+    "subscriber_id": "&lt;your sales-org UUID&gt;"
+  }'</code></pre>
+        <p>Use <code>"subscriber_type": "client"</code> + your client UUID instead for client-token integrators.</p>
+        <p>The response's <code>data.secret</code> (starts with <code>whsec_</code>) signs every outgoing payload — store it securely. Outgoing requests carry the signature in <code>X-PrescribeRx-Signature</code> (HMAC-SHA256 of the raw body).</p>
+
+        <h3>Events you'll receive (External Telehealth orders)</h3>
+        <table>
+            <tr><th>Event</th><th>When</th><th>Payload key</th></tr>
+            <tr><td><code>order.placed</code></td><td>Immediately after our 201 to your <code>POST /orders</code></td><td><code>order_id</code>, <code>order_number</code>, <code>total_amount</code>, <code>external_order_id</code></td></tr>
+            <tr><td><code>order.status_changed</code></td><td><code>workflow_status</code> transitions</td><td><code>old_status</code>, <code>new_status</code>, <code>external_order_id</code></td></tr>
+            <tr><td><code>order.cancelled</code></td><td>Admin or system cancels</td><td><code>reason</code>, <code>cancelled_at</code>, <code>external_order_id</code></td></tr>
+            <tr><td><code>fulfillment.shipped</code></td><td>FC reports the order shipped</td><td><code>tracking_number</code>, <code>tracking_url</code>, <code>carrier</code>, <code>shipped_at</code>, <code>external_order_id</code></td></tr>
+            <tr><td><code>fulfillment.delivered</code></td><td>Carrier reports delivered</td><td><code>tracking_number</code>, <code>delivered_at</code>, <code>external_order_id</code></td></tr>
+            <tr><td><code>fulfillment.cancelled</code></td><td>FC cancellation (rare; usually inventory)</td><td><code>reason</code>, <code>cancelled_at</code>, <code>external_order_id</code></td></tr>
+        </table>
+        <p>Every payload includes your supplied <code>data.external_order_id</code> when the order originated from this API — use it to correlate with your internal records.</p>
+
+        <h2>7 — Troubleshooting</h2>
+        <table>
+            <tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+            <tr><td>401 Unauthorized</td><td>Token expired or wrong header</td><td>Reissue. Header is <code>Authorization: Bearer &lt;token&gt;</code> with the full <code>&lt;id&gt;|&lt;random&gt;</code> string.</td></tr>
+            <tr><td>403 "missing ability"</td><td>Token issued without the right abilities</td><td>Ask your rep to re-issue with <code>external-telehealth:*</code> abilities.</td></tr>
+            <tr><td>403 "client_id does not belong to your sales organization"</td><td>Wrong client UUID or cross-tenant</td><td>Verify the UUID against the list your rep provided. Client-token integrators must use their own client_id.</td></tr>
+            <tr><td>404 "No provider found for this NPI at the given client"</td><td>Not yet registered, OR registered at a different client</td><td>Call <code>POST /providers</code> first, or fix the <code>client_id</code> in your payload.</td></tr>
+            <tr><td>403 "Provider is registered but not yet ACTIVE"</td><td>Admin hasn't approved yet</td><td>Wait; poll <code>GET /providers/{npi}</code>.</td></tr>
+            <tr><td>422 "Unknown product SKU"</td><td>SKU isn't in our catalog or was retired</td><td>Ask your rep for the current SKU list. Case-sensitive.</td></tr>
+            <tr><td>422 "is compounded and requires `compounding_reason_slug`"</td><td>Compounded product without a slug</td><td>Add <code>compounding_reason_slug</code> to the line.</td></tr>
+            <tr><td>422 "Header `Idempotency-Key` is required"</td><td>Forgot the header</td><td>Add <code>Idempotency-Key: &lt;uuid&gt;</code> to every order POST.</td></tr>
+            <tr><td>422 "prescription.pdf_base64 does not contain a valid PDF"</td><td>Decoded bytes don't start with <code>%PDF-</code></td><td>Re-export from your e-Rx. Common cause: double base64 encoding, or sending raw text.</td></tr>
+            <tr><td>200 OK instead of 201 on a fresh POST</td><td>Reused an Idempotency-Key from a prior order</td><td>Generate a fresh UUID per distinct order.</td></tr>
+        </table>
+
+        <div class="callout ok">
+            <strong>Need a sandbox-ready token?</strong> The sandbox tokens panel on the
+            <a href="https://demo.prescribe-rx.com/api/docs">main API reference</a> auto-rotates one every 12h.
+            Look for the <code>SALESORGANIZATION</code> entry, or ask an admin to issue an explicit
+            External Telehealth token via tinker (procedure documented internally).
+        </div>
+
+        <p class="back" style="margin-top: 36px;">
+            <a href="https://demo.prescribe-rx.com/api/docs">← Back to API reference</a>
+        </p>
+    </div>
+</body>
+</html>

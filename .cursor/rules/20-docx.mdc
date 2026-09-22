@@ -1,0 +1,22 @@
+---
+description: Document build conventions for client facing docx deliverables
+globs: build/docs/**,docs/**
+alwaysApply: false
+---
+
+Markdown in docs/ is canonical. The docx is generated output and lives in out/.
+Never edit a file in out/ directly. Edits go into the build script.
+
+Before rebuilding a document the user has edited, diff against their version
+and treat their file as authoritative.
+
+# Format
+
+- Arial throughout. US Letter, one inch margins.
+- Title 24pt bold. Subtitle 18pt.
+- Meta line 10pt grey: Confidential, month and year, Working File For Discussion.
+- Section headings 16pt bold. Subsections 12pt bold.
+- One line grey summaries at 11pt under headings.
+- Body and bullets 11pt.
+- No italics. No horizontal lines.
+- Partnership document naming is Company plus Company.

@@ -1,0 +1,25 @@
+/*
+ * Mount fade — same settle as ScrollReveal (Apple Ads fade-in-transition):
+ * opacity + translateY(36px), cubic-bezier(0.5, 1, 0.89, 1) ~0.85s.
+ */
+
+@keyframes mountFadeIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 36px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.mount {
+  animation: mountFadeIn 0.85s cubic-bezier(0.5, 1, 0.89, 1) 0.15s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mount {
+    animation: none;
+  }
+}

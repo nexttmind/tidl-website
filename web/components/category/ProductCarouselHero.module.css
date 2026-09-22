@@ -1,0 +1,152 @@
+.root {
+  position: relative;
+  isolation: isolate;
+  color: var(--text-inverse);
+  /* Allow horizontal carousel scroll; do not clip the track */
+  overflow-x: visible;
+  overflow-y: visible;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(20, 26, 31, 0.56) 0%,
+      rgba(20, 26, 31, 0.21) 40%,
+      rgba(20, 26, 31, 0.49) 100%
+    ),
+    linear-gradient(90deg, #262e38 0%, #262e38 100%);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 48px 0 40px;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding-inline: var(--layout-gutter);
+  max-width: var(--layout-max);
+  margin-inline: auto;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: calc(clamp(28px, 6vw, 36px) * var(--font-display-scale));
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+}
+
+.ctaRow :global(a) {
+  min-height: 44px;
+}
+
+.secondaryCta {
+  display: none;
+}
+
+.subtitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: calc(16px * var(--font-display-scale));
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+}
+
+.carousel {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 16px;
+  width: 100%;
+  max-width: var(--layout-max);
+  margin-inline: auto;
+  box-sizing: border-box;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--layout-gutter);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 4px var(--layout-gutter) 8px;
+  touch-action: pan-x;
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.card {
+  scroll-snap-align: start;
+  flex: 0 0 auto;
+}
+
+@media (min-width: 1025px) {
+  .bg {
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(20, 26, 31, 0.48) 0%,
+        rgba(20, 26, 31, 0.12) 50%,
+        rgba(20, 26, 31, 0.42) 100%
+      ),
+      linear-gradient(90deg, #262e38 0%, #262e38 100%);
+  }
+
+  .content {
+    gap: 32px;
+    padding: 64px 0 60px;
+  }
+
+  .intro {
+    gap: 32px;
+  }
+
+  .title {
+    font-size: calc(52px * var(--font-display-scale));
+    line-height: 1.1;
+  }
+
+  .secondaryCta {
+    display: inline-flex;
+  }
+
+  .subtitle {
+    font-size: calc(18px * var(--font-display-scale));
+  }
+
+  .carousel {
+    gap: 20px;
+  }
+}

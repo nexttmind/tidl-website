@@ -1,0 +1,31 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.link {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-pill);
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition:
+    color 120ms ease,
+    background-color 120ms ease;
+}
+
+.link:hover,
+.link:focus-visible {
+  color: var(--text-inverse);
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+
+.icon {
+  display: block;
+  width: 18px;
+  height: 18px;
+}

@@ -1,0 +1,291 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.label {
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--care-text, var(--text-primary));
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: baseline;
+}
+
+.req {
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--care-text-tertiary, var(--text-tertiary));
+  font-weight: 400;
+}
+
+.help {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--care-text-secondary, var(--text-secondary));
+  line-height: 1.4;
+}
+
+.input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px) saturate(1.1);
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  color: var(--care-text, var(--text-primary));
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  font: inherit;
+  font-size: 1rem;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.input::placeholder {
+  color: var(--care-text-tertiary, var(--text-tertiary));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .input:hover {
+    border-color: var(--care-border-strong, var(--border-strong));
+  }
+}
+
+.input:focus {
+  outline: 2px solid color-mix(in srgb, var(--care-accent, var(--color-gold)) 70%, transparent);
+  outline-offset: 1px;
+  border-color: var(--care-accent, var(--color-gold));
+}
+
+.input:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.file {
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--care-text-secondary, var(--text-secondary));
+}
+
+.error {
+  margin: 0;
+  color: var(--care-danger, var(--status-danger));
+  font-size: 0.85rem;
+}
+
+.choiceRow,
+.choiceCol {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.choiceCol {
+  flex-direction: column;
+}
+
+.choiceGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.choiceGridSingle {
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 520px) {
+  .choiceGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.choiceCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-height: 4.5rem;
+  padding: var(--space-4);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: var(--care-text, #fff);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.choiceCard:focus-within {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .choiceCard:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.28);
+  }
+}
+
+.choiceCardSelected {
+  border-color: color-mix(in srgb, var(--care-accent, var(--color-gold)) 70%, transparent);
+  background: color-mix(in srgb, var(--care-accent, var(--color-gold)) 16%, rgba(255, 255, 255, 0.08));
+}
+
+.choiceCard input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.choiceCardLabel {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.35;
+  padding-right: 1.75rem;
+}
+
+.choiceMark {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--care-border-strong, rgba(255, 255, 255, 0.28));
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.choiceCardSelected .choiceMark {
+  border-color: var(--care-accent, var(--color-gold));
+  background: var(--care-accent, var(--color-gold));
+  color: var(--care-accent-ink, var(--color-ink));
+}
+
+.choiceMark svg {
+  opacity: 0;
+}
+
+.choiceCardSelected .choiceMark svg {
+  opacity: 1;
+}
+
+.choiceChipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-start;
+}
+
+.choiceChip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+  padding: 0.55rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px) saturate(1.15);
+  -webkit-backdrop-filter: blur(12px) saturate(1.15);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  color: var(--care-text, #fff);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: border-color 120ms ease, background-color 120ms ease, color 120ms ease;
+}
+
+.choiceChip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.choiceChip:focus-within {
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .choiceChip:hover {
+    border-color: rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.18);
+  }
+}
+
+.choiceChipSelected {
+  background: var(--care-accent, var(--color-gold));
+  border-color: var(--care-accent, var(--color-gold));
+  color: var(--care-accent-ink, var(--color-ink));
+  font-weight: 600;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.95rem;
+  cursor: pointer;
+  color: var(--care-text, var(--text-primary));
+}
+
+.heightRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.section {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 400;
+  margin: var(--space-3) 0 var(--space-2);
+  color: var(--care-text, var(--text-primary));
+}
+
+.bmi {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 1.25rem;
+  margin: 0;
+  color: var(--care-accent, var(--color-gold));
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip {
+  border: 1px solid var(--care-border, var(--border-default));
+  background: var(--care-raised, var(--surface-sunken));
+  border-radius: var(--radius-pill);
+  padding: 0.25rem 0.7rem;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: var(--care-text, var(--text-primary));
+}

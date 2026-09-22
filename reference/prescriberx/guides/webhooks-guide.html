@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webhooks — PrescribeRx API</title>
+    <style>
+        :root {
+            --header-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --ink: #1a1a1a;
+            --muted: #666;
+            --accent: #2196f3;
+        }
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: var(--ink);
+            background: #fafafa;
+        }
+        .topbar {
+            background: var(--header-bg);
+            color: white;
+            padding: 16px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .topbar h1 { margin: 0; font-size: 1.3em; font-weight: 600; }
+        .topbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9em;
+            opacity: 0.9;
+            border-bottom: 1px dotted rgba(255,255,255,0.5);
+        }
+        .topbar a:hover { opacity: 1; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px 28px 60px; }
+        h2 { margin: 36px 0 14px; font-size: 1.4em; border-bottom: 2px solid #eee; padding-bottom: 6px; }
+        h3 { margin: 24px 0 10px; font-size: 1.1em; color: var(--accent); }
+        p { line-height: 1.55; }
+        .lead { color: var(--muted); margin-bottom: 22px; font-size: 1.05em; }
+        .pill {
+            display: inline-block;
+            background: #eef2ff;
+            color: #3949ab;
+            padding: 2px 10px;
+            border-radius: 11px;
+            font-size: 0.8em;
+            margin-right: 6px;
+            font-family: monospace;
+        }
+        .category-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 12px 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        .category-card h3 { margin-top: 0; }
+        .event-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 6px 14px;
+            font-size: 0.88em;
+            margin-top: 8px;
+        }
+        .event-list code {
+            background: #f3f4f6;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 0.92em;
+            color: #1f2937;
+            display: inline-block;
+        }
+        .event-list .desc { color: var(--muted); font-size: 0.85em; padding-left: 8px; }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 0.82em;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+        .code-block .c { color: #94a3b8; }
+        .code-block .h { color: #f59e0b; }
+        .code-block .s { color: #4ade80; }
+        .code-block .k { color: #c084fc; }
+        table.endpoints {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 0.92em;
+        }
+        table.endpoints th,
+        table.endpoints td {
+            border: 1px solid #e5e7eb;
+            padding: 9px 11px;
+            text-align: left;
+            vertical-align: top;
+        }
+        table.endpoints th { background: #f3f4f6; font-weight: 600; }
+        table.endpoints code { font-size: 0.92em; }
+        .verb {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.75em;
+            font-weight: 700;
+            font-family: monospace;
+            color: white;
+        }
+        .verb.get { background: #2563eb; }
+        .verb.post { background: #16a34a; }
+        .verb.put { background: #ea580c; }
+        .verb.del { background: #dc2626; }
+        .callout {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 10px 14px;
+            margin: 14px 0;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.9em;
+        }
+        .callout-info {
+            background: #dbeafe;
+            border-left: 4px solid #2563eb;
+            padding: 10px 14px;
+            margin: 14px 0;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.9em;
+        }
+        .step {
+            display: flex;
+            margin: 14px 0;
+            gap: 14px;
+        }
+        .step-num {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        .step-body { flex: 1; padding-top: 4px; }
+        .step-body h4 { margin: 0 0 6px; font-size: 1em; }
+        .step-body p { margin: 4px 0; color: #444; font-size: 0.92em; }
+    </style>
+<script id="browser-logger-active">
+(function() {
+    const ENDPOINT = 'https://demo.prescribe-rx.com/_boost/browser-logs';
+    const logQueue = [];
+    let flushTimeout = null;
+
+    console.log('🔍 Browser logger active (MCP server detected). Posting to: ' + ENDPOINT);
+
+    // Store original console methods
+    const originalConsole = {
+        log: console.log,
+        info: console.info,
+        error: console.error,
+        warn: console.warn,
+        table: console.table
+    };
+
+    // Helper to safely stringify values
+    function safeStringify(obj) {
+        const seen = new WeakSet();
+        return JSON.stringify(obj, (key, value) => {
+            if (typeof value === 'object' && value !== null) {
+                if (seen.has(value)) return '[Circular]';
+                seen.add(value);
+            }
+            if (value instanceof Error) {
+                return {
+                    name: value.name,
+                    message: value.message,
+                    stack: value.stack
+                };
+            }
+            return value;
+        });
+    }
+
+    // Batch and send logs
+    function flushLogs() {
+        if (logQueue.length === 0) return;
+
+        const batch = logQueue.splice(0, logQueue.length);
+
+        fetch(ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ logs: batch })
+        }).catch(err => {
+            // Silently fail to avoid infinite loops
+            originalConsole.error('Failed to send logs:', err);
+        });
+    }
+
+    // Debounced flush (100ms)
+    function scheduleFlush() {
+        if (flushTimeout) clearTimeout(flushTimeout);
+        flushTimeout = setTimeout(flushLogs, 100);
+    }
+
+    // Intercept console methods
+    ['log', 'info', 'error', 'warn', 'table'].forEach(method => {
+        console[method] = function(...args) {
+            // Call original method
+            originalConsole[method].apply(console, args);
+
+            // Capture log data
+            try {
+                logQueue.push({
+                    type: method,
+                    timestamp: new Date().toISOString(),
+                    data: args.map(arg => {
+                        try {
+                            return typeof arg === 'object' ? JSON.parse(safeStringify(arg)) : arg;
+                        } catch (e) {
+                            return String(arg);
+                        }
+                    }),
+                    url: window.location.href,
+                    userAgent: navigator.userAgent
+                });
+
+                scheduleFlush();
+            } catch (e) {
+                // Fail silently
+            }
+        };
+    });
+
+    // Global error handlers for uncaught errors
+    const originalOnError = window.onerror;
+    window.onerror = function boostErrorHandler(errorMsg, url, lineNumber, colNumber, error) {
+        try {
+            logQueue.push({
+                type: 'uncaught_error',
+                timestamp: new Date().toISOString(),
+                data: [{
+                    message: errorMsg,
+                    filename: url,
+                    lineno: lineNumber,
+                    colno: colNumber,
+                    error: error ? {
+                        name: error.name,
+                        message: error.message,
+                        stack: error.stack
+                    } : null
+                }],
+                url: window.location.href,
+                userAgent: navigator.userAgent
+            });
+
+            scheduleFlush();
+        } catch (e) {
+            // Fail silently
+        }
+
+        // Call original handler if it exists
+        if (originalOnError && typeof originalOnError === 'function') {
+            return originalOnError(errorMsg, url, lineNumber, colNumber, error);
+        }
+
+        // Let the error continue to propagate
+        return false;
+    }
+    window.addEventListener('error', (event) => {
+        try {
+            logQueue.push({
+                type: 'window_error',
+                timestamp: new Date().toISOString(),
+                data: [{
+                    message: event.message,
+                    filename: event.filename,
+                    lineno: event.lineno,
+                    colno: event.colno,
+                    error: event.error ? {
+                        name: event.error.name,
+                        message: event.error.message,
+                        stack: event.error.stack
+                    } : null
+                }],
+                url: window.location.href,
+                userAgent: navigator.userAgent
+            });
+
+            scheduleFlush();
+        } catch (e) {
+            // Fail silently
+        }
+
+        // Let the error continue to propagate
+        return false;
+    });
+    window.addEventListener('unhandledrejection', (event) => {
+        try {
+            logQueue.push({
+                type: 'error',
+                timestamp: new Date().toISOString(),
+                data: [{
+                    message: 'Unhandled Promise Rejection',
+                    reason: event.reason instanceof Error ? {
+                        name: event.reason.name,
+                        message: event.reason.message,
+                        stack: event.reason.stack
+                    } : event.reason
+                }],
+                url: window.location.href,
+                userAgent: navigator.userAgent
+            });
+
+            scheduleFlush();
+        } catch (e) {
+            // Fail silently
+        }
+
+        // Let the rejection continue to propagate
+        return false;
+    });
+
+    // Flush on page unload
+    window.addEventListener('beforeunload', () => {
+        if (logQueue.length > 0) {
+            navigator.sendBeacon(ENDPOINT, JSON.stringify({ logs: logQueue }));
+        }
+    });
+})();
+</script>
+</head>
+<body>
+    <div class="topbar">
+        <h1>Webhooks Guide</h1>
+        <div>
+            <a href="https://demo.prescribe-rx.com/api/docs">← Back to API reference</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <p class="lead">
+            Webhooks let your app receive real-time notifications for events that happen in PrescribeRx —
+            an encounter is created, an order ships, lab results arrive, a subscription renews. Subscribe to
+            the events you care about and we'll <code>POST</code> a signed JSON payload to your URL when each
+            event fires. This page covers the 35 subscribable events,
+            how to set up a subscription, signature verification, and how to handle failures.
+        </p>
+
+        <div class="callout-info">
+            <strong>Two ways to manage webhook subscriptions:</strong>
+            <ol style="margin: 6px 0 0 18px;">
+                <li><strong>UI</strong> — Sales orgs and clients can self-serve from their portal:
+                    <code>/sales-organization/integrations/webhooks</code> or
+                    <code>/client/settings/webhooks</code>. Admins use <code>/admin/webhooks</code>.</li>
+                <li><strong>API</strong> — Programmatic CRUD via <code>/api/v1/webhooks</code> (requires the
+                    <code>webhook:read / create / update / delete</code> abilities, which sales-org and
+                    client tokens carry by default — see the
+                    <a href="https://demo.prescribe-rx.com/api/docs/tokens-matrix">token matrix</a>).</li>
+            </ol>
+        </div>
+
+        <h2>Subscribable events</h2>
+        <p>
+            Every event is sent as a <code>POST</code> with a JSON body keyed by <code>event</code>,
+            <code>timestamp</code>, <code>webhook_id</code>, <code>subscription_id</code>, and
+            <code>data</code>. Subscribe to any subset of these on a single
+            subscription, or use a wildcard like <code>encounter.*</code> to receive all encounter events.
+        </p>
+
+        <div class="callout-info">
+            <strong>All event slugs below are live.</strong> As of 2026-05-01 every category — encounter,
+            order, fulfillment, lab, prescription, subscription, patient, appointment — emits deliveries
+            to matching subscriptions. The slugs you see here are the full public contract; if you don't
+            see expected traffic, double-check your subscription's <code>events</code> array and
+            <code>is_active</code> flag (see "Common issues" below).
+        </div>
+
+        
+                    <div class="category-card">
+                <h3>Encounters <span class="pill">7 events</span></h3>
+                <div class="event-list">
+                                            <div>
+                            <code>encounter.created</code>
+                            <div class="desc">Encounter Created</div>
+                        </div>
+                                            <div>
+                            <code>encounter.status_changed</code>
+                            <div class="desc">Encounter Status Changed</div>
+                        </div>
+                                            <div>
+                            <code>encounter.assigned</code>
+                            <div class="desc">Provider Assigned</div>
+                        </div>
+                                            <div>
+                            <code>encounter.prescribed</code>
+                            <div class="desc">Prescription Written</div>
+                        </div>
+                                            <div>
+                            <code>encounter.completed</code>
+                            <div class="desc">Encounter Completed</div>
+                        </div>
+                                            <div>
+                            <code>encounter.cancelled</code>
+                            <div class="desc">Encounter Cancelled</div>
+                        </div>
+                                            <div>
+                            <code>encounter.scheduled</code>
+                            <div class="desc">Encounter Scheduled</div>
+                        </div>
+                                    </div>
+            </div>
+                    <div class="category-card">
+                <h3>Orders <span class="pill">6 events</span></h3>
+                <div class="event-list">
+                                            <div>
+                            <code>order.placed</code>
+                            <div class="desc">Order Placed</div>
+                        </div>
+                                            <div>
+                            <code>order.paid</code>
+                            <div class="desc">Order Payment Captured</div>
+                        </div>
+                                            <div>
+                            <code>order.cancelled</code>
+                            <div class="desc">Order Cancelled</div>
+                        </div>
+                                            <div>
+                            <code>order.refunded</code>
+                            <div class="desc">Order Refunded</div>
+                        </div>
+                                            <div>
+                            <code>order.voided</code>
+                            <div class="desc">Order Authorization Voided</div>
+                        </div>
+                                            <div>
+                            <code>order.status_changed</code>
+                            <div class="desc">Order Status Changed</div>
+                        </div>
+                                    </div>
+            </div>
+                    <div class="category-card">
+                <h3>Fulfillment <span class="pill">3 events</span></h3>
+                <div class="event-list">
+                                            <div>
+                            <code>fulfillment.shipped</code>
+                            <div class="desc">Shipment Shipped</div>
+                        </div>
+                                            <div>
+                            <code>fulfillment.delivered</code>
+                            <div class="desc">Shipment Delivered</div>
+                        </div>
+                                            <div>
+                            <code>fulfillment.cancelled</code>
+                            <div class="desc">Fulfillment Cancelled</div>
+                        </div>
+                                    </div>
+            </div>
+                    <div class="category-card">
+                <h3>Labs <span class="pill">4 events</span></h3>
+                <div class="event-list">
+                                            <div>
+                            <code>lab.order_created</code>
+                            <div class="desc">Lab Order Created</div>
+                        </div>
+                                            <div>
+                            <code>lab.results_received</code>
+                            <div class="desc">Lab Results Received</div>
+                        </div>
+                                            <div>
+                            <code>lab.review_completed</code>
+                            <div class="desc">Lab Review Completed</div>
+                        </div>
+                                            <div>
+                            <code>lab.deviation_flagged</code>
+                            <div class="desc">Lab Deviation Flagged</div>
+                        </div>
+                                    </div>
+            </div>
+                    <div class="category-card">
+                <h3>Prescriptions <span class="pill">1 events</span></h3>
+                <div class="event-list">
+                                            <div>
+                            <code>prescription.written</code>
+                            <div class="desc">Prescription Written</div>
+                        </div>
+                                    </div>
+            </div>
+                    <div class="category-card">
+                <h3>Approvals <span class="pill">2 events</span></h3>
+                <div class="event-list">
+                                            <div>
+                            <code>approval.accepted</code>
+                            <div class="desc">Provider-Added Item Approved</div>
+                        </div>
+                                            <div>
+                            <code>approval.declined</code>
+                            <div class="desc">Provider-Added Item Declined</div>
+                        </div>
+                                    </div>
+            </div>
+                    <div class="category-card">
+                <h3>Subscriptions <span class="pill">8 events</span></h3>
+                <div class="event-list">
+                                            <div>
+                            <code>subscription.created</code>
+                            <div class="desc">Subscription Created</div>
+                        </div>
+                                            <div>
+                            <code>subscription.renewed</code>
+                            <div class="desc">Subscription Renewed</div>
+                        </div>
+                                            <div>
+                            <code>subscription.cancelled</code>
+                            <div class="desc">Subscription Cancelled</div>
+                        </div>
+                                            <div>
+                            <code>subscription.payment_failed</code>
+                            <div class="desc">Subscription Payment Failed</div>
+                        </div>
+                                            <div>
+                            <code>subscription.paused</code>
+                            <div class="desc">Subscription Paused</div>
+                        </div>
+                                            <div>
+                            <code>subscription.resumed</code>
+                            <div class="desc">Subscription Resumed</div>
+                        </div>
+                                            <div>
+                            <code>subscription.refill_requested</code>
+                            <div class="desc">Subscription Refill Requested</div>
+                        </div>
+                                            <div>
+                            <code>subscription.reassessment_due</code>
+                            <div class="desc">Subscription Reassessment Due</div>
+                        </div>
+                                    </div>
+            </div>
+                    <div class="category-card">
+                <h3>Patients <span class="pill">1 events</span></h3>
+                <div class="event-list">
+                                            <div>
+                            <code>patient.created</code>
+                            <div class="desc">Patient Created</div>
+                        </div>
+                                    </div>
+            </div>
+                    <div class="category-card">
+                <h3>Appointments <span class="pill">3 events</span></h3>
+                <div class="event-list">
+                                            <div>
+                            <code>appointment.scheduled</code>
+                            <div class="desc">Appointment Scheduled</div>
+                        </div>
+                                            <div>
+                            <code>appointment.cancelled</code>
+                            <div class="desc">Appointment Cancelled</div>
+                        </div>
+                                            <div>
+                            <code>appointment.rescheduled</code>
+                            <div class="desc">Appointment Rescheduled</div>
+                        </div>
+                                    </div>
+            </div>
+        
+        <h2>Setting up a subscription (5-minute walkthrough)</h2>
+
+        <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-body">
+                <h4>Create your endpoint</h4>
+                <p>Build a <code>POST</code> endpoint on your server that accepts JSON. Return <code>2xx</code>
+                within 30 seconds — anything else is treated as a failure and triggers retries.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-body">
+                <h4>Subscribe via UI or API</h4>
+                <p><strong>UI:</strong> Go to your portal's webhooks page, click "Add subscription", paste the
+                URL, pick events, save. The signing secret is shown once — copy it.</p>
+                <p><strong>API:</strong></p>
+                <div class="code-block">
+<span class="h">curl</span> -X POST <span class="s">"https://demo.prescribe-rx.com/api/v1/webhooks"</span> \
+  -H <span class="s">"Authorization: Bearer YOUR_TOKEN"</span> \
+  -H <span class="s">"Content-Type: application/json"</span> \
+  -d <span class="s">'{
+    "url": "https://your-app.com/webhooks/prescriberx",
+    "events": ["encounter.prescribed", "order.placed", "fulfillment.shipped"],
+    "is_active": true
+  }'</span>
+                </div>
+                <p>Response includes <code>id</code>, <code>signing_secret</code> (shown once — store it
+                securely), and the events you subscribed to.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-body">
+                <h4>Verify the signature on every delivery</h4>
+                <p>Every webhook arrives with an <code>X-PrescribeRx-Signature</code> header. The value
+                is <code>sha256=&lt;hex&gt;</code> where <code>&lt;hex&gt;</code> is the lowercase hex
+                digest of <code>HMAC-SHA256(raw_request_body, signing_secret)</code>. Compute it on
+                your side using the raw request body bytes (not parsed JSON) and the signing secret
+                you copied at subscription creation. Reject deliveries that don't match.</p>
+
+                <div class="callout-info">
+                    <strong>Format.</strong> Both production deliveries and test deliveries (from
+                    <code>POST /api/v1/webhooks/&#123;id&#125;/test</code>) send the same shape:
+                    <code>X-PrescribeRx-Signature: sha256=a1b2c3...</code>. Strip the
+                    <code>sha256=</code> prefix before comparing the remainder against your computed
+                    HMAC. The prefix exists for forward compatibility (future algorithms will use
+                    the same envelope, e.g. <code>sha512=</code>).
+                </div>
+
+                <div class="code-block">
+<span class="c">// PHP</span>
+<span class="k">$received</span> = <span class="k">$_SERVER</span>[<span class="s">'HTTP_X_PRESCRIBERX_SIGNATURE'</span>] ?? <span class="s">''</span>;
+<span class="k">$received</span> = <span class="h">str_starts_with</span>(<span class="k">$received</span>, <span class="s">'sha256='</span>) ? <span class="h">substr</span>(<span class="k">$received</span>, <span class="k">7</span>) : <span class="k">$received</span>;
+<span class="k">$expected</span> = <span class="h">hash_hmac</span>(<span class="s">'sha256'</span>, <span class="k">$rawBody</span>, <span class="k">$signingSecret</span>);
+<span class="k">if</span> (! <span class="h">hash_equals</span>(<span class="k">$expected</span>, <span class="k">$received</span>)) {
+    <span class="h">http_response_code</span>(<span class="k">401</span>);
+    <span class="k">exit</span>;
+}
+                </div>
+                <div class="code-block">
+<span class="c">// Node.js</span>
+<span class="k">const</span> crypto = <span class="h">require</span>(<span class="s">'crypto'</span>);
+<span class="k">let</span> received = req.headers[<span class="s">'x-prescriberx-signature'</span>] || <span class="s">''</span>;
+<span class="k">if</span> (received.<span class="h">startsWith</span>(<span class="s">'sha256='</span>)) received = received.<span class="h">slice</span>(<span class="k">7</span>);
+<span class="k">const</span> expected = crypto.<span class="h">createHmac</span>(<span class="s">'sha256'</span>, signingSecret).<span class="h">update</span>(rawBody).<span class="h">digest</span>(<span class="s">'hex'</span>);
+<span class="k">if</span> (! crypto.<span class="h">timingSafeEqual</span>(<span class="h">Buffer.from</span>(expected), <span class="h">Buffer.from</span>(received))) {
+    <span class="k">return</span> res.<span class="h">status</span>(<span class="k">401</span>).<span class="h">end</span>();
+}
+                </div>
+
+                <p style="margin-top: 1rem;"><strong>Other delivery headers</strong> — useful for
+                logging, idempotency, and dashboards (sent on every delivery, including tests):</p>
+                <table class="endpoints">
+                    <thead><tr><th>Header</th><th>Value</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>User-Agent</code></td><td><code>PrescribeRx-Webhook/1.0</code></td></tr>
+                        <tr><td><code>X-Webhook-ID</code></td><td>UUID — unique per delivery; use as idempotency key</td></tr>
+                        <tr><td><code>X-Webhook-Event</code></td><td>The event slug (e.g. <code>order.placed</code>)</td></tr>
+                        <tr><td><code>X-Webhook-Timestamp</code></td><td>ISO-8601 timestamp matching the body's <code>timestamp</code> field</td></tr>
+                        <tr><td><code>X-PrescribeRx-Signature</code></td><td><code>sha256=&lt;hex&gt;</code> — HMAC-SHA256 of the raw request body using your signing secret</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-body">
+                <h4>Test before going live</h4>
+                <p>Trigger a test delivery with the <code>webhook.test</code> event:</p>
+                <div class="code-block">
+<span class="h">curl</span> -X POST <span class="s">"https://demo.prescribe-rx.com/api/v1/webhooks/{subscription_id}/test"</span> \
+  -H <span class="s">"Authorization: Bearer YOUR_TOKEN"</span>
+                </div>
+                <p>Watch the delivery logs at <code>/api/v1/webhooks/{subscription_id}/delivery-logs</code>
+                or in the UI to see request + response details.</p>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-num">5</div>
+            <div class="step-body">
+                <h4>Handle retries gracefully</h4>
+                <p>Failed deliveries (non-2xx, timeout, connection error) are retried up to
+                <strong>3 total attempts</strong> with exponential backoff: <code>~10s</code> after
+                attempt 1, <code>~100s</code> (~1.7 min) after attempt 2, then no further attempts.
+                Each attempt has a <strong>30-second timeout</strong>.</p>
+                <p>After <strong>50 consecutive failures</strong> across deliveries the subscription
+                is auto-disabled — the UI shows a banner and you'll receive an email; re-enable via
+                <code>POST /api/v1/webhooks/&#123;id&#125;/re-enable</code> after fixing your endpoint.</p>
+                <p>Treat each delivery as <strong>at-least-once</strong>: include an idempotency check
+                keyed on the <code>webhook_id</code> field (a UUID generated per delivery, also sent
+                in the <code>X-Webhook-ID</code> header).</p>
+            </div>
+        </div>
+
+        <h2>Subscription management endpoints</h2>
+        <table class="endpoints">
+            <thead>
+                <tr><th>Verb</th><th>Path</th><th>Purpose</th><th>Required ability</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><span class="verb get">GET</span></td><td><code>/api/v1/webhooks/event-types</code></td><td>List subscribable event types</td><td><code>webhook:read</code></td></tr>
+                <tr><td><span class="verb get">GET</span></td><td><code>/api/v1/webhooks</code></td><td>List your subscriptions</td><td><code>webhook:read</code></td></tr>
+                <tr><td><span class="verb post">POST</span></td><td><code>/api/v1/webhooks</code></td><td>Create a subscription</td><td><code>webhook:create</code></td></tr>
+                <tr><td><span class="verb get">GET</span></td><td><code>/api/v1/webhooks/{id}</code></td><td>Get one subscription</td><td><code>webhook:read</code></td></tr>
+                <tr><td><span class="verb put">PUT</span></td><td><code>/api/v1/webhooks/{id}</code></td><td>Update URL / events / active flag</td><td><code>webhook:update</code></td></tr>
+                <tr><td><span class="verb del">DELETE</span></td><td><code>/api/v1/webhooks/{id}</code></td><td>Delete a subscription</td><td><code>webhook:delete</code></td></tr>
+                <tr><td><span class="verb post">POST</span></td><td><code>/api/v1/webhooks/{id}/rotate-secret</code></td><td>Roll the signing secret</td><td><code>webhook:update</code></td></tr>
+                <tr><td><span class="verb post">POST</span></td><td><code>/api/v1/webhooks/{id}/re-enable</code></td><td>Re-enable an auto-disabled subscription</td><td><code>webhook:update</code></td></tr>
+                <tr><td><span class="verb post">POST</span></td><td><code>/api/v1/webhooks/{id}/test</code></td><td>Trigger a webhook.test delivery</td><td><code>webhook:update</code></td></tr>
+                <tr><td><span class="verb get">GET</span></td><td><code>/api/v1/webhooks/{id}/delivery-logs</code></td><td>Recent delivery attempts (request/response)</td><td><code>webhook:read</code></td></tr>
+            </tbody>
+        </table>
+
+        <h2>Sample payload shape</h2>
+        <p>Every delivery follows the same envelope. The <code>data</code> block varies by event type.
+        Below is the actual shape currently emitted for <code>encounter.prescribed</code> — the data
+        block contains the four fields shown, no more.</p>
+        <div class="code-block">
+{
+  <span class="k">"event"</span>: <span class="s">"encounter.prescribed"</span>,
+  <span class="k">"timestamp"</span>: <span class="s">"2026-04-30T20:34:12+00:00"</span>,
+  <span class="k">"webhook_id"</span>: <span class="s">"019ddf8a-7c3d-7234-ab01-c9d8e7f6a5b4"</span>,
+  <span class="k">"subscription_id"</span>: <span class="s">"019dd4a1-3c2b-7100-89ab-cdef01234567"</span>,
+  <span class="k">"data"</span>: {
+    <span class="k">"encounter_id"</span>: <span class="s">"019dd4d8-1a2b-7300-89ab-000111222333"</span>,
+    <span class="k">"encounter_number"</span>: <span class="s">"ENC-7658107290"</span>,
+    <span class="k">"patient_chart_id"</span>: <span class="s">"019dd4ce-5f6a-7200-89ab-112233445566"</span>,
+    <span class="k">"prescribed_at"</span>: <span class="s">"2026-04-30T20:34:08+00:00"</span>
+  }
+}
+        </div>
+        <p style="margin-top: 1rem; font-size: 0.9rem; color: #6b7280;">
+            Need richer data (e.g., the prescription itself, the provider's NPI)? Hit
+            <code>GET /api/v1/encounters/&#123;id&#125;</code> with your token after receiving the
+            webhook. The webhook is the doorbell; the API is the deeper read.
+        </p>
+
+        <h2>Wildcards + filters</h2>
+        <p>Use a wildcard to subscribe to a whole category in one shot:</p>
+        <div class="code-block">
+{
+  <span class="k">"events"</span>: [<span class="s">"encounter.*"</span>, <span class="s">"order.placed"</span>, <span class="s">"order.paid"</span>, <span class="s">"fulfillment.*"</span>]
+}
+        </div>
+        <p><code>encounter.*</code> matches all 7 encounter events. <code>fulfillment.*</code> matches all
+        3 fulfillment events. Use <code>*</code> alone to subscribe to everything (not generally
+        recommended — narrower subscriptions are easier to debug).</p>
+
+        <div class="callout">
+            <strong>Scope:</strong> Subscriptions only fire for events within your token's data scope. A
+            client-token subscription only receives events for that client's encounters/orders/etc; a
+            sales-org-token subscription receives events for the entire org tree. Cross-tenant events are
+            never delivered regardless of subscription configuration.
+        </div>
+
+        <h2>Common issues</h2>
+        <table class="endpoints">
+            <thead>
+                <tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>No deliveries arriving</td><td>Subscription <code>is_active=false</code>, or auto-disabled after 50 failures, or no events of the subscribed slug have been emitted yet on your tenant</td><td>Check status via <code>GET /webhooks/&#123;id&#125;</code>, re-enable if needed; trigger one of your subscribed events (e.g. POST a unified intake to fire <code>encounter.created</code> + <code>patient.created</code>)</td></tr>
+                <tr><td>Signature mismatch</td><td>Verifying parsed JSON instead of raw bytes, or forgetting to strip the <code>sha256=</code> prefix from the header value before comparing</td><td>HMAC the raw request body bytes. Strip the <code>sha256=</code> prefix from <code>X-PrescribeRx-Signature</code> before comparing the remainder.</td></tr>
+                <tr><td>Webhook called multiple times for same event</td><td>Your endpoint returned non-2xx → retry, OR delivery succeeded but your acknowledgement timed out</td><td>Idempotency check keyed on <code>webhook_id</code> (also in <code>X-Webhook-ID</code> header)</td></tr>
+                <tr><td>Slow delivery</td><td>Endpoint &gt;30s response triggers timeout retry</td><td>Acknowledge with 200 immediately, process async</td></tr>
+                <tr><td>Subscription URL not saving</td><td>Localhost / 192.x.x.x / 10.x.x.x rejected</td><td>Use a public-routable URL; ngrok works for dev</td></tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

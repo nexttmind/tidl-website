@@ -1,0 +1,41 @@
+.link {
+  display: inline-flex;
+  text-decoration: none;
+}
+
+.lockup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 183px;
+}
+
+.wordmark {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.tagline {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.compact {
+  width: 100%;
+  max-width: 120px;
+  gap: 0;
+}
+
+.compact .tagline {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .lockup {
+    width: 140px;
+  }
+}

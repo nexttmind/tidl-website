@@ -1,0 +1,47 @@
+.heroChrome {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 5;
+  width: 100vw;
+  transform: translateX(-50%);
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.heroChrome > * {
+  pointer-events: auto;
+}
+
+.postScroll {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  pointer-events: none;
+  animation: postScrollIn 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.postScroll > :global(header) {
+  pointer-events: auto;
+}
+
+@keyframes postScrollIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroChrome,
+  .postScroll {
+    transition: none;
+    animation: none;
+  }
+}

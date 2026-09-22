@@ -1,0 +1,31 @@
+.page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  /* Transparent so the body wash is the only field. Re-painting
+     --section-bg-image here boxed it inside layout-frame and showed
+     left/right edges against the viewport wash. */
+  background: transparent;
+}
+
+.main :is(h1, h2) {
+  scroll-margin-top: 88px;
+}
+
+.disclaimer {
+  margin: 0 auto;
+  padding: var(--space-8) var(--layout-gutter) var(--space-10);
+  max-width: 52ch;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.65;
+  text-align: center;
+}

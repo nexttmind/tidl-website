@@ -1,0 +1,196 @@
+.frame {
+  /* Clinical flow local surface: footer Nightfield + Mark gold accent */
+  --care-bg: var(--footer-bg-base);
+  --care-panel: transparent;
+  --care-raised: rgba(255, 255, 255, 0.08);
+  --care-raised-hover: rgba(255, 255, 255, 0.14);
+  --care-border: rgba(255, 255, 255, 0.14);
+  --care-border-strong: rgba(255, 255, 255, 0.28);
+  --care-text: var(--color-white);
+  --care-text-secondary: rgba(255, 255, 255, 0.62);
+  --care-text-tertiary: rgba(255, 255, 255, 0.42);
+  --care-accent: var(--color-gold);
+  --care-accent-ink: var(--color-ink);
+  --care-danger: #e07a7a;
+  --care-media-inset: var(--space-5);
+  --care-media-radius: 28px;
+
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.15fr);
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  background-color: var(--footer-bg-base);
+  background-image: var(--footer-bg-image);
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: var(--care-text);
+  margin-top: 0;
+  color-scheme: dark;
+}
+
+.mediaPane {
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: var(--care-media-inset);
+  padding-right: calc(var(--care-media-inset) / 2);
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.mediaFrame {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--care-media-radius);
+  background: var(--color-night);
+  isolation: isolate;
+}
+
+.media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.mediaScrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(18, 22, 28, 0.35) 0%,
+      transparent 28%,
+      transparent 55%,
+      rgba(18, 22, 28, 0.35) 100%
+    ),
+    radial-gradient(
+      ellipse 70% 40% at 50% 50%,
+      rgba(18, 22, 28, 0.45) 0%,
+      transparent 70%
+    );
+}
+
+.mediaContent {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-6);
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.logo {
+  align-self: flex-start;
+  pointer-events: auto;
+  flex-shrink: 0;
+}
+
+.logo :global(img) {
+  filter: brightness(0) invert(1);
+}
+
+.mediaTitle {
+  margin: 0;
+  padding: 0 var(--space-4);
+  max-width: 100%;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: clamp(1.65rem, 3.2vw, 2.75rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--care-text);
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.5);
+}
+
+.mediaSpacer {
+  flex-shrink: 0;
+  height: 33px;
+  width: 1px;
+  visibility: hidden;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: transparent;
+  color: var(--care-text);
+}
+
+.panelBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-6) var(--space-6);
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  .frame {
+    grid-template-columns: 1fr;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .mediaPane {
+    padding: var(--space-4);
+    padding-bottom: 0;
+    height: min(48vw, 300px);
+    min-height: 220px;
+  }
+
+  .mediaFrame {
+    border-radius: 20px;
+  }
+
+  .mediaContent {
+    padding: var(--space-4);
+  }
+
+  .mediaTitle {
+    font-size: clamp(1.35rem, 5vw, 1.85rem);
+  }
+
+  .mediaSpacer {
+    height: 24px;
+  }
+
+  .panel {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .panelBody {
+    max-width: none;
+    padding: var(--space-4) var(--space-5) var(--space-6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .media {
+    /* Still image fallback is preferred via poster; keep video paused in JS */
+  }
+}

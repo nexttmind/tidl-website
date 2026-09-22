@@ -1,0 +1,147 @@
+@property --ask-ai-from {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ffffff;
+}
+
+@property --ask-ai-mid {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ffffff;
+}
+
+@property --ask-ai-to {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ffffff;
+}
+
+.aiIcon {
+  flex-shrink: 0;
+  position: relative;
+  display: block;
+  width: 20px;
+  height: 20px;
+  overflow: visible;
+  transform: scale(1);
+  transform-origin: center center;
+  --ai-orbit-r: 20%;
+  --ai-orbit-ms: 9.6s;
+  --ask-ai-from: var(--color-white);
+  --ask-ai-mid: var(--color-white);
+  --ask-ai-to: var(--color-white);
+  filter: none;
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 220ms ease-out,
+    --ask-ai-from 220ms ease-out,
+    --ask-ai-mid 220ms ease-out,
+    --ask-ai-to 220ms ease-out;
+}
+
+.aiStar {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center center;
+  animation: askAiOrbit var(--ai-orbit-ms) linear infinite;
+  animation-delay: var(--ai-delay, 0s);
+}
+
+.aiStar svg {
+  display: block;
+  width: 52%;
+  height: 52%;
+}
+
+.aiStar[data-i="0"] {
+  --s-max: 1;
+  --s-min: 0.38;
+  --ai-delay: 0s;
+}
+
+.aiStar[data-i="1"] {
+  --s-max: 0.82;
+  --s-min: 0.34;
+  --ai-delay: calc(var(--ai-orbit-ms) * -1 / 3);
+}
+
+.aiStar[data-i="1"] svg {
+  opacity: 0.9;
+}
+
+.aiStar[data-i="2"] {
+  --s-max: 0.62;
+  --s-min: 0.26;
+  --ai-delay: calc(var(--ai-orbit-ms) * -2 / 3);
+}
+
+.aiStar[data-i="2"] svg {
+  opacity: 0.78;
+}
+
+@keyframes askAiOrbit {
+  0% {
+    transform: rotate(0deg) translateY(calc(-1 * var(--ai-orbit-r))) rotate(0deg)
+      scale(var(--s-max));
+  }
+  12.5% {
+    transform: rotate(45deg) translateY(calc(-1 * var(--ai-orbit-r))) rotate(-45deg)
+      scale(calc(var(--s-min) + (var(--s-max) - var(--s-min)) * 0.8536));
+  }
+  25% {
+    transform: rotate(90deg) translateY(calc(-1 * var(--ai-orbit-r))) rotate(-90deg)
+      scale(calc(var(--s-min) + (var(--s-max) - var(--s-min)) * 0.5));
+  }
+  37.5% {
+    transform: rotate(135deg) translateY(calc(-1 * var(--ai-orbit-r))) rotate(-135deg)
+      scale(calc(var(--s-min) + (var(--s-max) - var(--s-min)) * 0.1464));
+  }
+  50% {
+    transform: rotate(180deg) translateY(calc(-1 * var(--ai-orbit-r))) rotate(-180deg)
+      scale(var(--s-min));
+  }
+  62.5% {
+    transform: rotate(225deg) translateY(calc(-1 * var(--ai-orbit-r))) rotate(-225deg)
+      scale(calc(var(--s-min) + (var(--s-max) - var(--s-min)) * 0.1464));
+  }
+  75% {
+    transform: rotate(270deg) translateY(calc(-1 * var(--ai-orbit-r))) rotate(-270deg)
+      scale(calc(var(--s-min) + (var(--s-max) - var(--s-min)) * 0.5));
+  }
+  87.5% {
+    transform: rotate(315deg) translateY(calc(-1 * var(--ai-orbit-r))) rotate(-315deg)
+      scale(calc(var(--s-min) + (var(--s-max) - var(--s-min)) * 0.8536));
+  }
+  100% {
+    transform: rotate(360deg) translateY(calc(-1 * var(--ai-orbit-r))) rotate(-360deg)
+      scale(var(--s-max));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aiIcon {
+    transition: none;
+  }
+
+  .aiStar {
+    animation: none;
+  }
+
+  .aiStar[data-i="0"] {
+    transform: rotate(0deg) translateY(calc(-1 * var(--ai-orbit-r))) rotate(0deg)
+      scale(1);
+  }
+
+  .aiStar[data-i="1"] {
+    transform: rotate(120deg) translateY(calc(-1 * var(--ai-orbit-r)))
+      rotate(-120deg) scale(0.46);
+  }
+
+  .aiStar[data-i="2"] {
+    transform: rotate(240deg) translateY(calc(-1 * var(--ai-orbit-r)))
+      rotate(-240deg) scale(0.35);
+  }
+}

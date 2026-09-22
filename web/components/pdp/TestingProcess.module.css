@@ -1,0 +1,112 @@
+.root {
+  width: 100%;
+  background: transparent;
+}
+
+.inner {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding: var(--layout-section-y) clamp(28px, 5vw, 72px);
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(16rem, 0.4fr) minmax(0, 1fr);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: center;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.headline {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: calc(clamp(28px, 3.2vw, 38px) * var(--font-display-scale) / 1.4);
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.lede {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(12px, 1.6vw, 20px);
+  min-width: 0;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  min-width: 0;
+  aspect-ratio: 1;
+  padding: clamp(16px, 2vw, 28px) clamp(12px, 1.6vw, 22px);
+  box-sizing: border-box;
+  text-align: center;
+  background: var(--surface-page-raised);
+  border-radius: var(--radius-card);
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-primary);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+@media (max-width: 900px) {
+  .inner {
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: var(--space-7);
+  }
+}
+
+@media (max-width: 560px) {
+  .grid {
+    gap: var(--space-3);
+  }
+
+  .card {
+    padding: var(--space-3) var(--space-2);
+    gap: var(--space-3);
+  }
+
+  .icon svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .title {
+    font-size: 12px;
+    max-width: none;
+  }
+}

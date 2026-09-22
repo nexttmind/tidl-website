@@ -1,0 +1,198 @@
+/*
+ * Social proof — contained frame, white story cards, soft wash background.
+ * Matches PDP reference: stars, title, body, attribution + pair of nav arrows.
+ */
+
+.root {
+  position: relative;
+  width: 100%;
+  padding-block: clamp(48px, 7vw, 88px);
+  background: #f3f1ec;
+}
+
+.frame {
+  width: 100%;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: clamp(28px, 5vw, 72px);
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-bottom: clamp(28px, 4vw, 40px);
+  max-width: 36rem;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: calc(clamp(28px, 4vw, 40px) * var(--font-display-scale));
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.subtitleLead {
+  color: var(--text-secondary);
+}
+
+.verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.verifiedIcon {
+  flex: none;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0 2px 4px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(260px, 1fr);
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 2px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.card {
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: clamp(24px, 3vw, 36px);
+  border-radius: 16px;
+  background: var(--surface-page-raised);
+  box-shadow:
+    0 1px 2px rgba(26, 26, 26, 0.04),
+    0 10px 28px rgba(26, 26, 26, 0.05);
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+.stars {
+  margin: 0;
+  color: #e8b923;
+  font-size: 15px;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+
+.quote {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: calc(clamp(18px, 2vw, 22px) * var(--font-display-scale));
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-primary);
+}
+
+.body {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.65;
+  flex: 1 1 auto;
+}
+
+.name {
+  margin: 0;
+  margin-top: auto;
+  padding-top: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.nav {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: clamp(28px, 4vw, 36px);
+}
+
+.navBtn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  background: #2b2b2b;
+  color: var(--text-inverse);
+  cursor: pointer;
+  transition: background-color 140ms ease, transform 140ms ease;
+}
+
+.navBtn:active {
+  transform: translateY(1px);
+}
+
+.navBtn:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .navBtn:hover {
+    background: #1a1a1a;
+  }
+}
+
+@media (min-width: 1024px) {
+  .list {
+    grid-auto-flow: unset;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  /* Keep arrows for cycle through longer lists or future expansion */
+  .navBtn {
+    /* still useful when more than 3 items overflow on smaller laptop widths
+       with 3 columns they are mainly decorative but keep interaction consistent */
+  }
+}
+
+@media (max-width: 767px) {
+  .root {
+    padding-block: var(--space-8);
+  }
+
+  .frame {
+    padding-inline: var(--layout-gutter);
+  }
+
+  .list {
+    grid-auto-columns: minmax(78%, 320px);
+    gap: 14px;
+  }
+}

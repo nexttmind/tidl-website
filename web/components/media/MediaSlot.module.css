@@ -1,0 +1,135 @@
+.root {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-media);
+  border: 1px dashed var(--border-subtle);
+  background: var(--surface-sunken);
+  color: var(--text-secondary);
+  isolation: isolate;
+}
+
+.fill {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.dark {
+  background: #2a3340;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-inverse-secondary);
+}
+
+.swatch {
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.hasMedia {
+  border: none;
+  background: #1a222a;
+}
+
+.media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.vivid .media {
+  filter: saturate(1.28) contrast(1.06) brightness(1.02);
+}
+
+.lift .media {
+  filter: brightness(1.4) contrast(0.92) saturate(1.06);
+}
+
+.vivid.lift .media {
+  filter: brightness(1.45) contrast(0.92) saturate(1.08);
+}
+
+.lift .grain {
+  opacity: 0.12;
+}
+
+.lift .wash {
+  opacity: 0.35;
+}
+
+.contain {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.contain .media {
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Film grain over photography */
+.grain {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.28;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+  background-repeat: repeat;
+}
+
+/* Cool gradient wash for depth / contrast against glass chrome */
+.wash {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      160deg,
+      rgba(33, 43, 56, 0.18) 0%,
+      transparent 42%,
+      rgba(64, 87, 116, 0.12) 100%
+    ),
+    radial-gradient(
+      ellipse 70% 55% at 10% 90%,
+      rgba(175, 124, 84, 0.16) 0%,
+      transparent 60%
+    );
+  mix-blend-mode: soft-light;
+}
+
+.label {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.aspect {
+  opacity: 0.7;
+}
+
+.hex {
+  opacity: 0.85;
+  letter-spacing: 0.06em;
+}

@@ -1,0 +1,592 @@
+.root {
+  /* Field wash lives on the shop band so section 2 and this card share one surface. */
+  position: relative;
+  z-index: 1;
+  padding: 0;
+}
+
+.stage {
+  width: 100%;
+  max-width: var(--layout-max);
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+
+.card {
+  display: grid;
+  gap: 0;
+}
+
+/* Outer stage matching Figma Category Section — height stepped up from 587 base.
+ * Default shows only the clipped photo; no fill in the uncovered area. */
+.notecard {
+  position: relative;
+  isolation: isolate;
+  height: clamp(578px, 56.1vw, 807px);
+  border-radius: var(--radius-card);
+  overflow: clip;
+  color: var(--text-inverse);
+  background: transparent;
+}
+
+/*
+ * Default clip ≈ 1014/1387 ≈ 73.1% (Figma State=Default)
+ * Expanded → 100% width (Figma State=Expanded)
+ */
+.notecardClip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 73.1%;
+  border-radius: var(--radius-card);
+  overflow: clip;
+  transition: width var(--cat-width-ms, 320ms) ease-out;
+  z-index: 1;
+}
+
+.notecard[data-expanded="true"] .notecardClip {
+  width: 100%;
+}
+
+/* Category switch: snap shut before replaying width → protocol. */
+.notecard[data-instant="true"] .notecardClip,
+.notecard[data-instant="true"] .protocol,
+.notecard[data-instant="true"] .notecardScrim {
+  transition: none;
+}
+
+.heroLayer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: opacity 400ms ease-in-out;
+}
+
+.heroLayer[data-active="true"] {
+  opacity: 1;
+}
+
+.heroLayer img,
+.heroLayer video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1) translate3d(0, 0, 0);
+  transform-origin: center center;
+  transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .notecard:hover .heroLayer[data-active="true"] img,
+  .notecard:hover .heroLayer[data-active="true"] video {
+    transform: scale(1.05) translate3d(1.2%, -0.8%, 0);
+  }
+}
+
+.notecardScrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    124deg,
+    rgba(63, 90, 113, 0.72) 2.5%,
+    rgba(85, 100, 112, 0) 52%
+  );
+  pointer-events: none;
+  transition: opacity var(--cat-width-ms, 320ms) ease-out;
+}
+
+.notecard[data-expanded="true"] .notecardScrim {
+  background: linear-gradient(
+    124deg,
+    rgba(20, 28, 36, 0.45) 2.5%,
+    rgba(20, 28, 36, 0) 45%
+  );
+}
+
+/* Same plus-mark grid as the pen section. */
+.plusMarks {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.plusMark {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  display: block;
+}
+
+.plusMarkBottom {
+  top: auto;
+  /* Gutter under the glass cards, nudged up from the edge. */
+  bottom: calc(clamp(32px, 4.5vw, 52px) / 2 - 3px);
+}
+
+/*
+ * Protocol sizes to the glass cards. Fade pad above them is set from the
+ * active hero's bottom luminance (--protocol-fade / scrim stops).
+ */
+.protocol {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3;
+  height: auto;
+  /* Horizontal inset matches title/eyebrow at 87/1440 on both sides. */
+  padding:
+    var(--protocol-fade, 48px)
+    calc(87 / 1440 * 100%)
+    clamp(32px, 4.5vw, 52px);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, var(--protocol-scrim-mid, 0.62)) 42%,
+    rgba(0, 0, 0, var(--protocol-scrim-end, 0.94)) 100%
+  );
+  transform: translateY(100%);
+  transition:
+    transform var(--cat-protocol-ms, 380ms) cubic-bezier(0.22, 1, 0.36, 1),
+    padding-top 280ms ease,
+    background 280ms ease;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.protocol[data-open="true"] {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.protocolGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(12px, 2vw, 28px);
+  align-items: stretch;
+  align-content: start;
+}
+
+.protocolGrid > li {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  padding: clamp(12px, 1.4vw, 18px) clamp(12px, 1.2vw, 16px);
+  border: 1px solid transparent;
+  border-radius: var(--radius-media);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: none;
+  transform: translateY(0);
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease,
+    backdrop-filter 180ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .protocolGrid > li:hover {
+    background: rgba(255, 255, 255, 0.24);
+    border-color: rgba(255, 255, 255, 0.32);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 12px 28px rgba(20, 28, 36, 0.28);
+    transform: translateY(-3px);
+  }
+}
+
+.protocolHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.protocolIcon {
+  flex-shrink: 0;
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  color: var(--text-inverse);
+}
+
+.protocolIcon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.protocolLabel {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.2;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.protocolBody {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: clamp(11px, 0.95vw, 13px);
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/*
+ * Copy overlays the full notecard so % tops match the plus-mark grid.
+ * Eyebrow sits on the top mark row; chips hang under it; lead centers below.
+ */
+.copy {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/*
+ * Eyebrow rides with the top plus row. Chips stay pinned at their prior
+ * spot (former 58/879 guide + eyebrow + gap) so they don't follow.
+ */
+.copyTop {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.copyLead {
+  position: absolute;
+  left: calc(87 / 1440 * 100%);
+  /* Center in the clear band between chips and protocol glass cards. */
+  top: calc(58 / 879 * 100% + 54px);
+  bottom: var(--protocol-band, clamp(150px, 26%, 210px));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--space-4);
+  max-width: min(42rem, 70%);
+}
+
+.eyebrow {
+  position: absolute;
+  top: calc(40 / 879 * 100%);
+  left: calc(87 / 1440 * 100%);
+  margin: 0;
+  height: 6px;
+  display: flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.chips {
+  position: absolute;
+  /* Freeze at previous placement: 58/879 + 6px eyebrow + 16px gap */
+  top: calc(58 / 879 * 100% + 22px);
+  left: calc(87 / 1440 * 100%);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chips li {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 14px 4px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--chip-ink, #755f42);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: calc(clamp(36px, 5vw, 60px) * var(--font-display-scale));
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.titleFaded {
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.body {
+  margin: 0;
+  max-width: none;
+  font-family: var(--font-ui);
+  font-size: clamp(14px, 1.15vw, 16px);
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.cta {
+  pointer-events: auto;
+  margin-top: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-width: 0;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(0);
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.ctaRow .cta,
+.ctaRow .ctaSecondary {
+  margin-top: 0;
+}
+
+.ctaSecondary {
+  pointer-events: auto;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-width: 1px;
+  backdrop-filter: blur(8px) saturate(1.1);
+  -webkit-backdrop-filter: blur(8px) saturate(1.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  color: var(--text-inverse);
+  font-weight: 500;
+  transform: translateY(0);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.ctaSecondary:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 4px 12px rgba(0, 0, 0, 0.14);
+  transform: translateY(-2px);
+}
+
+.ctaSecondary:active {
+  transform: translateY(0);
+  transition-duration: 90ms;
+}
+
+.cta:hover {
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 4px 12px rgba(0, 0, 0, 0.14);
+  transform: translateY(-2px);
+}
+
+.cta:active {
+  transform: translateY(0);
+  transition-duration: 90ms;
+}
+
+/* Program prev / next — glass circles on the notecard flanks. */
+.navArrow {
+  position: absolute;
+  top: 50%;
+  z-index: 7;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--text-inverse);
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 6px 18px rgba(20, 28, 36, 0.18);
+  transform: translateY(-50%);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease,
+    opacity 160ms ease;
+}
+
+.navArrowPrev {
+  left: clamp(12px, 1.8vw, 28px);
+}
+
+.navArrowNext {
+  right: clamp(12px, 1.8vw, 28px);
+}
+
+.navArrow:hover {
+  background: rgba(255, 255, 255, 0.28);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.navArrow:active {
+  transform: translateY(-50%) scale(0.96);
+  transition-duration: 90ms;
+}
+
+.navArrow:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.85);
+  outline-offset: 2px;
+}
+
+/* Scroll-into-view expands; stays expanded. Arrow controls step programs. */
+
+.reduceMotion .notecardClip,
+.reduceMotion .protocol,
+.reduceMotion .heroLayer,
+.reduceMotion .heroLayer img,
+.reduceMotion .heroLayer video,
+.reduceMotion .copy,
+.reduceMotion .notecardScrim,
+.reduceMotion .cta,
+.reduceMotion .navArrow,
+.reduceMotion .protocolGrid > li {
+  transition: none;
+}
+
+.reduceMotion .heroLayer img,
+.reduceMotion .heroLayer video,
+.reduceMotion .notecard:hover .heroLayer[data-active="true"] img,
+.reduceMotion .notecard:hover .heroLayer[data-active="true"] video {
+  transform: none;
+}
+
+.reduceMotion .cta:hover,
+.reduceMotion .cta:active {
+  transform: none;
+}
+
+.reduceMotion .navArrow:hover,
+.reduceMotion .navArrow:active {
+  transform: translateY(-50%);
+}
+
+.reduceMotion .protocolGrid > li:hover {
+  transform: none;
+}
+
+@media (max-width: 900px) {
+  .notecardClip {
+    width: 100%;
+  }
+
+  .navArrow {
+    width: 40px;
+    height: 40px;
+  }
+
+  .navArrowPrev {
+    left: 12px;
+  }
+
+  .navArrowNext {
+    right: 12px;
+  }
+
+  .plusMarkBottom {
+    bottom: calc(32px / 2 - 3px);
+  }
+
+  .eyebrow {
+    top: calc(40 / 879 * 100%);
+    left: 20px;
+  }
+
+  .chips {
+    top: calc(58 / 879 * 100% + 22px);
+    left: 20px;
+  }
+
+  .copyLead {
+    left: 20px;
+    top: calc(58 / 879 * 100% + 54px);
+    bottom: var(--protocol-band, clamp(160px, 40%, 280px));
+    gap: 12px;
+    max-width: calc(100% - 40px);
+  }
+
+  .title {
+    font-size: calc(clamp(22px, 5.5vw, 34px) * var(--font-display-scale));
+  }
+
+  .body {
+    display: none;
+  }
+
+  .notecard[data-protocol="true"] .cta {
+    display: none;
+  }
+
+  .protocol {
+    /* Match mobile eyebrow/chip inset on both sides. */
+    padding-inline: 20px;
+    padding-bottom: 32px;
+    max-height: 58%;
+    overflow-y: auto;
+  }
+
+  .protocolGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .copyLead {
+    bottom: var(--protocol-band, clamp(200px, 50%, 320px));
+  }
+
+  .protocol {
+    max-height: 64%;
+  }
+
+  .protocolGrid {
+    grid-template-columns: 1fr;
+  }
+}

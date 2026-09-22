@@ -1,0 +1,54 @@
+/* White rounded sheet under the sticky header. Video hero sits below. */
+
+.root {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  box-sizing: border-box;
+  /* Pull up under the sticky header so the white plane reads continuous. */
+  margin-top: -1px;
+  padding: 0 var(--layout-gutter) var(--space-4);
+  background: transparent;
+}
+
+.sheet {
+  background: var(--surface-page-raised);
+  border-radius: 0 0 28px 28px;
+  overflow: hidden;
+  box-shadow: 0 1px 0 rgba(26, 26, 26, 0.04);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 3.5vw, 48px);
+  max-width: var(--layout-max);
+  margin-inline: auto;
+  padding: clamp(8px, 1.5vw, 16px) var(--layout-gutter) clamp(28px, 3.5vw, 48px);
+  box-sizing: border-box;
+}
+
+.headline {
+  margin: 0;
+  max-width: 12ch;
+  font-family: var(--font-display);
+  font-size: calc(clamp(36px, 5.2vw, 64px) * var(--font-display-scale, 1));
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: 0.005em;
+  color: var(--text-primary);
+}
+
+@media (max-width: 720px) {
+  .root {
+    padding-inline: 0;
+  }
+
+  .sheet {
+    border-radius: 0 0 20px 20px;
+  }
+
+  .headline {
+    max-width: 14ch;
+  }
+}

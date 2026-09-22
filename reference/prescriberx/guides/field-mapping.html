@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Field Mapping — PrescribeRx</title>
+    <style>
+        :root {
+            --header-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --ink: #1a1a1a;
+            --muted: #666;
+            --accent: #2196f3;
+            --pill-bg: #eef2ff;
+            --pill-fg: #3949ab;
+        }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: #fafafa; }
+        .topbar { background: var(--header-bg); color: white; padding: 16px 28px; display: flex; align-items: center; justify-content: space-between; }
+        .topbar h1 { margin: 0; font-size: 1.3em; font-weight: 600; }
+        .topbar a { color: white; text-decoration: none; font-size: 0.9em; opacity: 0.9; border-bottom: 1px dotted rgba(255,255,255,0.5); }
+        .topbar a:hover { opacity: 1; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 30px 28px 60px; }
+        h2 { margin: 36px 0 14px; font-size: 1.4em; border-bottom: 2px solid #eee; padding-bottom: 6px; }
+        h3 { margin: 24px 0 10px; font-size: 1.05em; color: var(--accent); }
+        p { line-height: 1.55; color: var(--ink); }
+        .lead { color: var(--muted); margin-bottom: 22px; }
+        code { background: #f3f4f6; padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: 0.9em; }
+        table.map { width: 100%; border-collapse: collapse; margin: 14px 0 24px; font-size: 0.88em; }
+        table.map th, table.map td { border: 1px solid #e5e7eb; padding: 9px 11px; vertical-align: top; text-align: left; }
+        table.map th { background: #f3f4f6; font-weight: 600; }
+        table.map td.api { font-family: monospace; font-size: 0.85em; white-space: nowrap; }
+        table.map td.dest { font-family: monospace; font-size: 0.82em; color: #475569; }
+        table.map td.notes { color: #475569; font-size: 0.88em; }
+        .pill { display: inline-block; background: var(--pill-bg); color: var(--pill-fg); padding: 2px 8px; border-radius: 11px; font-size: 0.78em; margin-right: 4px; font-family: monospace; }
+        .pill.tier1 { background: #dbeafe; color: #1d4ed8; }
+        .pill.tier2 { background: #dcfce7; color: #15803d; }
+        .pill.tier3 { background: #fef3c7; color: #b45309; }
+        .pill.chart { background: #fce7f3; color: #be185d; }
+        .pill.doc { background: #e0e7ff; color: #4338ca; }
+        .callout-info { background: #dbeafe; border-left: 4px solid #2563eb; padding: 10px 14px; margin: 14px 0; border-radius: 0 4px 4px 0; font-size: 0.9em; }
+        .callout { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 10px 14px; margin: 14px 0; border-radius: 0 4px 4px 0; font-size: 0.9em; }
+        details { margin: 8px 0 16px; }
+        summary { cursor: pointer; color: var(--muted); padding: 4px 0; font-size: 0.9em; }
+        summary:hover { color: var(--accent); }
+        nav.toc { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px 18px; margin: 0 0 24px; font-size: 0.9em; }
+        nav.toc strong { display: block; margin-bottom: 6px; color: var(--muted); font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.04em; }
+        nav.toc a { display: inline-block; margin-right: 14px; color: var(--accent); text-decoration: none; }
+        nav.toc a:hover { text-decoration: underline; }
+    </style>
+<script id="browser-logger-active">
+(function() {
+    const ENDPOINT = 'https://demo.prescribe-rx.com/_boost/browser-logs';
+    const logQueue = [];
+    let flushTimeout = null;
+
+    console.log('🔍 Browser logger active (MCP server detected). Posting to: ' + ENDPOINT);
+
+    // Store original console methods
+    const originalConsole = {
+        log: console.log,
+        info: console.info,
+        error: console.error,
+        warn: console.warn,
+        table: console.table
+    };
+
+    // Helper to safely stringify values
+    function safeStringify(obj) {
+        const seen = new WeakSet();
+        return JSON.stringify(obj, (key, value) => {
+            if (typeof value === 'object' && value !== null) {
+                if (seen.has(value)) return '[Circular]';
+                seen.add(value);
+            }
+            if (value instanceof Error) {
+                return {
+                    name: value.name,
+                    message: value.message,
+                    stack: value.stack
+                };
+            }
+            return value;
+        });
+    }
+
+    // Batch and send logs
+    function flushLogs() {
+        if (logQueue.length === 0) return;
+
+        const batch = logQueue.splice(0, logQueue.length);
+
+        fetch(ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ logs: batch })
+        }).catch(err => {
+            // Silently fail to avoid infinite loops
+            originalConsole.error('Failed to send logs:', err);
+        });
+    }
+
+    // Debounced flush (100ms)
+    function scheduleFlush() {
+        if (flushTimeout) clearTimeout(flushTimeout);
+        flushTimeout = setTimeout(flushLogs, 100);
+    }
+
+    // Intercept console methods
+    ['log', 'info', 'error', 'warn', 'table'].forEach(method => {
+        console[method] = function(...args) {
+            // Call original method
+            originalConsole[method].apply(console, args);
+
+            // Capture log data
+            try {
+                logQueue.push({
+                    type: method,
+                    timestamp: new Date().toISOString(),
+                    data: args.map(arg => {
+                        try {
+                            return typeof arg === 'object' ? JSON.parse(safeStringify(arg)) : arg;
+                        } catch (e) {
+                            return String(arg);
+                        }
+                    }),
+                    url: window.location.href,
+                    userAgent: navigator.userAgent
+                });
+
+                scheduleFlush();
+            } catch (e) {
+                // Fail silently
+            }
+        };
+    });
+
+    // Global error handlers for uncaught errors
+    const originalOnError = window.onerror;
+    window.onerror = function boostErrorHandler(errorMsg, url, lineNumber, colNumber, error) {
+        try {
+            logQueue.push({
+                type: 'uncaught_error',
+                timestamp: new Date().toISOString(),
+                data: [{
+                    message: errorMsg,
+                    filename: url,
+                    lineno: lineNumber,
+                    colno: colNumber,
+                    error: error ? {
+                        name: error.name,
+                        message: error.message,
+                        stack: error.stack
+                    } : null
+                }],
+                url: window.location.href,
+                userAgent: navigator.userAgent
+            });
+
+            scheduleFlush();
+        } catch (e) {
+            // Fail silently
+        }
+
+        // Call original handler if it exists
+        if (originalOnError && typeof originalOnError === 'function') {
+            return originalOnError(errorMsg, url, lineNumber, colNumber, error);
+        }
+
+        // Let the error continue to propagate
+        return false;
+    }
+    window.addEventListener('error', (event) => {
+        try {
+            logQueue.push({
+                type: 'window_error',
+                timestamp: new Date().toISOString(),
+                data: [{
+                    message: event.message,
+                    filename: event.filename,
+                    lineno: event.lineno,
+                    colno: event.colno,
+                    error: event.error ? {
+                        name: event.error.name,
+                        message: event.error.message,
+                        stack: event.error.stack
+                    } : null
+                }],
+                url: window.location.href,
+                userAgent: navigator.userAgent
+            });
+
+            scheduleFlush();
+        } catch (e) {
+            // Fail silently
+        }
+
+        // Let the error continue to propagate
+        return false;
+    });
+    window.addEventListener('unhandledrejection', (event) => {
+        try {
+            logQueue.push({
+                type: 'error',
+                timestamp: new Date().toISOString(),
+                data: [{
+                    message: 'Unhandled Promise Rejection',
+                    reason: event.reason instanceof Error ? {
+                        name: event.reason.name,
+                        message: event.reason.message,
+                        stack: event.reason.stack
+                    } : event.reason
+                }],
+                url: window.location.href,
+                userAgent: navigator.userAgent
+            });
+
+            scheduleFlush();
+        } catch (e) {
+            // Fail silently
+        }
+
+        // Let the rejection continue to propagate
+        return false;
+    });
+
+    // Flush on page unload
+    window.addEventListener('beforeunload', () => {
+        if (logQueue.length > 0) {
+            navigator.sendBeacon(ENDPOINT, JSON.stringify({ logs: logQueue }));
+        }
+    });
+})();
+</script>
+</head>
+<body>
+    <div class="topbar">
+        <h1>API Field Mapping</h1>
+        <a href="https://demo.prescribe-rx.com/api/docs">← Back to API reference</a>
+    </div>
+
+    <div class="container">
+        <p class="lead">
+            Every <code>POST /api/v1/telehealth/intake/unified</code> payload field maps to one or more
+            destinations on the server: a column on <code>encounters</code> / <code>patient_charts</code>,
+            a tier-1/2/3 JSON storage column, an <code>encounter_intake_answers</code> row, or an upserted
+            chart-side record (medication / allergy / condition / vital / address / document). This page
+            documents that mapping so integrators can predict — without reading source code — exactly
+            where their data lands.
+        </p>
+
+        <div class="callout-info">
+            <strong>Storage tiers (legend below).</strong>
+            <span class="pill tier1">tier 1</span> Strict — core demographics on patient/chart. Validation always required.
+            <span class="pill tier2">tier 2</span> Flexible — vitals + medical history. Validated but not strictly typed.
+            <span class="pill tier3">tier 3</span> Lax — encounter-specific Q&amp;A. Provider-reviewable.
+            <span class="pill chart">chart-sync</span> IntakeAnswerRouter mirrors this to chart-side rows.
+            <span class="pill doc">document</span> Persists as a <code>patient_documents</code> row.
+        </div>
+
+        <nav class="toc">
+            <strong>On this page</strong>
+            <a href="#identity">Patient identity</a>
+            <a href="#address">Addresses</a>
+            <a href="#vitals">Vitals</a>
+            <a href="#history">Medical history</a>
+            <a href="#answers">Encounter answers</a>
+            <a href="#products">Product / package selection</a>
+            <a href="#payment">Payment block</a>
+            <a href="#documents">Documents &amp; identification</a>
+            <a href="#consents">Consents</a>
+            <a href="#fulfillment">Fulfillment preferences</a>
+            <a href="#metadata">Sandbox &amp; metadata</a>
+        </nav>
+
+        
+        <h2 id="identity">Patient identity (tier 1)</h2>
+        <p>
+            Always required. <code>UnifiedIntakeController</code> uses these to find an existing
+            <code>users</code> row (by <code>email</code>) or create a new one, plus a paired
+            <code>patient_charts</code> row.
+        </p>
+        <table class="map">
+            <thead><tr><th style="width:20%">API field</th><th style="width:30%">Destination</th><th>Notes</th></tr></thead>
+            <tbody>
+                <tr><td class="api">patient.first_name</td><td class="dest">users.first_name + patient_charts.first_name</td><td class="notes">Used for test-name detection (matches <code>/\btest(ing|er)?\b/i</code> → flips <code>encounter.is_sandbox=true</code>).</td></tr>
+                <tr><td class="api">patient.last_name</td><td class="dest">users.last_name + patient_charts.last_name</td><td class="notes">Same test-name detection.</td></tr>
+                <tr><td class="api">patient.email</td><td class="dest">users.email (unique key)</td><td class="notes">If a user already exists with this email, the chart is reused; otherwise a new user is created.</td></tr>
+                <tr><td class="api">patient.date_of_birth</td><td class="dest">patient_charts.date_of_birth</td><td class="notes">ISO date, must be before today.</td></tr>
+                <tr><td class="api">patient.phone</td><td class="dest">users.phone + patient_charts.phone</td><td class="notes">Stored as-is; downstream notification services normalize to E.164.</td></tr>
+                <tr><td class="api">patient.gender</td><td class="dest">patient_charts.gender</td><td class="notes">Accepts string (<code>male</code>/<code>female</code>/<code>other</code>) or numeric (<code>1</code>/<code>2</code>/<code>3</code>).</td></tr>
+                <tr><td class="api">patient.race</td><td class="dest">patient_charts.race</td><td class="notes">Free-form string.</td></tr>
+                <tr><td class="api">patient.ethnicity</td><td class="dest">patient_charts.ethnicity</td><td class="notes">Free-form string.</td></tr>
+                <tr><td class="api">patient.preferred_language</td><td class="dest">patient_charts.preferred_language</td><td class="notes">Free-form (e.g. <code>en</code>, <code>es</code>).</td></tr>
+            </tbody>
+        </table>
+
+        
+        <h2 id="address">Addresses (tier 1)</h2>
+        <p>One of three shapes; the controller normalizes to two <code>addresses</code> rows on the chart (one SHIPPING default, one BILLING default).</p>
+        <table class="map">
+            <thead><tr><th style="width:30%">Shape</th><th>What it does</th></tr></thead>
+            <tbody>
+                <tr><td class="api">patient.address.{...}</td><td class="notes">Legacy single. Used as <strong>both</strong> shipping + billing default. State licensing is determined from this since "physical = shipping" on this platform.</td></tr>
+                <tr><td class="api">patient.shipping_address.{...} <br>+ patient.billing_address.{...}</td><td class="notes">Distinct addresses. Shipping drives state licensing.</td></tr>
+                <tr><td class="api">patient.shipping_address.{...} <br>+ patient.billing_same_as_shipping=true</td><td class="notes">Billing auto-copied from shipping at chart-create time.</td></tr>
+            </tbody>
+        </table>
+        <p>Sub-fields on every address shape: <code>street</code>, <code>street2</code>, <code>city</code>, <code>state</code> (2-letter), <code>zip</code>, <code>country</code> (2-letter, default US).</p>
+
+        
+        <h2 id="vitals">Vitals (tier 2 + chart-sync)</h2>
+        <p>
+            Persisted to the <code>encounters.tier2_vitals</code> JSON snapshot AND to <code>patient_vitals</code> rows via
+            <code>IntakeAnswerRouter</code>. <span class="pill tier2">tier 2</span><span class="pill chart">chart-sync</span>
+        </p>
+        <table class="map">
+            <thead><tr><th style="width:25%">API field</th><th style="width:30%">Destination</th><th>Notes</th></tr></thead>
+            <tbody>
+                <tr><td class="api">vitals.height_inches</td><td class="dest">patient_vitals (type=height)<br>+ tier2_vitals.height_inches</td><td class="notes">Range 30–96. Used for BMI computation downstream.</td></tr>
+                <tr><td class="api">vitals.weight_lbs</td><td class="dest">patient_vitals (type=weight)<br>+ tier2_vitals.weight_lbs</td><td class="notes">Range 50–800. Auto-flagged as the patient's "starting_weight" if no prior weight reading exists.</td></tr>
+                <tr><td class="api">vitals.blood_pressure_systolic / .blood_pressure_diastolic</td><td class="dest">patient_vitals (type=blood_pressure)<br>+ tier2_vitals.blood_pressure_*</td><td class="notes">Both required together.</td></tr>
+                <tr><td class="api">vitals.heart_rate_bpm</td><td class="dest">patient_vitals (type=heart_rate)<br>+ tier2_vitals.heart_rate_bpm</td><td class="notes">Range 40–200.</td></tr>
+            </tbody>
+        </table>
+
+        
+        <h2 id="history">Medical history (tier 2 + chart-sync)</h2>
+        <p>
+            Three string arrays, each routed to chart-side rows via the typeahead-aware
+            <code>IntakeAnswerRouter</code>. Strings are matched against <code>terminology_*</code> tables —
+            unmatched strings are persisted as free-text on the chart row.
+            <span class="pill tier2">tier 2</span><span class="pill chart">chart-sync</span>
+        </p>
+        <table class="map">
+            <thead><tr><th style="width:25%">API field</th><th style="width:30%">Destination</th><th>Notes</th></tr></thead>
+            <tbody>
+                <tr><td class="api">medical_history.allergies[]</td><td class="dest">patient_allergies (one row per string)<br>+ tier2_medical_history.allergies</td><td class="notes">Empty / "None" / "NKDA" results in a row with <code>has_no_allergies=true</code>.</td></tr>
+                <tr><td class="api">medical_history.medications[]</td><td class="dest">patient_medications (one row per string)<br>+ tier2_medical_history.medications</td><td class="notes">String-only — for structured dose/frequency, use the <code>/me/patient/medications</code> endpoint instead.</td></tr>
+                <tr><td class="api">medical_history.conditions[]</td><td class="dest">patient_conditions (one row per string)<br>+ tier2_medical_history.conditions</td><td class="notes">Matches <code>terminology_conditions</code> by display name; unmatched → free-text row.</td></tr>
+            </tbody>
+        </table>
+        <details>
+            <summary>How chart sync works (deeper dive)</summary>
+            <p style="margin-top:10px">
+                After the encounter is created, <code>IntakeAnswerRouter::route()</code> walks
+                <code>medical_history.*</code> and dispatches to one of six upserter services
+                (<code>UpsertPatientAllergyService</code>, <code>UpsertPatientMedicationService</code>,
+                <code>UpsertPatientConditionService</code>, etc.). Upserters dedupe against
+                existing chart rows by canonical concept ID — so re-submitting "Penicillin"
+                on a future encounter doesn't create a duplicate row.
+            </p>
+        </details>
+
+        
+        <h2 id="answers">Encounter answers (tier 3 + chart-sync)</h2>
+        <p>
+            Free-form key/value object keyed by field <code>slug</code>.
+            Values are persisted in <code>tier3_encounter_questions</code> JSON
+            AND as individual <code>encounter_intake_answers</code> rows
+            (one per slug). For slugs that map to standard chart fields
+            (e.g. <code>current_weight_lbs</code>) the answer also flows
+            through <code>IntakeAnswerRouter</code> to the chart.
+            <span class="pill tier3">tier 3</span><span class="pill chart">chart-sync</span>
+        </p>
+        <p><strong>Discover slugs:</strong> <code>GET /api/v1/telehealth/encounter-types/{id}/schema</code> returns the canonical list of fields + types + display conditions for an encounter type.</p>
+        <table class="map">
+            <thead><tr><th style="width:18%">Field type</th><th style="width:26%">Expected value</th><th>Example</th></tr></thead>
+            <tbody>
+                <tr><td class="api">text / textarea</td><td class="dest">string</td><td class="notes"><code>"chief_complaint": "Mild headache"</code></td></tr>
+                <tr><td class="api">number</td><td class="dest">number</td><td class="notes"><code>"current_weight_lbs": 215</code></td></tr>
+                <tr><td class="api">yes_no</td><td class="dest">"Yes" or "No" (case-insensitive)</td><td class="notes"><code>"glp1_diabetes_mellitus": "No"</code></td></tr>
+                <tr><td class="api">select</td><td class="dest">option value string</td><td class="notes"><code>"weight_goal": "lose_15_lbs"</code></td></tr>
+                <tr><td class="api">multiselect</td><td class="dest">array of option values</td><td class="notes"><code>"prior_attempts": ["diet", "exercise"]</code></td></tr>
+                <tr><td class="api">toggle / boolean</td><td class="dest">true / false</td><td class="notes"><code>"sms_opt_in": true</code></td></tr>
+                <tr><td class="api">height (composite)</td><td class="dest">{"feet":N,"inches":N}</td><td class="notes"><code>"height": {"feet": 5, "inches": 10}</code></td></tr>
+                <tr><td class="api">blood_pressure (composite)</td><td class="dest">{"systolic":N,"diastolic":N}</td><td class="notes"><code>"bp": {"systolic": 120, "diastolic": 80}</code></td></tr>
+                <tr><td class="api">date</td><td class="dest">ISO date (YYYY-MM-DD)</td><td class="notes"><code>"last_period": "2026-04-15"</code></td></tr>
+            </tbody>
+        </table>
+        <p><code>ApiIntakeDependencyValidator</code> runs after the basic schema validation and enforces conditional <strong>required</strong> rules (e.g., a follow-up answer required when a parent answer is "Yes"). Failures return 422 with field-level error messages.</p>
+
+        
+        <h2 id="products">Product / package selection</h2>
+        <p>Two valid shapes for catalog selection — pick one per integration.</p>
+        <h3>Modern nested shape (preferred)</h3>
+        <table class="map">
+            <thead><tr><th style="width:28%">API field</th><th style="width:25%">Resolves to</th><th>Notes</th></tr></thead>
+            <tbody>
+                <tr><td class="api">products[].product_id</td><td class="dest">products.id</td><td class="notes">UUID — exact SKU.</td></tr>
+                <tr><td class="api">products[].product_number</td><td class="dest">products.product_number</td><td class="notes">Human-friendly <code>PROD-XXXXX</code>.</td></tr>
+                <tr><td class="api">products[].product_type_id</td><td class="dest">product_types.id → resolved placeholder product</td><td class="notes">Generic — provider picks the final SKU at prescribe-time.</td></tr>
+                <tr><td class="api">products[].product_type_slug</td><td class="dest">product_types.slug → placeholder</td><td class="notes">e.g. <code>"tirzepatide"</code>.</td></tr>
+                <tr><td class="api">products[].dose_product_id</td><td class="dest">dose_products.id</td><td class="notes">Per-line dose pin (rare — usually provider-decided).</td></tr>
+                <tr><td class="api">products[].quantity</td><td class="dest">encounter_products.quantity</td><td class="notes">1–99.</td></tr>
+                <tr><td class="api">products[].snapshot_price</td><td class="dest">encounter_products.snapshot_price</td><td class="notes">Locks the patient-charge price.</td></tr>
+                <tr><td class="api">packages[].package_id</td><td class="dest">packages.id</td><td class="notes">UUID.</td></tr>
+                <tr><td class="api">packages[].package_number</td><td class="dest">packages.package_number</td><td class="notes"><code>PKG-XXXXX</code>.</td></tr>
+                <tr><td class="api">packages[].plan_id</td><td class="dest">package_plans.id</td><td class="notes">Subscription term selection.</td></tr>
+            </tbody>
+        </table>
+        <h3>Legacy flat shape (backward compat)</h3>
+        <p>
+            <code>product_ids[]</code>, <code>package_id</code>, <code>package_ids[]</code>, <code>plan_id</code>
+            — accepted but new integrations should use <code>products[]</code> / <code>packages[]</code>.
+        </p>
+
+        
+        <h2 id="payment">Payment block</h2>
+        <p>Five modes — pick exactly one. Sales-org and client tokens cannot use <code>authorize</code> (PRX is not the merchant of record on API flows).</p>
+        <table class="map">
+            <thead><tr><th style="width:18%">payment.mode</th><th style="width:28%">Required fields</th><th>Order outcome</th></tr></thead>
+            <tbody>
+                <tr><td class="api">authorize</td><td class="dest">gateway, amount, card_token</td><td class="notes">PRX runs pre-auth. Order workflow → <code>READY_FOR_CAPTURE</code>. Embed-only.</td></tr>
+                <tr><td class="api">reference_preauth</td><td class="dest">pre_auth.transaction_id, pre_auth.authorized_amount</td><td class="notes">You ran a pre-auth; we record + vault. Capture later via <code>POST /orders/{id}/capture</code>.</td></tr>
+                <tr><td class="api">reference_captured</td><td class="dest">transaction.transaction_id, transaction.amount</td><td class="notes">Record-only audit trail of a sale you already ran.</td></tr>
+                <tr><td class="api">prepaid</td><td class="dest">reason</td><td class="notes">No charge — out-of-band billing settled. Order workflow → <code>READY_FOR_FULFILLMENT</code>.</td></tr>
+                <tr><td class="api">patient_review</td><td class="dest">— (no extra fields)</td><td class="notes">Defer — patient gets emailed a portal link to confirm + pay.</td></tr>
+            </tbody>
+        </table>
+        <p><code>payment.gateway</code> in <code>authorize</code> mode must be one of <code>authorize_net</code> / <code>stripe</code> / <code>nmi</code> / <code>square</code>. In record-only modes, it accepts any free-form string (the integrator's gateway name, recorded for audit).</p>
+
+        
+        <h2 id="documents">Documents &amp; identification</h2>
+        <p>
+            <code>identification.{...}</code> stores structured ID metadata (number + state + type) on the patient chart.
+            <code>documents[]</code> uploads up to 20 files (10MB each), persisted as <code>patient_documents</code> rows
+            linked to both the chart and the encounter. <span class="pill doc">document</span>
+        </p>
+        <table class="map">
+            <thead><tr><th style="width:28%">API field</th><th style="width:30%">Destination</th><th>Notes</th></tr></thead>
+            <tbody>
+                <tr><td class="api">identification.id_number</td><td class="dest">patient_charts.government_id_number</td><td class="notes">Required on controlled-substance encounter types.</td></tr>
+                <tr><td class="api">identification.id_state</td><td class="dest">patient_charts.government_id_state</td><td class="notes">2-letter US state.</td></tr>
+                <tr><td class="api">identification.id_type</td><td class="dest">patient_charts.government_id_type</td><td class="notes"><code>drivers_license</code> | <code>state_id</code> | <code>passport</code> | <code>military_id</code>.</td></tr>
+                <tr><td class="api">documents[].type</td><td class="dest">patient_documents.document_type</td><td class="notes">12 enum values — see OpenAPI.</td></tr>
+                <tr><td class="api">documents[].filename</td><td class="dest">patient_documents.original_filename</td><td class="notes">Including extension.</td></tr>
+                <tr><td class="api">documents[].file_base64</td><td class="dest">S3 (documents disk) → patient_documents.path</td><td class="notes">Preferred. MIME sniffed server-side; mismatch → 422.</td></tr>
+                <tr><td class="api">documents[].url</td><td class="dest">Server fetches → S3 → patient_documents.path</td><td class="notes">Use only when file_base64 isn't practical (large files). HTTPS only.</td></tr>
+            </tbody>
+        </table>
+
+        
+        <h2 id="consents">Consents</h2>
+        <p>Each entry creates a <code>consent_audit_logs</code> row + (when applicable) a <code>patient_chart_consents</code> upsert.</p>
+        <table class="map">
+            <thead><tr><th style="width:22%">API field</th><th style="width:30%">Destination</th><th>Notes</th></tr></thead>
+            <tbody>
+                <tr><td class="api">consents[].consent_type</td><td class="dest">consent_audit_logs.consent_type</td><td class="notes">Integer enum — see OpenAPI <code>ConsentType</code>.</td></tr>
+                <tr><td class="api">consents[].consent_text</td><td class="dest">consent_audit_logs.consent_text</td><td class="notes">Full text shown to user (kept for audit).</td></tr>
+                <tr><td class="api">consents[].consent_version</td><td class="dest">consent_audit_logs.consent_version</td><td class="notes">Free-form (e.g. <code>"2.1"</code>).</td></tr>
+                <tr><td class="api">consents[].consented_at</td><td class="dest">consent_audit_logs.consented_at</td><td class="notes">If omitted, server stamps <code>now()</code>.</td></tr>
+                <tr><td class="api">consents[].ip_address</td><td class="dest">consent_audit_logs.ip_address</td><td class="notes">If omitted, server captures <code>$request->ip()</code>.</td></tr>
+                <tr><td class="api">consents[].signature_method</td><td class="dest">consent_audit_logs.signature_method</td><td class="notes"><code>click</code> | <code>typed</code> | <code>pad</code>.</td></tr>
+                <tr><td class="api">consents[].signature_data</td><td class="dest">consent_audit_logs.signature_data</td><td class="notes">Base64 PNG (for <code>pad</code> method).</td></tr>
+            </tbody>
+        </table>
+
+        
+        <h2 id="fulfillment">Fulfillment preferences</h2>
+        <p>
+            All optional. Resolution chain documented in
+            <code>docs/dev/FC_OVERRIDES_ARCHITECTURE.md §3</code> — null fields inherit FC defaults / vendor defaults.
+        </p>
+        <table class="map">
+            <thead><tr><th style="width:32%">API field</th><th style="width:30%">Destination</th><th>Notes</th></tr></thead>
+            <tbody>
+                <tr><td class="api">fulfillment_preferences.shipping_service_code</td><td class="dest">encounters.fulfillment_preferences.shipping_service_code</td><td class="notes">Per-FC service code (e.g. <code>USPS_GROUND</code>).</td></tr>
+                <tr><td class="api">fulfillment_preferences.bill_to</td><td class="dest">encounters.fulfillment_preferences.bill_to</td><td class="notes"><code>Patient</code> | <code>Practice</code> | <code>Customer</code>.</td></tr>
+                <tr><td class="api">fulfillment_preferences.ship_to</td><td class="dest">encounters.fulfillment_preferences.ship_to</td><td class="notes"><code>Patient</code> | <code>Practice</code>.</td></tr>
+                <tr><td class="api">fulfillment_preferences.per_product[]</td><td class="dest">encounter_products.fulfillment_overrides JSON</td><td class="notes">Per-line override — most specific wins.</td></tr>
+            </tbody>
+        </table>
+
+        
+        <h2 id="metadata">Sandbox &amp; metadata</h2>
+        <table class="map">
+            <thead><tr><th style="width:24%">API field</th><th style="width:30%">Destination</th><th>Notes</th></tr></thead>
+            <tbody>
+                <tr><td class="api">is_sandbox</td><td class="dest">encounters.is_sandbox + orders.is_sandbox</td><td class="notes">Skips provider auto-assignment, fulfillment dispatch, commission/billing reports. Auto-set when patient name matches <code>/\btest(ing|er)?\b/i</code>.</td></tr>
+                <tr><td class="api">reason_for_visit</td><td class="dest">encounters.reason_for_visit</td><td class="notes">Free-form (max 500 chars).</td></tr>
+                <tr><td class="api">chief_complaint</td><td class="dest">encounters.chief_complaint</td><td class="notes">Free-form (max 1000 chars).</td></tr>
+                <tr><td class="api">metadata</td><td class="dest">encounters.metadata JSON</td><td class="notes">Opaque pass-through — admin UI surfaces it on the encounter detail page.</td></tr>
+                <tr><td class="api">client_id / client_number</td><td class="dest">encounter.client_id (resolved to UUID)</td><td class="notes">Falls back to authenticated token's tenant.</td></tr>
+                <tr><td class="api">sales_org_id / sales_org_number</td><td class="dest">encounter.sales_organization_id</td><td class="notes">Falls back to client's parent org.</td></tr>
+                <tr><td class="api">provider_id</td><td class="dest">encounter.provider_profile_id</td><td class="notes">Optional — if omitted, <code>EncounterAssignmentEngine</code> picks one (unless <code>is_sandbox=true</code>).</td></tr>
+            </tbody>
+        </table>
+
+        <div class="callout">
+            <strong>Tip — confirming where your data landed.</strong>
+            After a successful intake, <code>GET /api/v1/encounters/{id}?include=patient,prescriptions,soapNotes</code>
+            returns the full encounter + chart-side rows that resulted from the upsert pipeline.
+            Use this to verify medications/allergies/conditions were matched to terminology rows
+            (vs. persisted as free-text), and to confirm the encounter status transitioned correctly.
+        </div>
+
+        <h2>Source of truth</h2>
+        <p style="font-size:0.92em; color:var(--muted)">
+            This page is hand-curated from
+            <code>app/Http/Controllers/Api/V1/Telehealth/UnifiedIntakeController.php::store()</code> and
+            <code>app/Services/Encounter/IntakeAnswerRouter.php</code>. When the validation rules or
+            chart-sync routing change, this page must be updated as part of the same commit
+            (see <code>feedback_api_docs_update_rule</code>).
+        </p>
+    </div>
+</body>
+</html>

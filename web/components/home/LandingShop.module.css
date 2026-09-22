@@ -1,0 +1,833 @@
+.root {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  padding: var(--space-6) 0;
+  background: transparent;
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  width: auto;
+  max-width: var(--layout-max);
+  margin-inline: var(--shop-notecard-inset, var(--space-5));
+}
+
+.notecard {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  aspect-ratio: 1630 / 605;
+  border-radius: 40px;
+  overflow: hidden;
+  background: transparent;
+}
+
+.notecard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--color-night) 5%, transparent);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.notecard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.15;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch' seed='4015'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+.track {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  height: 100%;
+  overflow: hidden;
+  padding-inline: var(--space-7);
+  touch-action: pan-y;
+  cursor: default;
+}
+
+.track[data-dragging="true"] {
+  cursor: default;
+  user-select: none;
+}
+
+.rail {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 45px;
+  height: 100%;
+  width: max-content;
+  will-change: transform;
+  transform: translate3d(var(--rail-x, 0px), 0, 0);
+  backface-visibility: hidden;
+}
+
+.jump {
+  position: absolute;
+  top: 50%;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--color-white) 28%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-night) 62%, transparent);
+  color: var(--text-inverse);
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transform: translateY(-50%);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.jumpLeft {
+  left: var(--space-5);
+}
+
+.jumpRight {
+  right: var(--space-5);
+}
+
+.jump:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-night) 70%, transparent);
+  outline-offset: 2px;
+}
+
+.jump:active {
+  transform: translateY(-50%) scale(0.96);
+  transition-duration: 90ms;
+}
+
+.card {
+  --settle: 800ms cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 330px;
+  height: 440px;
+  max-height: 72.727%;
+  aspect-ratio: 330 / 440;
+  border-radius: 40px;
+  overflow: visible;
+  pointer-events: auto;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.card:focus {
+  outline: none;
+}
+
+.card:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-night) 70%, transparent);
+  outline-offset: 2px;
+}
+
+.card:hover {
+  z-index: 3;
+}
+
+.plate {
+  position: absolute;
+  width: 75%;
+  height: 85%;
+  left: 50%;
+  top: 12.5%;
+  transform: translateX(-50%) scale(1);
+  overflow: hidden;
+  /* 32px radius on 330×440 white-matte exports. 30px sat outside the paint. */
+  border-radius: calc(32 / 330 * 100%) / calc(32 / 440 * 100%);
+  opacity: 0;
+  transition:
+    opacity var(--settle),
+    transform var(--settle);
+}
+
+.plateImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.03);
+}
+
+.plate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0.2;
+  mix-blend-mode: overlay;
+  background-image: var(--section-bg-grain);
+  background-size: 120px 120px;
+  background-repeat: repeat;
+}
+
+.card:hover .plate,
+.card:focus-within .plate {
+  opacity: 1;
+  transform: translateX(-50%) scale(1.15);
+}
+
+.shopCta {
+  /* Sit inside the plate (75% × 85%), with room from the rounded corners. */
+  position: absolute;
+  left: calc(12.5% + 16px);
+  right: calc(12.5% + 16px);
+  bottom: calc(2.5% + 18px);
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  width: auto;
+  min-width: 0;
+  overflow: visible;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--settle) 140ms;
+}
+
+.card:hover .shopCta,
+.card:focus-within .shopCta {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.shopCta .shopCtaBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 32px;
+  height: auto;
+  padding: 7px 14px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-white) 18%, transparent);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-inverse);
+}
+
+.card:hover .shopCtaBtn,
+.card:focus-within .shopCtaBtn {
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+}
+
+.vial {
+  position: relative;
+  z-index: 2;
+  width: 78%;
+  height: 78%;
+  object-fit: contain;
+  object-position: center;
+  background: transparent;
+  transform: scale(1);
+  transform-origin: center center;
+  filter: none;
+  transition: transform var(--settle) 90ms;
+}
+
+.bloomHost[data-bloom="sexual-health"] .vial {
+  filter: url(#tidl-pill-defringe);
+}
+
+
+.pair {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.card:hover .vial,
+.card:focus-within .vial,
+.bloomHost:hover .vial,
+.bloomHost:focus-within .vial {
+  transform: scale(1.15);
+  filter:
+    drop-shadow(0 28px 24px color-mix(in srgb, var(--color-night) 55%, transparent))
+    drop-shadow(0 12px 64px color-mix(in srgb, var(--color-night) 42%, transparent))
+    drop-shadow(0 0 96px color-mix(in srgb, var(--color-night) 28%, transparent));
+}
+
+/*
+ * Bloom stage is the Figma group, shifted so the vial center lands on
+ * the card center. At rest it sits slightly off that seat; hover slides
+ * it behind the vial and scales from the vial origin.
+ */
+.bloomStage {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  aspect-ratio: var(--group-w) / var(--group-h);
+  transform-origin: var(--vial-x) var(--vial-y);
+  transform:
+    translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+    translate(10px, 16px)
+    scale(1);
+  pointer-events: none;
+  transition: transform var(--settle);
+}
+
+.bloomHost .bloomStage {
+  opacity: 0;
+  transition:
+    transform var(--settle),
+    opacity var(--settle);
+}
+
+.card:hover .bloomStage,
+.card:focus-within .bloomStage,
+.bloomHost:hover .bloomStage,
+.bloomHost:focus-within .bloomStage {
+  transform:
+    translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+    translate(0, 0)
+    scale(1.15);
+}
+
+.bloomHost:hover .bloomStage,
+.bloomHost:focus-within .bloomStage {
+  opacity: 1;
+}
+
+.bloomHost:hover .vial,
+.bloomHost:focus-within .vial {
+  filter: none;
+}
+
+.card[data-settled="true"] {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  aspect-ratio: unset;
+}
+
+.card[data-settled="true"] .bloomStage,
+.card[data-settled="true"]:hover .bloomStage,
+.card[data-settled="true"]:focus-within .bloomStage {
+  transform:
+    translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+    translate(0, 0)
+    scale(1);
+}
+
+.card[data-settled="true"] .vial,
+.card[data-settled="true"]:hover .vial,
+.card[data-settled="true"]:focus-within .vial {
+  transform: scale(1);
+  filter:
+    drop-shadow(0 22px 24px color-mix(in srgb, var(--color-night) 48%, transparent))
+    drop-shadow(0 8px 48px color-mix(in srgb, var(--color-night) 28%, transparent));
+}
+
+/*
+ * Notecard expand: vial plants first, bloom follows on its own clock.
+ * No lift shadow, no sit-back into the bloom.
+ */
+.card[data-entrance="expand"] .vial,
+.card[data-entrance="expand"]:hover .vial,
+.card[data-entrance="expand"]:focus-within .vial,
+.card[data-entrance="expand"][data-settled="true"] .vial,
+.card[data-entrance="expand"][data-settled="true"]:hover .vial,
+.card[data-entrance="expand"][data-settled="true"]:focus-within .vial {
+  filter: none;
+}
+
+.card[data-entrance="expand"] .vial {
+  transition: transform 560ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card[data-entrance="expand"] .bloomStage {
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card[data-entrance="expand"]:not([data-seated="true"]) .vial,
+.card[data-entrance="expand"]:not([data-seated="true"]):hover .vial,
+.card[data-entrance="expand"]:not([data-seated="true"]):focus-within .vial {
+  transform: translateY(20px) scale(0.94);
+}
+
+.card[data-entrance="expand"][data-seated="true"] .vial,
+.card[data-entrance="expand"][data-seated="true"]:hover .vial,
+.card[data-entrance="expand"][data-seated="true"]:focus-within .vial {
+  transform: translateY(0) scale(1);
+}
+
+.card[data-entrance="expand"]:not([data-seated="true"]) .bloomStage,
+.card[data-entrance="expand"]:not([data-seated="true"]):hover .bloomStage,
+.card[data-entrance="expand"]:not([data-seated="true"]):focus-within .bloomStage {
+  transform:
+    translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+    translate(0, 0)
+    scale(0.72);
+}
+
+.card[data-entrance="expand"][data-seated="true"] .bloomStage,
+.card[data-entrance="expand"][data-seated="true"]:hover .bloomStage,
+.card[data-entrance="expand"][data-seated="true"]:focus-within .bloomStage {
+  transform:
+    translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+    translate(0, 0)
+    scale(1);
+}
+
+.bloomSlot {
+  position: absolute;
+  inset: var(--bloom-slot-t, 0) var(--bloom-slot-r, 0) var(--bloom-slot-b, 0)
+    var(--bloom-slot-l, 0);
+  container-type: size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card[data-bloom="creative"] .bloomSlot,
+.bloomHost[data-bloom="creative"] .bloomSlot {
+  inset: 1.69% 3.64% 1.79% 3.83%;
+}
+
+.bloomPair {
+  position: relative;
+  flex: none;
+  width: hypot(calc(var(--hw-a) * 1cqw), calc(var(--hw-b) * 1cqh));
+  height: hypot(calc(var(--hh-a) * 1cqw), calc(var(--hh-b) * 1cqh));
+  overflow: visible;
+  transform: rotate(var(--bloom-rotate)) skewX(var(--bloom-skew))
+    scaleX(var(--bloom-scale-x));
+}
+
+.bloom {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  transform: scale(var(--bloom-img-scale, 1));
+  transform-origin: var(--vial-x) var(--vial-y);
+}
+
+.card[data-bloom="athlete"] .bloom,
+.bloomHost[data-bloom="athlete"] .bloom {
+  transform: scale(0.8);
+  transform-origin: var(--vial-x) var(--vial-y);
+}
+
+.card[data-bloom="traveler"] .bloom,
+.bloomHost[data-bloom="traveler"] .bloom {
+  transform: scale(0.85);
+  transform-origin: var(--vial-x) var(--vial-y);
+}
+
+.bloomSway {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mask-image: radial-gradient(
+    ellipse 58% 52% at 47% 58%,
+    transparent 40%,
+    #000 76%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 58% 52% at 47% 58%,
+    transparent 40%,
+    #000 76%
+  );
+}
+
+.swayFilter {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail {
+    will-change: auto;
+  }
+
+  .plate,
+  .vial,
+  .bloomStage {
+    transition: none;
+  }
+
+  .bloomStage {
+    transform: translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)));
+  }
+
+  .card:hover .plate,
+  .card:focus-within .plate {
+    transform: translateX(-50%);
+  }
+
+  .card:hover .vial,
+  .card:focus-within .vial,
+  .bloomHost:hover .vial,
+  .bloomHost:focus-within .vial {
+    transform: none;
+  }
+
+  .card[data-settled="true"] .bloomStage,
+  .card:hover .bloomStage,
+  .card:focus-within .bloomStage,
+  .bloomHost:hover .bloomStage,
+  .bloomHost:focus-within .bloomStage {
+    transform: translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)));
+  }
+
+  .bloomHost .bloomStage,
+  .bloomHost:hover .bloomStage,
+  .bloomHost:focus-within .bloomStage {
+    opacity: 0;
+  }
+
+  .bloomSway {
+    display: none;
+  }
+
+  .shopCta {
+    transition: none;
+  }
+
+  .jump:active {
+    transform: translateY(-50%);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .notecard::before,
+  .jump,
+  .shopCtaBtn {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .shopCta .shopCtaBtn {
+    background: color-mix(in srgb, var(--color-white) 32%, transparent);
+  }
+
+  .notecard::before {
+    background: color-mix(in srgb, var(--color-night) 4%, var(--color-white));
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .jump:hover {
+    background: color-mix(in srgb, var(--color-night) 78%, transparent);
+    border-color: color-mix(in srgb, var(--color-white) 45%, transparent);
+  }
+
+  .shopCta .shopCtaBtn:hover {
+    background: color-mix(in srgb, var(--color-white) 28%, transparent);
+  }
+}
+
+@media (hover: none) {
+  .card {
+    touch-action: manipulation;
+  }
+
+  .plate,
+  .pair,
+  .vial,
+  .shopCta,
+  .shopCtaBtn {
+    pointer-events: none;
+  }
+
+  .plate {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+
+  .shopCta {
+    opacity: 1;
+  }
+
+  .shopCta .shopCtaBtn {
+    backdrop-filter: blur(16px) saturate(1.2);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  }
+
+  .bloomHost .bloomStage {
+    opacity: 1;
+    transform:
+      translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+      translate(0, 0)
+      scale(1);
+  }
+
+  .vial,
+  .card:hover .vial,
+  .card:focus-within .vial,
+  .bloomHost:hover .vial,
+  .bloomHost:focus-within .vial {
+    transform: scale(1);
+    filter: none;
+  }
+
+  .card:hover .plate,
+  .card:focus-within .plate {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+
+  .card:hover .bloomStage,
+  .card:focus-within .bloomStage,
+  .bloomHost:hover .bloomStage,
+  .bloomHost:focus-within .bloomStage {
+    transform:
+      translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+      translate(0, 0)
+      scale(1);
+  }
+}
+
+@media (width < 721px), (721px <= width < 1025px) {
+  .card {
+    touch-action: manipulation;
+  }
+
+  .plate,
+  .pair,
+  .vial,
+  .shopCta,
+  .shopCtaBtn {
+    pointer-events: none;
+  }
+
+  /*
+   * Center flourish is driven by --enter pose vars from JS.
+   * Off center: vial at rest, bloom off. At screen center: pop, then seat
+   * past that card's plate.
+   */
+  .card .vial,
+  .card:hover .vial,
+  .card:focus-within .vial {
+    opacity: var(--plant-o, 1);
+    transform:
+      translateY(var(--plant-y, 0px))
+      rotate(var(--plant-r, 0deg))
+      scale(var(--plant-s, 1));
+    filter: none;
+    transition: none;
+  }
+
+  .card .bloomStage,
+  .card:hover .bloomStage,
+  .card:focus-within .bloomStage {
+    width: 100%;
+    opacity: var(--bloom-o, 0);
+    transform:
+      translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+      translate(0, 0)
+      scale(var(--bloom-s, 0.88));
+    transition: none;
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) and (width < 721px),
+  (prefers-reduced-motion: reduce) and (721px <= width < 1025px) {
+  .card .vial,
+  .card .bloomStage,
+  .card[data-bloomed="true"] .vial,
+  .card[data-bloomed="true"] .bloomStage {
+    transition: none;
+  }
+}
+
+@media (721px <= width < 1025px) {
+  .root {
+    overflow: visible;
+    padding: 90px 0 92px;
+  }
+
+  .inner {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+  }
+
+  .notecard {
+    aspect-ratio: auto;
+    height: min(500px, 64vh);
+    border-radius: 0;
+    overflow: visible;
+  }
+
+  .notecard::before,
+  .notecard::after {
+    display: none;
+  }
+
+  .track {
+    padding-inline: 0;
+    overflow: visible;
+  }
+
+  .card {
+    width: min(340px, 52vw);
+    height: auto;
+    max-height: 96%;
+    aspect-ratio: 300 / 430;
+    border-radius: 28px;
+    overflow: visible;
+  }
+
+  .rail {
+    gap: 28px;
+  }
+
+  .plate {
+    width: 86%;
+    height: 94%;
+    top: 3%;
+  }
+
+  .pair {
+    padding-bottom: 40px;
+  }
+
+  .vial {
+    width: 66%;
+    height: 64%;
+  }
+
+  .shopCta {
+    left: calc(7% + 14px);
+    right: calc(7% + 14px);
+    bottom: calc(8% + 24px);
+  }
+
+  .bloom,
+  .bloomStage {
+    overflow: visible;
+  }
+}
+
+@media (width < 721px) {
+  .root {
+    overflow: visible;
+    padding: 90px 0 92px;
+  }
+
+  .inner {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+  }
+
+  .notecard {
+    height: min(440px, 64vh);
+    border-radius: 0;
+    overflow: visible;
+  }
+
+  .notecard::before,
+  .notecard::after {
+    display: none;
+  }
+
+  .track {
+    padding-inline: 0;
+    overflow: visible;
+  }
+
+  .rail {
+    gap: 24px;
+  }
+
+  .card {
+    width: min(300px, 74vw);
+    height: auto;
+    max-height: 96%;
+    aspect-ratio: 300 / 430;
+    border-radius: 28px;
+    overflow: visible;
+  }
+
+  .plate {
+    width: 88%;
+    height: 94%;
+    top: 3%;
+  }
+
+  .pair {
+    padding-bottom: 40px;
+  }
+
+  .vial {
+    width: 68%;
+    height: 64%;
+  }
+
+  .bloom,
+  .bloomStage {
+    overflow: visible;
+  }
+
+  .jumpLeft {
+    left: var(--space-3);
+  }
+
+  .jumpRight {
+    right: var(--space-3);
+  }
+
+  .shopCta {
+    left: calc(6% + 12px);
+    right: calc(6% + 12px);
+    bottom: calc(8% + 22px);
+  }
+
+  .shopCta .shopCtaBtn {
+    min-height: 30px;
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+}

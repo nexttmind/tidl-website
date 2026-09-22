@@ -1,0 +1,30 @@
+---
+description: Generative video, image, and ffmpeg pipeline patterns
+globs: build/media/**
+alwaysApply: false
+---
+
+# Generative video
+
+- Seedance 2.0 is the production platform. Native 4K, multi reference input.
+- Veo and Omni Flash are for iteration only.
+- Generate each shot in a separate session to prevent grade drift.
+- UI elements and text overlays are composited in After Effects, never
+  generated. Labels drift and text degrades.
+- Grade drift correction is deferred to post.
+
+# Image generation
+
+- Positive prompt language overrides exclusion lists. Fix form drift by
+  rewriting the positive clauses, not by extending negatives.
+- Vocabulary carries unintended associations. Audit per noun.
+- Keep all text and labeling out of generated images. Composite in post.
+
+# ffmpeg
+
+- concat demuxer with -c copy for lossless joining, only when codec,
+  resolution, and frame rate match exactly.
+- -sseof -0.1 for reliable final frame extraction.
+- Alpha fade: fade=t=in:st=X:d=Y:alpha=1,fade=t=out:st=A:d=B:alpha=1 with
+  enable='lt(t,T)' on the overlay filter.
+- Set -framerate 24 on looped image input so fade timestamps resolve correctly.

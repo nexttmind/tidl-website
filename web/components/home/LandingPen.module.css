@@ -1,0 +1,659 @@
+.root {
+  /* Top matches hero→shop. Side gutter comes from --shop-notecard-inset. */
+  padding: var(--space-5) 0 var(--space-10);
+  color: var(--text-inverse);
+}
+
+.stage {
+  width: auto;
+  max-width: var(--layout-max);
+  margin-inline: var(--shop-notecard-inset, var(--space-5));
+  box-sizing: border-box;
+}
+
+.frame {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  /* Match the media asset (2880×1758) / Figma 1440×879 so nothing is cropped */
+  aspect-ratio: 1440 / 879;
+  border-radius: 40px;
+  overflow: clip;
+  /* Equal inset for top guides + bottom plus / dots */
+  --pen-edge-inset: var(--space-7);
+}
+
+.frame[data-clickable="true"] {
+  cursor: pointer;
+}
+
+.mediaStack {
+  position: absolute;
+  inset: 0;
+  /* Field from shopBand shows through any contain letterboxing */
+  background: transparent;
+}
+
+.media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* contain = full pen always visible; cover was cropping the tip */
+  object-fit: contain;
+  object-position: center center;
+  opacity: 1;
+  transition: opacity 0.7s ease;
+  pointer-events: none;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(40, 48, 56, 0.35) 0%,
+    rgba(40, 48, 56, 0.05) 55%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* Figma plus marks — fixed overlay, same place on every step */
+.plusMarks {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.plusMark {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  display: block;
+}
+
+/* Mirror bottom inset so top / bottom plus rows match */
+.plusMarkTop {
+  top: var(--pen-edge-inset);
+}
+
+.plusMarkBottom {
+  top: auto;
+  bottom: var(--pen-edge-inset);
+}
+
+/* Figma Group 33 — right rail stills on Pen 2–4 */
+.details {
+  position: absolute;
+  top: 15.7%;
+  left: 74.2%;
+  z-index: 1;
+  display: grid;
+  gap: 24px;
+  width: min(291px, 20.2%);
+  max-height: 68%;
+  align-items: start;
+  align-content: start;
+  pointer-events: none;
+}
+
+.detailCard {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 291 / 185;
+  object-fit: cover;
+  align-self: start;
+  border-radius: 12px;
+  /* Stay visible even if motion is interrupted mid-mount */
+  opacity: 1;
+  transform: translate3d(0, 36px, 0) scale(0.96);
+  animation: detailRise 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform;
+}
+
+.details[data-reduced="true"] .detailCard {
+  animation: none;
+  transform: none;
+}
+
+@keyframes detailRise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 36px, 0) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/* ── Shared callout + morphing branch ── */
+
+.callout {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.callout[data-active="true"] {
+  opacity: 1;
+}
+
+.calloutSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.calloutPath {
+  fill: none;
+  stroke: var(--color-white);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.calloutStroke {
+  fill: var(--color-white);
+}
+
+/* Hotspot sits on the pen; above the chevron so it reads as the tip mark */
+.hotspot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  transition:
+    top 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    left 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hotspotCore {
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--color-white);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.5),
+    0 0 10px 2px rgba(255, 255, 255, 0.35);
+  z-index: 1;
+}
+
+.hotspotRing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.08);
+  animation: hotspotPulse 2.4s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+}
+
+.hotspotRing[data-delay="true"] {
+  animation-delay: 1.2s;
+}
+
+.hotspot[data-reduced="true"] .hotspotRing {
+  animation: none;
+  opacity: 0.4;
+  transform: scale(1.85);
+}
+
+@keyframes hotspotPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  65% {
+    opacity: 0.2;
+  }
+  100% {
+    transform: scale(3.4);
+    opacity: 0;
+  }
+}
+
+.inner {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  align-content: center;
+  gap: 0;
+  padding: 0 clamp(48px, 6vw, 86px);
+  pointer-events: none;
+}
+
+.inner[data-mode="step"] .copy {
+  /* Two display lines + room for descenders (e.g. Inject) */
+  min-height: calc(clamp(36px, 4.2vw, 60px) * 2.35);
+  padding-bottom: 0.12em;
+  animation: stepRewrite 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.inner[data-mode="intro"] .copy {
+  /* Three display lines — keep the block anchored while centered */
+  min-height: calc(clamp(32px, 4vw, 60px) * 3.3);
+  padding-bottom: 0.12em;
+}
+
+.tags {
+  position: absolute;
+  z-index: 5;
+  /* Same band as the top plus row */
+  top: var(--pen-edge-inset);
+  /* Start where the removed leftmost plus sat */
+  left: calc(87 / 1440 * 100%);
+  margin: 0;
+  padding: 0;
+  height: 6px;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 33px;
+  pointer-events: none;
+}
+
+.tags li {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.copy {
+  min-height: clamp(160px, 24vw, 246px);
+  max-width: min(420px, 100%);
+  animation: copyIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.title {
+  margin: 0;
+  max-width: none;
+  font-family: var(--font-display);
+  font-size: calc(clamp(32px, 4vw, 60px) * var(--font-display-scale));
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: 1.2px;
+}
+
+.title span {
+  display: block;
+  white-space: nowrap;
+}
+
+.inner[data-mode="intro"] .title span {
+  white-space: normal;
+}
+
+.stepTitle {
+  margin: 0;
+  display: grid;
+  gap: 0;
+  max-width: min(688px, 100%);
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 1.2px;
+  overflow: visible;
+}
+
+.stepLabel {
+  display: block;
+  font-size: calc(clamp(36px, 4.2vw, 60px) * var(--font-display-scale));
+  font-weight: 400;
+  white-space: nowrap;
+  line-height: 1.2;
+  padding-bottom: 0.06em;
+}
+
+.stepName {
+  display: block;
+  font-size: calc(clamp(36px, 4.2vw, 60px) * var(--font-display-scale));
+  font-weight: 400;
+  white-space: nowrap;
+  line-height: 1.2;
+  padding-bottom: 0.08em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.body {
+  margin: clamp(16px, 1.4vw, 24px) 0 0;
+  max-width: 28ch;
+  font-family: var(--font-ui);
+  font-size: clamp(18px, 1.7vw, 24px);
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: 1.2px;
+  color: var(--text-inverse);
+}
+
+.dots {
+  position: absolute;
+  left: 50%;
+  bottom: var(--pen-edge-inset);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 3;
+  pointer-events: auto;
+}
+
+/* Same control language as LandingHero; corner so it clears center dots */
+.playback {
+  position: absolute;
+  z-index: 6;
+  right: var(--pen-edge-inset);
+  bottom: var(--pen-edge-inset);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(26, 26, 26, 0.55);
+  color: var(--color-white);
+  cursor: pointer;
+  pointer-events: auto;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.frame[data-details="true"] .playback {
+  right: calc(min(291px, 20.2%) + var(--pen-edge-inset) + 12px);
+}
+
+.playback:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .playback:hover {
+    background: rgba(26, 26, 26, 0.7);
+  }
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition:
+    width 0.55s cubic-bezier(0.22, 1.2, 0.36, 1),
+    background-color 0.35s ease;
+}
+
+.dot[data-active="true"] {
+  width: 48px;
+  background: var(--color-white);
+}
+
+@keyframes copyIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Step copy: same slot, left→right rewrite wipe */
+@keyframes stepRewrite {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .media,
+  .hotspot,
+  .dot,
+  .copy,
+  .callout,
+  .detailCard {
+    transition: none;
+    animation: none;
+  }
+
+  .detailCard {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Phone + tablet: Scout reveal stack. Copy, film, three thumbs that all fit. */
+@media (width < 1025px) {
+  .root {
+    color: var(--text-primary);
+    padding: var(--space-6) 0 var(--space-8);
+  }
+
+  .stage {
+    margin-inline: var(--layout-gutter);
+  }
+
+  .frame {
+    aspect-ratio: auto;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "tags"
+      "copy"
+      "film"
+      "thumbs"
+      "dots";
+    --pen-edge-inset: 0px;
+    border-radius: 0;
+    overflow: visible;
+    background: transparent;
+    cursor: default;
+  }
+
+  .plusMarks,
+  .scrim {
+    display: none;
+  }
+
+  .callout {
+    --pen-tip-gap: 36;
+    grid-area: film;
+    z-index: 2;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+  }
+
+  .calloutPath {
+    stroke: var(--color-gold);
+    stroke-width: 1;
+  }
+
+  .calloutStroke {
+    fill: var(--color-gold);
+  }
+
+  .calloutSvg polygon {
+    transform-box: fill-box;
+    transform-origin: right center;
+    transform: scale(0.72);
+  }
+
+  .tags {
+    grid-area: tags;
+    position: relative;
+    top: auto;
+    left: auto;
+    height: auto;
+    max-width: none;
+    gap: var(--space-4);
+    padding: 0 0 var(--space-3);
+    color: var(--text-secondary);
+  }
+
+  .tags li {
+    color: var(--text-secondary);
+  }
+
+  .inner {
+    display: contents;
+  }
+
+  .copy {
+    grid-area: copy;
+    min-height: 0;
+    max-width: none;
+    padding: 0 0 var(--space-5);
+    color: var(--text-primary);
+  }
+
+  .inner[data-mode="step"] .copy,
+  .inner[data-mode="intro"] .copy {
+    min-height: 0;
+    padding-bottom: var(--space-5);
+  }
+
+  .title,
+  .stepLabel,
+  .stepName,
+  .body {
+    color: var(--text-primary);
+  }
+
+  .stepName,
+  .title span:last-child {
+    color: var(--text-secondary);
+  }
+
+  .mediaStack {
+    grid-area: film;
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1440 / 879;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+    background: var(--surface-sunken);
+  }
+
+  .playback {
+    grid-area: film;
+    position: absolute;
+    right: var(--space-3);
+    bottom: var(--space-3);
+    margin: 0;
+    z-index: 6;
+  }
+
+  .frame[data-details="true"] .playback {
+    right: var(--space-3);
+  }
+
+  .details {
+    grid-area: thumbs;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+    max-width: none;
+    max-height: none;
+    box-sizing: border-box;
+    padding: var(--space-3) 0 0;
+    pointer-events: none;
+  }
+
+  .detailCard {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    height: auto;
+    max-height: none;
+    aspect-ratio: 291 / 185;
+    object-fit: cover;
+    border-radius: var(--radius-media);
+  }
+
+  .dots {
+    grid-area: dots;
+    position: relative;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    justify-content: center;
+    margin: var(--space-4) 0 0;
+  }
+
+  .dot {
+    background: color-mix(in srgb, var(--text-primary) 28%, transparent);
+  }
+
+  .dot[data-active="true"] {
+    width: 36px;
+    background: var(--text-primary);
+  }
+
+  .title span,
+  .stepLabel,
+  .stepName {
+    white-space: normal;
+  }
+}
+
+@media (721px <= width < 1025px) {
+  .title,
+  .stepLabel,
+  .stepName {
+    font-size: calc(clamp(18px, 2.6vw, 22px) * var(--font-display-scale, 1));
+    letter-spacing: 0.4px;
+  }
+
+  .body {
+    font-size: 16px;
+    max-width: 36ch;
+    letter-spacing: 0.02em;
+  }
+}
+
+@media (width < 721px) {
+  .title,
+  .stepLabel,
+  .stepName {
+    font-size: calc(clamp(16px, 4.2vw, 18px) * var(--font-display-scale, 1));
+    letter-spacing: 0.4px;
+  }
+
+  .body {
+    font-size: 15px;
+    max-width: 32ch;
+    letter-spacing: 0.02em;
+  }
+}

@@ -1,0 +1,32 @@
+---
+description: Figma MCP plugin runtime constraints for the TIDL files
+globs: build/figma/**
+alwaysApply: false
+---
+
+File keys:
+- TIDL Daybreak Fields: KcKa8zfPY1IArc8QP9d1rW
+- TIDL web prototype:   jVfEjwKeDW2jUAW2lD64gK
+- Sigmaa team plan:     team::1494820914537600594
+
+# Runtime traps, all learned the hard way
+
+- Every auto layout container must have fills explicitly set to an empty array
+  on creation. The default white fill silently breaks dark and gradient sections.
+- figma.getNodeByIdAsync requires setCurrentPageAsync first.
+- Sections need 200px or more clearance or they absorb children from adjacent
+  sections.
+- resize() on an auto layout frame locks both axes. Set
+  layoutSizingVertical='HUG' after creation to hug content.
+- Licensed fonts (Canela, Sohne, Apercu) are not returned by
+  listAvailableFontsAsync. Use Inter as a stand in and note the real family in
+  the style description.
+
+# Brand
+
+Daybreak Fields (`KcKa8zfPY1IArc8QP9d1rW`) is the Figma brand file, not the
+live site. Live web type is Inter and Space Mono. Do not put Canela, Sohne,
+or Source Serif 4 on consumer surfaces.
+
+Daybreak palette, eight tokens: Stone canvas, Night ink, Slate, Mark gold
+(EBBB3E), Bronze, Nightfield, Skyfield, Hardware blue.
