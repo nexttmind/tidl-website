@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240" role="img" aria-label="Parents">
+<rect width="240" height="240" fill="#FBF9F6"/>
+<path d="M 95.56 164.1 C 73.77 177.71 45.3 173.37 28.56 153.89 C 11.81 134.4 11.81 105.6 28.56 86.11 C 45.3 66.63 73.77 62.29 95.56 75.9" fill="none" stroke="#1A1A1A" stroke-width="7.0" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 144.44 75.9 C 166.23 62.29 194.7 66.63 211.44 86.11 C 228.19 105.6 228.19 134.4 211.44 153.89 C 194.7 173.37 166.23 177.71 144.44 164.1" fill="none" stroke="#1A1A1A" stroke-width="7.0" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="120" cy="120" r="5.5" fill="#1A1A1A"/>
+</svg>

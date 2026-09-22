@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240" role="img" aria-label="Jetlag Recovery">
+<rect width="240" height="240" fill="#FBF9F6"/>
+<path d="M 86 72 L 142 72 C 170.72 72 194 100.72 194 124 L 194 124 C 194 152.72 170.72 176 142 176 L 86 176 C 63.91 176 46 158.09 46 136 L 46 112 C 46 89.91 63.91 72 86 72 Z" fill="none" stroke="#1A1A1A" stroke-width="7.0" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 46 156 C 58 70 168 48 196 108" fill="none" stroke="#1A1A1A" stroke-width="7.0" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="186" cy="96" r="5.5" fill="#1A1A1A"/>
+</svg>

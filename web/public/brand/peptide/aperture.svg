@@ -1,0 +1,9 @@
+<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>TIDL Aperture</title>
+  <g fill="currentColor">
+    <path d="M120 114C140 108 152 72 120 38C88 72 100 108 120 114Z"/>
+    <path d="M126 120C132 140 168 152 202 120C168 88 132 100 126 120Z"/>
+    <path d="M120 126C100 132 88 168 120 202C152 168 140 132 120 126Z"/>
+    <path d="M114 120C108 100 72 88 38 120C72 152 108 140 114 120Z"/>
+  </g>
+</svg>

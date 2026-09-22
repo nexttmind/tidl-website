@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240" role="img" aria-label="Mental">
+<rect width="240" height="240" fill="#FBF9F6"/>
+<path d="M 147.14 88.96 C 141.29 98.32 131.03 104 120 104 C 108.97 104 98.71 98.32 92.86 88.96" fill="none" stroke="#1A1A1A" stroke-width="7.0" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 133.31 159.02 C 128.13 149.28 128.34 137.56 133.86 128 C 139.37 118.44 149.42 112.4 160.45 112.02" fill="none" stroke="#1A1A1A" stroke-width="7.0" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 79.55 112.02 C 90.58 112.4 100.63 118.44 106.14 128 C 111.66 137.56 111.87 149.28 106.69 159.02" fill="none" stroke="#1A1A1A" stroke-width="7.0" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="120" cy="120" r="5.5" fill="#1A1A1A"/>
+</svg>

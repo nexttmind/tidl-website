@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000" role="img" aria-label="Transformation">
+<rect width="1000" height="1000" fill="#FBF9F6"/>
+<g fill="none" stroke="#1A1A1A" stroke-linecap="round" stroke-linejoin="round">
+<polygon points="500.00,463.20 536.80,500.00 500.00,536.80 463.20,500.00" stroke-width="4.14"/>
+<polygon points="539.68,460.32 539.68,539.68 460.32,539.68 460.32,460.32" stroke-width="4.14"/>
+<polygon points="587.76,500.00 500.00,587.76 412.24,500.00 500.00,412.24" stroke-width="4.14"/>
+<polygon points="589.59,589.59 410.41,589.59 410.41,410.41 589.59,410.41" stroke-width="4.14"/>
+<polygon points="500.00,671.29 328.71,500.00 500.00,328.71 671.29,500.00" stroke-width="4.14"/>
+<polygon points="344.01,655.99 344.01,344.01 655.99,344.01 655.99,655.99" stroke-width="4.14"/>
+<polygon points="225.95,500.00 500.00,225.95 774.05,500.00 500.00,774.05" stroke-width="4.14"/>
+<polygon points="265.81,265.81 734.19,265.81 734.19,734.19 265.81,734.19" stroke-width="4.14"/>
+</g>
+<g fill="#1A1A1A">
+<circle cx="500.00" cy="500.00" r="6.62"/>
+<circle cx="500.00" cy="463.20" r="6.26"/>
+<circle cx="536.80" cy="500.00" r="6.26"/>
+<circle cx="500.00" cy="536.80" r="6.26"/>
+<circle cx="463.20" cy="500.00" r="6.26"/>
+<circle cx="539.68" cy="460.32" r="6.26"/>
+<circle cx="539.68" cy="539.68" r="6.26"/>
+<circle cx="460.32" cy="539.68" r="6.26"/>
+<circle cx="460.32" cy="460.32" r="6.26"/>
+<circle cx="587.76" cy="500.00" r="6.26"/>
+<circle cx="500.00" cy="587.76" r="6.26"/>
+<circle cx="412.24" cy="500.00" r="6.26"/>
+<circle cx="500.00" cy="412.24" r="6.26"/>
+<circle cx="589.59" cy="589.59" r="6.26"/>
+<circle cx="410.41" cy="589.59" r="6.26"/>
+<circle cx="410.41" cy="410.41" r="6.26"/>
+<circle cx="589.59" cy="410.41" r="6.26"/>
+<circle cx="500.00" cy="671.29" r="6.26"/>
+<circle cx="328.71" cy="500.00" r="6.26"/>
+<circle cx="500.00" cy="328.71" r="6.26"/>
+<circle cx="671.29" cy="500.00" r="6.26"/>
+<circle cx="344.01" cy="655.99" r="6.26"/>
+<circle cx="344.01" cy="344.01" r="6.26"/>
+<circle cx="655.99" cy="344.01" r="6.26"/>
+<circle cx="655.99" cy="655.99" r="6.26"/>
+<circle cx="225.95" cy="500.00" r="6.26"/>
+<circle cx="500.00" cy="225.95" r="6.26"/>
+<circle cx="774.05" cy="500.00" r="6.26"/>
+<circle cx="500.00" cy="774.05" r="6.26"/>
+<circle cx="265.81" cy="265.81" r="6.26"/>
+<circle cx="734.19" cy="265.81" r="6.26"/>
+<circle cx="734.19" cy="734.19" r="6.26"/>
+<circle cx="265.81" cy="734.19" r="6.26"/>
+</g></svg>

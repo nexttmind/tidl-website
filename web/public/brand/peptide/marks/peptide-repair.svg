@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000" role="img" aria-label="Repair">
+<rect width="1000" height="1000" fill="#FBF9F6"/>
+<g fill="none" stroke="#1A1A1A" stroke-linecap="round" stroke-linejoin="round">
+<polygon points="500.00,168.80 786.83,334.40 786.83,665.60 500.00,831.20 213.17,665.60 213.17,334.40" stroke-width="8.46"/>
+</g>
+<g fill="#1A1A1A">
+<circle cx="213.17" cy="334.40" r="12.88"/>
+<circle cx="213.17" cy="444.80" r="12.88"/>
+<circle cx="213.17" cy="555.20" r="12.88"/>
+<circle cx="213.17" cy="665.60" r="12.88"/>
+<circle cx="308.78" cy="279.20" r="12.88"/>
+<circle cx="308.78" cy="389.60" r="12.88"/>
+<circle cx="308.78" cy="500.00" r="12.88"/>
+<circle cx="308.78" cy="610.40" r="12.88"/>
+<circle cx="308.78" cy="720.80" r="12.88"/>
+<circle cx="404.39" cy="224.00" r="12.88"/>
+<circle cx="404.39" cy="334.40" r="12.88"/>
+<circle cx="404.39" cy="444.80" r="12.88"/>
+<circle cx="404.39" cy="555.20" r="12.88"/>
+<circle cx="404.39" cy="665.60" r="12.88"/>
+<circle cx="404.39" cy="776.00" r="12.88"/>
+<circle cx="500.00" cy="168.80" r="12.88"/>
+<circle cx="500.00" cy="279.20" r="12.88"/>
+<circle cx="500.00" cy="389.60" r="12.88"/>
+<circle cx="500.00" cy="500.00" r="12.88"/>
+<circle cx="500.00" cy="610.40" r="12.88"/>
+<circle cx="500.00" cy="720.80" r="12.88"/>
+<circle cx="500.00" cy="831.20" r="12.88"/>
+<circle cx="595.61" cy="224.00" r="12.88"/>
+<circle cx="595.61" cy="334.40" r="12.88"/>
+<circle cx="595.61" cy="444.80" r="12.88"/>
+<circle cx="595.61" cy="555.20" r="12.88"/>
+<circle cx="595.61" cy="665.60" r="12.88"/>
+<circle cx="595.61" cy="776.00" r="12.88"/>
+<circle cx="691.22" cy="279.20" r="12.88"/>
+<circle cx="691.22" cy="389.60" r="12.88"/>
+<circle cx="691.22" cy="500.00" r="12.88"/>
+<circle cx="691.22" cy="610.40" r="12.88"/>
+<circle cx="691.22" cy="720.80" r="12.88"/>
+<circle cx="786.83" cy="334.40" r="12.88"/>
+<circle cx="786.83" cy="444.80" r="12.88"/>
+<circle cx="786.83" cy="555.20" r="12.88"/>
+<circle cx="786.83" cy="665.60" r="12.88"/>
+</g></svg>

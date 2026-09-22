@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240" role="img" aria-label="Healthspan">
+<rect width="240" height="240" fill="#FBF9F6"/>
+<path d="M 84 62 L 142 62 C 174.03 62 200 94.03 200 120 L 200 120 C 200 152.03 174.03 178 142 178 L 84 178 C 59.7 178 40 158.3 40 134 L 40 106 C 40 81.7 59.7 62 84 62 Z" fill="none" stroke="#1A1A1A" stroke-width="7.0" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 110.88 73.17 L 149.82 88.91 C 170.3 97.18 178.63 124.37 171.92 140.98 L 171.92 140.98 C 163.65 161.46 140.33 171.36 119.85 163.08 L 80.91 147.35 C 65.55 141.14 58.12 123.66 64.33 108.29 L 71.82 89.75 C 78.03 74.39 95.52 66.97 110.88 73.17 Z" fill="none" stroke="#1A1A1A" stroke-width="7.0" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 123.77 93.06 L 142.48 111.12 C 151.22 119.56 149.86 135.14 143.02 142.23 L 143.02 142.23 C 134.58 150.97 120.65 151.21 111.91 142.77 L 93.21 124.71 C 86.85 118.57 86.67 108.44 92.81 102.09 L 101.15 93.45 C 107.29 87.1 117.42 86.92 123.77 93.06 Z" fill="none" stroke="#1A1A1A" stroke-width="7.0" stroke-linecap="round" stroke-linejoin="round"/>
+
+</svg>

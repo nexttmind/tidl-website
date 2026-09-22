@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240" role="img" aria-label="Creators">
+<rect width="240" height="240" fill="#FBF9F6"/>
+<path d="M 106 62 L 130 62 C 141.05 62 150 73.05 150 82 L 150 82 C 150 93.05 141.05 102 130 102 L 106 102 C 97.16 102 90 94.84 90 86 L 90 78 C 90 69.16 97.16 62 106 62 Z" fill="none" stroke="#1A1A1A" stroke-width="7.0" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 177.23 136.88 L 165.23 157.66 C 159.71 167.23 145.66 169.46 137.91 164.98 L 137.91 164.98 C 128.34 159.46 125.07 147.23 130.59 137.66 L 142.59 116.88 C 147.01 109.22 156.79 106.6 164.44 111.02 L 171.37 115.02 C 179.03 119.44 181.65 129.22 177.23 136.88 Z" fill="none" stroke="#1A1A1A" stroke-width="7.0" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 76.77 161.12 L 64.77 140.34 C 59.25 130.77 64.34 117.5 72.09 113.02 L 72.09 113.02 C 81.66 107.5 93.89 110.77 99.41 120.34 L 111.41 141.12 C 115.83 148.78 113.21 158.56 105.56 162.98 L 98.63 166.98 C 90.97 171.4 81.19 168.78 76.77 161.12 Z" fill="none" stroke="#1A1A1A" stroke-width="7.0" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="120" cy="120" r="5.5" fill="#1A1A1A"/>
+</svg>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240" role="img" aria-label="Metabolic">
+<rect width="240" height="240" fill="#FBF9F6"/>
+<path d="M 92 76 L 136 76 C 160.3 76 180 100.3 180 120 L 180 120 C 180 144.3 160.3 164 136 164 L 92 164 C 74.33 164 60 149.67 60 132 L 60 108 C 60 90.33 74.33 76 92 76 Z" fill="none" stroke="#1A1A1A" stroke-width="7.0" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="120" cy="120" r="5.5" fill="#1A1A1A"/>
+</svg>
