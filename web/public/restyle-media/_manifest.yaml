@@ -1,0 +1,127 @@
+version: 1
+defaults:
+  missing: placeholder
+slots:
+  category.hero:
+    type: image
+    aspect: "16/9"
+    alt: "TIDL Flow pen and stacks"
+    decorative: false
+  category.subcat.executive:
+    type: image
+    aspect: "1/1"
+    alt: "Executives"
+  category.subcat.athlete:
+    type: image
+    aspect: "1/1"
+    alt: "Athletes"
+  category.subcat.transformation:
+    type: image
+    aspect: "1/1"
+    alt: "Transformation"
+  category.subcat.parents:
+    type: image
+    aspect: "1/1"
+    alt: "Parents"
+  category.subcat.creatives:
+    type: image
+    aspect: "1/1"
+    alt: "Creatives"
+  category.subcat.legacy:
+    type: image
+    aspect: "1/1"
+    alt: "Legacy"
+  category.product.executive-stack:
+    type: image
+    aspect: "3/4"
+  category.product.athlete-stack:
+    type: image
+    aspect: "3/4"
+  category.product.athlete-compete:
+    type: image
+    aspect: "3/4"
+  category.product.strength-stack:
+    type: image
+    aspect: "3/4"
+  category.product.recovery-stack:
+    type: image
+    aspect: "3/4"
+  category.product.foundation-stack:
+    type: image
+    aspect: "3/4"
+  category.product.transformation-stack:
+    type: image
+    aspect: "3/4"
+  category.product.transformation-focus:
+    type: image
+    aspect: "3/4"
+  category.product.radiance-stack:
+    type: image
+    aspect: "3/4"
+  category.product.radiance-standard:
+    type: image
+    aspect: "3/4"
+  category.product.renewal-stack:
+    type: image
+    aspect: "3/4"
+  category.product.rest-stack:
+    type: image
+    aspect: "3/4"
+  category.product.energy-stack:
+    type: image
+    aspect: "3/4"
+  category.product.legacy-stack:
+    type: image
+    aspect: "3/4"
+  category.product.cellular-stack:
+    type: image
+    aspect: "3/4"
+  category.product.transformation-intensive:
+    type: image
+    aspect: "3/4"
+  category.reading.r1:
+    type: image
+    aspect: "16/9"
+  category.reading.r2:
+    type: image
+    aspect: "16/9"
+  category.reading.r3:
+    type: image
+    aspect: "16/9"
+  pdp.transformation.main:
+    type: image
+    aspect: "1/1"
+    alt: "Transformation Stack"
+  pdp.transformation.thumb-1:
+    type: image
+    aspect: "1/1"
+  pdp.transformation.thumb-2:
+    type: image
+    aspect: "1/1"
+  pdp.transformation.thumb-3:
+    type: image
+    aspect: "1/1"
+  pdp.transformation.thumb-4:
+    type: image
+    aspect: "1/1"
+  pdp.transformation.benefit-1:
+    type: image
+    aspect: "16/9"
+  pdp.transformation.benefit-2:
+    type: image
+    aspect: "16/9"
+  pdp.transformation.benefit-3:
+    type: image
+    aspect: "16/9"
+  pdp.transformation.benefit-4:
+    type: image
+    aspect: "16/9"
+  pdp.reading.r1:
+    type: image
+    aspect: "16/9"
+  pdp.reading.r2:
+    type: image
+    aspect: "16/9"
+  pdp.reading.r3:
+    type: image
+    aspect: "16/9"
