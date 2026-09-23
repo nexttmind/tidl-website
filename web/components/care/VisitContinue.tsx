@@ -28,7 +28,11 @@ export function VisitContinue({ entrySlug, encounterId, demo = false }: Props) {
     <CareMoment
       eyebrow="Physician visit"
       title="A video visit is required"
-      lede="Based on the care path under review, your physician needs a live visit before prescribing or dispensing. Schedule and join here, then return for your protocol."
+      lede={
+        demo
+          ? "Based on the care path under review, your physician needs a live visit before prescribing or dispensing. Schedule and join here, then return for your protocol."
+          : "Based on the care path under review, your physician needs a live visit before prescribing or dispensing. Visit scheduling is not open on TIDL yet."
+      }
       mediaSrc={entry.brandPoster ?? entry.brandImage}
     >
       <dl className={styles.meta}>
@@ -37,13 +41,23 @@ export function VisitContinue({ entrySlug, encounterId, demo = false }: Props) {
           <dd>{entry.label}</dd>
         </div>
       </dl>
-      <p className={styles.note}>
-        Scheduling binds to PrescribeRx in a later pass. For this walkthrough,
-        continue after the visit would complete.
-      </p>
-      <Button onClick={continueToProtocol} className={styles.cta}>
-        Continue to protocol
-      </Button>
+      {demo ? (
+        <>
+          <p className={styles.note}>
+            Scheduling binds to PrescribeRx in a later pass. For this
+            walkthrough, continue after the visit would complete.
+          </p>
+          <Button onClick={continueToProtocol} className={styles.cta}>
+            Continue to protocol
+          </Button>
+        </>
+      ) : (
+        <p className={styles.note}>
+          When scheduling is available, you will book and join your visit here.
+          Until then, check back on this page or your account home for updates.
+          There is no estimated wait time on this screen.
+        </p>
+      )}
     </CareMoment>
   );
 }

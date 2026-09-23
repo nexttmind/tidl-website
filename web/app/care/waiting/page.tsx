@@ -1,6 +1,6 @@
 import { CarePortalChrome } from "@/components/care/CarePortalChrome";
 import { WaitingReview } from "@/components/care/WaitingReview";
-import { isSandboxDemoQuery } from "@/lib/prescriberx/protocol-gate";
+import { isSandboxDemoQuery } from "@/lib/prescriberx/sandbox-demo";
 
 export const metadata = {
   title: "TIDL · Waiting for review",

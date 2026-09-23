@@ -24,7 +24,7 @@ import {
   extractAbilitiesFromMe,
   orgTokenCanIssuePatientToken,
 } from "../prescriberx/abilities";
-import { mapAuthError } from "../prescriberx/auth-errors";
+import { mapAuthError, mapLoginError } from "../prescriberx/auth-errors";
 import { PrescribeRxError } from "../prescriberx/client";
 
 const SECRET = "phase-a-test-secret-key-32chars!!";
@@ -267,5 +267,35 @@ describe("mapAuthError", () => {
   it("maps TokenParseError to 502", async () => {
     const res = mapAuthError(new TokenParseError("missing"));
     assert.equal(res.status, 502);
+  });
+
+  it("keeps non-login 404 as 404 so order misses are not logout", async () => {
+    const res = mapAuthError(new PrescribeRxError("missing", 404, {}));
+    assert.equal(res.status, 404);
+  });
+});
+
+describe("mapLoginError", () => {
+  it("maps PRX 404 to TIDL 401 with generic auth copy", async () => {
+    const res = mapLoginError(
+      new PrescribeRxError("User not found", 404, { email: "hidden@x.com" }),
+    );
+    assert.equal(res.status, 401);
+    const json = (await res.json()) as {
+      message: string;
+      code?: string;
+      email?: unknown;
+    };
+    assert.equal(json.code, "unauthorized");
+    assert.equal(
+      json.message,
+      "Unable to complete authentication. Check your details and try again.",
+    );
+    assert.equal(json.email, undefined);
+  });
+
+  it("keeps 401 generic", async () => {
+    const res = mapLoginError(new PrescribeRxError("bad password", 401, {}));
+    assert.equal(res.status, 401);
   });
 });

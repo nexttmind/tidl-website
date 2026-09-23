@@ -18,6 +18,10 @@ import {
   readIntakeHandoff,
   type IntakeHandoff,
 } from "@/lib/prescriberx/intake-flow";
+import {
+  nextWaitPollMs,
+  waitingPollTimedOut,
+} from "@/lib/prescriberx/waiting-poll";
 import styles from "./WaitingReview.module.css";
 
 type Props = {
@@ -26,8 +30,6 @@ type Props = {
   /** Sandbox designers only: ?demo=1 and PRESCRIBERX_SANDBOX. */
   demoAllowed?: boolean;
 };
-
-const POLL_MS = 6000;
 
 /**
  * Waiting for physician review.
@@ -48,6 +50,7 @@ export function WaitingReview({
   const [statusData, setStatusData] = useState<EncounterStatusData | null>(
     null,
   );
+  const [pollTimedOut, setPollTimedOut] = useState(false);
   const advancedRef = useRef(false);
 
   useEffect(() => {
@@ -94,35 +97,128 @@ export function WaitingReview({
 
     let cancelled = false;
     let timer: number | null = null;
+    let inFlight = false;
+    let backoffStep = 0;
+    const startedAt = Date.now();
 
-    const poll = async () => {
-      try {
-        const res = await fetch(
-          `/api/prescriberx/encounters/${encodeURIComponent(resolvedEncounter)}/status`,
-          { headers: { Accept: "application/json" } },
-        );
-        const json: unknown = await res.json();
-        if (cancelled) return;
-        if (!res.ok) return;
-        const data = unwrapEncounterStatus(json);
-        if (!data) return;
-        setStatusData(data);
-        advanceFromStatus(data);
-      } catch {
-        /* keep waiting; fail closed */
+    const clearTimer = () => {
+      if (timer != null) {
+        window.clearTimeout(timer);
+        timer = null;
       }
     };
 
-    void poll();
-    timer = window.setInterval(() => {
+    const markTimedOut = () => {
+      if (cancelled) return;
+      setPollTimedOut(true);
+      clearTimer();
+    };
+
+    const scheduleNext = () => {
+      clearTimer();
+      if (cancelled || advancedRef.current) return;
+      if (document.visibilityState === "hidden") return;
+      if (waitingPollTimedOut(startedAt)) {
+        markTimedOut();
+        return;
+      }
+      const delay = nextWaitPollMs(backoffStep);
+      timer = window.setTimeout(() => {
+        void poll();
+      }, delay);
+    };
+
+    const poll = async () => {
+      if (cancelled || inFlight || advancedRef.current) return;
+      if (document.visibilityState === "hidden") return;
+      if (waitingPollTimedOut(startedAt)) {
+        markTimedOut();
+        return;
+      }
+
+      inFlight = true;
+      try {
+        const res = await fetch(
+          `/api/prescriberx/encounters/${encodeURIComponent(resolvedEncounter)}/status`,
+          {
+            headers: { Accept: "application/json" },
+            credentials: "include",
+          },
+        );
+        if (cancelled) return;
+
+        if (res.status === 401) {
+          clearTimer();
+          const login = new URLSearchParams();
+          login.set("mode", "login");
+          login.set("entry", entry.slug);
+          login.set("encounter", resolvedEncounter);
+          login.set("next", `/care/waiting?${continueParams()}`);
+          router.replace(`/care/account?${login.toString()}`);
+          return;
+        }
+
+        if (!res.ok) {
+          scheduleNext();
+          return;
+        }
+
+        const json: unknown = await res.json();
+        const data = unwrapEncounterStatus(json);
+        if (!data) {
+          scheduleNext();
+          return;
+        }
+
+        setStatusData(data);
+        const branch = classifyWaitingBranch(
+          data.status,
+          entry.visitGateDefault,
+        );
+        if (branch === "protocol" || branch === "visit") {
+          clearTimer();
+          advanceFromStatus(data);
+          return;
+        }
+
+        backoffStep += 1;
+        scheduleNext();
+      } catch {
+        scheduleNext();
+      } finally {
+        inFlight = false;
+      }
+    };
+
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        clearTimer();
+        return;
+      }
+      if (cancelled || advancedRef.current) return;
+      if (waitingPollTimedOut(startedAt)) {
+        markTimedOut();
+        return;
+      }
       void poll();
-    }, POLL_MS);
+    };
+
+    document.addEventListener("visibilitychange", onVisibility);
+    void poll();
 
     return () => {
       cancelled = true;
-      if (timer != null) window.clearInterval(timer);
+      clearTimer();
+      document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [resolvedEncounter, advanceFromStatus]);
+  }, [
+    resolvedEncounter,
+    advanceFromStatus,
+    continueParams,
+    entry.slug,
+    entry.visitGateDefault,
+    router,
+  ]);
 
   const statusLabel = encounterStatusLabel(statusData);
 
@@ -152,8 +248,9 @@ export function WaitingReview({
         ) : null}
       </dl>
       <p className={styles.quiet}>
-        Status updates arrive when the care team finishes review. There is no
-        estimated wait time on this screen.
+        {pollTimedOut
+          ? "Refresh this page later to check again. There is no estimated wait time on this screen."
+          : "Status updates arrive when the care team finishes review. There is no estimated wait time on this screen."}
       </p>
       {demoAllowed ? (
         <div className={styles.demo}>

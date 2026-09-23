@@ -6,7 +6,7 @@ import {
 import {
   GENERIC_VALIDATION,
   authJson,
-  mapAuthError,
+  mapLoginError,
 } from "@/lib/prescriberx/auth-errors";
 import {
   clientIpFromRequest,
@@ -105,21 +105,21 @@ export async function POST(request: Request) {
     }
     envelope = parsed;
   } catch (err) {
-    return mapAuthError(err);
+    return mapLoginError(err);
   }
 
   let parsed;
   try {
     parsed = extractAuthToken(envelope);
   } catch (err) {
-    return mapAuthError(err);
+    return mapLoginError(err);
   }
 
   // Confirm /auth/me with the patient token (never org).
   try {
     await prescribeRxPatientFetch("/auth/me", { token: parsed.token });
   } catch (err) {
-    return mapAuthError(err);
+    return mapLoginError(err);
   }
 
   const session: PatientSessionPayload = {

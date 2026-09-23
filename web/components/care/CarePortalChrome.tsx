@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import { FooterGlobal } from "@/components/chrome/FooterGlobal";
 import { SiteHeader } from "@/components/chrome/SiteHeader";
-import { CarePortalSession } from "@/components/care/CarePortalSession";
 import styles from "./CarePortalChrome.module.css";
 
 type Props = {
@@ -17,9 +16,6 @@ export function CarePortalChrome({ children }: Props) {
       </a>
       <div className={styles.heroChrome}>
         <SiteHeader overlay />
-        <div className={styles.sessionSlot}>
-          <CarePortalSession />
-        </div>
       </div>
       <div id="main">{children}</div>
       <FooterGlobal />

@@ -105,10 +105,18 @@ Single purpose screen. Copy direction:
 "Waiting for the physician to review your information."
 
 No fake progress, no simulated typing, no invented ETA. Optional: show
-elapsed wait only if the system has a real timestamp. Status updates from
-`GET /api/prescriberx/encounters/[id]/status` and / or webhooks
-(`encounter.assigned`, `encounter.status_changed`, `encounter.prescribed`,
-`encounter.cancelled`).
+elapsed wait only if the system has a real timestamp.
+
+**Polling (Phase N, shipped):** browser polls
+`GET /api/prescriberx/encounters/[id]/status` with the session cookie.
+Backoff 6s → 12s → 24s → 30s cap; pauses when the tab is hidden; stops after
+30 minutes with honest refresh copy; no overlapping in-flight polls. Missing
+session → 401, stop poll, redirect to login with `next` preserved. The route
+live-fetches PrescribeRx org status — it does not read the webhook projector.
+
+Webhooks (`encounter.assigned`, `encounter.status_changed`, `encounter.prescribed`,
+`encounter.cancelled`) are received at `POST /api/webhooks/prescriberx` but
+**waiting still polls PRX**; projector is not source of truth (Phase H).
 
 ### 5. Branch after review
 
@@ -201,9 +209,13 @@ inlining IDs in page components.
 
 ## Open items
 
-Shipped 2026-09-22 (see `docs/handoff-patient-portal.md`): AccountWizard auth
-bind, live `/care/home`, protocol/confirmation fail-closed until prescribed,
-Phase D smoke + `patient:issue-token` preflight.
+Shipped (see `docs/handoff-patient-portal.md`):
+
+- **2026-09-22:** AccountWizard auth bind, live `/care/home`, protocol/confirmation
+  fail-closed until prescribed, Phase D smoke + `patient:issue-token` preflight.
+- **2026-09-22 – 2026-09-23:** Phases J, H, E, F (home polish, webhooks,
+  env guards, password UX) and L, M, N (demo lock, abuse limits, waiting
+  backoff + prod headers).
 
 Still open:
 

@@ -170,6 +170,11 @@ export type IntakeHandoff = {
 
 export const INTAKE_HANDOFF_KEY = "tidl_intake_handoff";
 
+function clientWindow(): Window | null {
+  if (typeof globalThis === "undefined") return null;
+  return (globalThis as { window?: Window }).window ?? null;
+}
+
 function writeStore(store: Storage, data: IntakeHandoff) {
   store.setItem(INTAKE_HANDOFF_KEY, JSON.stringify(data));
 }
@@ -181,37 +186,46 @@ function readStore(store: Storage): IntakeHandoff | null {
 }
 
 export function writeIntakeHandoff(data: IntakeHandoff) {
-  if (typeof window === "undefined") return;
+  const win = clientWindow();
+  if (!win) return;
   try {
-    writeStore(sessionStorage, data);
-  } catch {
-    /* ignore quota / private mode */
-  }
-  try {
-    writeStore(localStorage, data);
+    writeStore(win.sessionStorage, data);
   } catch {
     /* ignore quota / private mode */
   }
 }
 
 export function readIntakeHandoff(): IntakeHandoff | null {
-  if (typeof window === "undefined") return null;
+  const win = clientWindow();
+  if (!win) return null;
   try {
-    return readStore(sessionStorage) ?? readStore(localStorage);
+    const fromSession = readStore(win.sessionStorage);
+    try {
+      win.localStorage.removeItem(INTAKE_HANDOFF_KEY);
+    } catch {
+      /* ignore quota / private mode */
+    }
+    return fromSession;
   } catch {
+    try {
+      win.localStorage.removeItem(INTAKE_HANDOFF_KEY);
+    } catch {
+      /* ignore */
+    }
     return null;
   }
 }
 
 export function clearIntakeHandoff() {
-  if (typeof window === "undefined") return;
+  const win = clientWindow();
+  if (!win) return;
   try {
-    sessionStorage.removeItem(INTAKE_HANDOFF_KEY);
+    win.sessionStorage.removeItem(INTAKE_HANDOFF_KEY);
   } catch {
     /* ignore quota / private mode */
   }
   try {
-    localStorage.removeItem(INTAKE_HANDOFF_KEY);
+    win.localStorage.removeItem(INTAKE_HANDOFF_KEY);
   } catch {
     /* ignore quota / private mode */
   }

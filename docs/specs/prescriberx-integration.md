@@ -185,8 +185,11 @@ Starter event set for launch lifecycle:
 Thirty one public event slugs are live as of 2026-05-01. List via
 `GET /webhooks/event-types`. Wildcards like `encounter.*` are accepted.
 
-Receiver lives on the TIDL server, not in PrescribeRx. Open item remains:
-public webhook URL after first deploy.
+Receiver lives on the TIDL server, not in PrescribeRx:
+`POST /api/webhooks/prescriberx`. Missing secret → 503; invalid HMAC → 401.
+Waiting still polls live encounter status. Open item remains: public webhook
+URL after first deploy (localhost callback URLs are rejected). Do not create
+the subscription from application code.
 
 ## Env contract
 

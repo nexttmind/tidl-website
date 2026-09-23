@@ -25,6 +25,7 @@ import {
 import { prescribeRxFetch } from "@/lib/prescriberx/client";
 import {
   getPrescribeRxEnv,
+  guardPrescribeRxEnv,
   missingPrescribeRxResponse,
 } from "@/lib/prescriberx/env";
 import { bindPatientPassword } from "@/lib/prescriberx/password-bind";
@@ -51,6 +52,8 @@ function isEmail(value: string): boolean {
 export async function POST(request: Request) {
   const env = getPrescribeRxEnv();
   if (!env) return missingPrescribeRxResponse();
+  const envBlocked = guardPrescribeRxEnv(env);
+  if (envBlocked) return envBlocked;
   if (!process.env.TIDL_SESSION_SECRET || process.env.TIDL_SESSION_SECRET.length < 32) {
     return authJson(
       {

@@ -1,6 +1,7 @@
 import { AccountHome } from "@/components/care/AccountHome";
 import { CarePortalChrome } from "@/components/care/CarePortalChrome";
 import { resolveClinicalEntry } from "@/content/clinical/entry-map";
+import { isSandboxDemoQuery } from "@/lib/prescriberx/sandbox-demo";
 
 export const metadata = {
   title: "TIDL · Your account",
@@ -18,7 +19,10 @@ export default async function CareHomePage({ searchParams }: PageProps) {
 
   return (
     <CarePortalChrome>
-      <AccountHome entrySlug={entry.slug} demo={params.demo === "1"} />
+      <AccountHome
+        entrySlug={entry.slug}
+        demo={isSandboxDemoQuery(params.demo)}
+      />
     </CarePortalChrome>
   );
 }

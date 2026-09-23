@@ -1,10 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import styles from "./CarePortalSession.module.css";
 
-export function CarePortalSession() {
+export type PatientSessionState = {
+  email: string | null;
+  busy: boolean;
+  logout: () => Promise<void>;
+};
+
+/** Client session for header chrome. Returns null email when signed out. */
+export function usePatientSession(): PatientSessionState {
   const router = useRouter();
   const [email, setEmail] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -24,7 +30,7 @@ export function CarePortalSession() {
         if (cancelled || !res.ok || !json.authenticated) return;
         setEmail(typeof json.email === "string" ? json.email : "Signed in");
       } catch {
-        /* stay hidden */
+        /* stay signed out */
       }
     })();
     return () => {
@@ -32,7 +38,7 @@ export function CarePortalSession() {
     };
   }, []);
 
-  const onLogout = async () => {
+  const logout = useCallback(async () => {
     setBusy(true);
     try {
       await fetch("/api/prescriberx/auth/logout", {
@@ -42,23 +48,10 @@ export function CarePortalSession() {
     } catch {
       /* still leave */
     }
+    setEmail(null);
     router.replace("/care/account?mode=login");
     router.refresh();
-  };
+  }, [router]);
 
-  if (!email) return null;
-
-  return (
-    <div className={styles.bar}>
-      <p className={styles.email}>{email}</p>
-      <button
-        type="button"
-        className={styles.logout}
-        onClick={() => void onLogout()}
-        disabled={busy}
-      >
-        {busy ? "Leaving…" : "Log out"}
-      </button>
-    </div>
-  );
+  return { email, busy, logout };
 }

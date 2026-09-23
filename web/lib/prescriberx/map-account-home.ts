@@ -8,12 +8,23 @@ import {
   relatedFor,
   type AccountHomeData,
   type AccountOrder,
+  type AccountPrescription,
   type PendingEncounter,
   type TrackingEvent,
 } from "@/content/fixtures/care-account-home";
-import type { CareTeamMember } from "@/content/fixtures/care-protocol";
+import type {
+  CareTeamMember,
+  ClinicalSummaryRow,
+} from "@/content/fixtures/care-protocol";
 import { catalogVialSrc } from "@/content/fixtures/catalog";
 import { evaluateProtocolAccess } from "./encounter-status";
+
+const ORDER_UUID =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function isOrderUuid(value: string): boolean {
+  return ORDER_UUID.test(value.trim());
+}
 
 function asRecord(value: unknown): Record<string, unknown> | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
@@ -101,14 +112,24 @@ function lookArray(
   return [];
 }
 
+function coerceRows(
+  value: unknown,
+  keys: readonly string[],
+): unknown[] {
+  if (Array.isArray(value)) return value;
+  return lookArray([value], keys);
+}
+
 function encounterIdOf(row: Record<string, unknown>): string {
   return pickString(row, ["id", "encounter_id", "uuid"]);
 }
 
-function mapTracking(raw: unknown): AccountOrder["tracking"] | undefined {
+export function mapTracking(raw: unknown): AccountOrder["tracking"] | undefined {
   const rec = asRecord(raw);
   if (!rec) return undefined;
-  const eventsRaw = asArray(rec.events ?? rec.timeline ?? rec.updates);
+  const nested = rec.tracking ?? rec.fulfillment;
+  const body = asRecord(nested) ?? rec;
+  const eventsRaw = asArray(body.events ?? body.timeline ?? body.updates);
   const events: TrackingEvent[] = eventsRaw.map((item, index) => {
     const ev = asRecord(item) ?? {};
     const label =
@@ -122,16 +143,30 @@ function mapTracking(raw: unknown): AccountOrder["tracking"] | undefined {
       current: ev.current === true || index === eventsRaw.length - 1,
     };
   });
-  const carrier = pickString(rec, ["carrier", "carrier_name"]);
-  const number = pickString(rec, ["number", "tracking_number", "tracking"]);
-  const shipTo = pickString(rec, ["ship_to", "shipTo", "destination", "address"]);
+  const carrier = pickString(body, ["carrier", "carrier_name"]);
+  const number = pickString(body, ["number", "tracking_number", "tracking"]);
+  const shipTo = pickString(body, [
+    "ship_to",
+    "shipTo",
+    "destination",
+    "address",
+  ]);
   if (!carrier && !number && events.length === 0) return undefined;
   return {
-    carrier: carrier || "Carrier assigned after fill",
-    number: number || "—",
-    shipTo: shipTo || "On file",
+    carrier,
+    number,
+    shipTo,
     events,
   };
+}
+
+export function mergeOrderTracking(
+  order: AccountOrder,
+  raw: unknown,
+): AccountOrder {
+  const tracking = mapTracking(raw);
+  if (!tracking) return order;
+  return { ...order, tracking };
 }
 
 function mapAgents(
@@ -140,7 +175,7 @@ function mapAgents(
 ): AccountOrder["agents"] {
   const lines = lookArray(
     [row],
-    ["items", "line_items", "products", "prescriptions", "agents"],
+    ["items", "line_items", "products", "agents"],
   );
   const agents: { name: string; dosage: string; vialSrc: string }[] = [];
   for (const item of lines) {
@@ -169,7 +204,11 @@ function mapOrder(
 ): AccountOrder | null {
   const rec = asRecord(raw);
   if (!rec) return null;
-  const id = pickString(rec, ["id", "order_id", "order_number", "number"]);
+  const uuidCandidate = pickString(rec, ["id", "order_id", "uuid"]);
+  const displayFallback = pickString(rec, ["order_number", "number"]);
+  const id = isOrderUuid(uuidCandidate)
+    ? uuidCandidate
+    : uuidCandidate || displayFallback;
   if (!id) return null;
   const statusRaw = pickString(rec, ["status", "status_label", "state"]);
   const stackName =
@@ -220,7 +259,10 @@ function mapPending(
     if (!id) continue;
     const status = pickString(rec, ["status", "status_label"]);
     if (evaluateProtocolAccess(status, visitGateDefault) !== "wait") continue;
-    if (status.toLowerCase() === "cancelled" || status.toLowerCase() === "canceled") {
+    if (
+      status.toLowerCase() === "cancelled" ||
+      status.toLowerCase() === "canceled"
+    ) {
       continue;
     }
     return {
@@ -237,6 +279,64 @@ function mapPending(
   return null;
 }
 
+function mapPrescription(raw: unknown): AccountPrescription | null {
+  const rec = asRecord(raw);
+  if (!rec) return null;
+  const lines = lookArray([rec], ["items", "line_items", "products"]);
+  const firstLine = asRecord(lines[0]);
+  const name =
+    pickString(rec, ["product_name", "name", "title", "display_name"]) ||
+    pickString(firstLine, ["product_name", "name", "title", "display_name"]);
+  if (!name) return null;
+  const id =
+    pickString(rec, ["id", "prescription_id", "uuid"]) || `rx-${name}`;
+  const orderRaw = pickString(rec, ["order_id", "order"]);
+  const orderId = isOrderUuid(orderRaw) ? orderRaw : undefined;
+  const dosage =
+    pickString(rec, ["dosage", "dose", "strength", "quantity"]) ||
+    pickString(firstLine, ["dosage", "dose", "strength", "quantity"]);
+  return { id, name, dosage, orderId };
+}
+
+function attachMatchingPrescriptions(
+  order: AccountOrder,
+  prescriptions: readonly AccountPrescription[],
+): AccountOrder {
+  if (!isOrderUuid(order.id)) return order;
+  const vialSrc = order.vialSrc;
+  const existing = new Set(order.agents.map((agent) => agent.name.toLowerCase()));
+  const extra: AccountOrder["agents"][number][] = [];
+  for (const rx of prescriptions) {
+    if (rx.orderId !== order.id) continue;
+    if (existing.has(rx.name.toLowerCase())) continue;
+    extra.push({
+      name: rx.name,
+      dosage: rx.dosage || "—",
+      vialSrc,
+    });
+    existing.add(rx.name.toLowerCase());
+  }
+  if (!extra.length) return order;
+  return { ...order, agents: [...order.agents, ...extra] };
+}
+
+function mapSurveyRows(dashboard: Record<string, unknown> | null): ClinicalSummaryRow[] {
+  const rows = lookArray(
+    [dashboard],
+    ["clinical_summary", "survey_rows", "survey", "answers"],
+  );
+  const out: ClinicalSummaryRow[] = [];
+  for (const item of rows) {
+    const rec = asRecord(item);
+    if (!rec) continue;
+    const label = pickString(rec, ["label", "question", "name", "title"]);
+    const value = pickString(rec, ["value", "answer", "response"]);
+    if (!label || !value) continue;
+    out.push({ label, value });
+  }
+  return out;
+}
+
 export function mapAccountHome(input: {
   entrySlug: string;
   dashboard?: unknown;
@@ -246,18 +346,38 @@ export function mapAccountHome(input: {
 }): AccountHomeData {
   const entry = resolveClinicalEntry(input.entrySlug);
   const dash = asRecord(input.dashboard);
-  const orderRows = lookArray(
-    [input.orders, dash],
-    ["orders", "recent_orders", "latest_orders"],
-  );
-  const encounterRows = lookArray(
-    [input.encounters, dash],
-    ["encounters", "recent_encounters", "latest_encounters"],
-  );
+  const orderRows = [
+    ...coerceRows(input.orders, ["orders", "recent_orders", "latest_orders"]),
+    ...lookArray([dash], ["orders", "recent_orders", "latest_orders"]),
+  ];
+  const encounterRows = [
+    ...coerceRows(input.encounters, [
+      "encounters",
+      "recent_encounters",
+      "latest_encounters",
+    ]),
+    ...lookArray([dash], [
+      "encounters",
+      "recent_encounters",
+      "latest_encounters",
+    ]),
+  ];
+  const prescriptionRows = [
+    ...coerceRows(input.prescriptions, [
+      "prescriptions",
+      "recent_prescriptions",
+    ]),
+    ...lookArray([dash], ["prescriptions", "recent_prescriptions"]),
+  ];
+
+  const prescriptions = prescriptionRows
+    .map(mapPrescription)
+    .filter((row): row is AccountPrescription => Boolean(row));
 
   const mapped = orderRows
     .map((row) => mapOrder(row, entry.slug, entry.label))
-    .filter((row): row is AccountOrder => Boolean(row));
+    .filter((row): row is AccountOrder => Boolean(row))
+    .map((order) => attachMatchingPrescriptions(order, prescriptions));
 
   const currentOrder =
     mapped.find((order) => isActiveOrder(order.statusLabel)) ??
@@ -293,6 +413,13 @@ export function mapAccountHome(input: {
     dash?.pharmacy ?? lookArray([dash], ["pharmacies"])[0],
   );
   const pharmacyName = pickString(pharmacyRec, ["name", "display_name"]);
+  const pharmacy = pharmacyName
+    ? {
+        name: pharmacyName,
+        detail: pickString(pharmacyRec, ["detail", "location", "city"]),
+        status: pickString(pharmacyRec, ["status"]),
+      }
+    : null;
 
   return {
     entrySlug: entry.slug,
@@ -300,18 +427,19 @@ export function mapAccountHome(input: {
     stackName: currentOrder?.stackName || entry.label,
     goals,
     careTeam,
-    pharmacy: {
-      name: pharmacyName || "Pharmacy assigned after review",
-      detail: pickString(pharmacyRec, ["detail", "location", "city"]) || "",
-      status: pickString(pharmacyRec, ["status"]) || "Standing by",
-    },
+    pharmacy,
     surveyTitle: "From your clinical survey",
     surveyLede:
       "Answers your physician used in review. Message your care team if anything has changed.",
-    surveyRows: [],
+    surveyRows: mapSurveyRows(dash),
     currentOrder,
     pastOrders,
-    pendingEncounter: mapPending(encounterRows, entry.slug, entry.visitGateDefault),
+    prescriptions,
+    pendingEncounter: mapPending(
+      encounterRows,
+      entry.slug,
+      entry.visitGateDefault,
+    ),
     related: relatedFor(entry.slug),
   };
 }

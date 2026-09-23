@@ -1,8 +1,14 @@
+import {
+  extractAbilitiesFromMe,
+  orgTokenCanIssuePatientToken,
+} from "@/lib/prescriberx/abilities";
 import { prescribeRxFetch } from "@/lib/prescriberx/client";
 import {
+  evaluatePrescribeRxEnvGuard,
   getPrescribeRxEnv,
   missingPrescribeRxResponse,
 } from "@/lib/prescriberx/env";
+import { buildHealthConfigFlags } from "@/lib/prescriberx/health-config";
 
 export const dynamic = "force-dynamic";
 
@@ -17,13 +23,38 @@ export async function GET() {
   const env = getPrescribeRxEnv();
   if (!env) return missingPrescribeRxResponse();
 
+  const guard = evaluatePrescribeRxEnvGuard(env);
+  const configFlags = buildHealthConfigFlags(env);
+
+  if (!guard.ok) {
+    return Response.json(
+      {
+        success: false,
+        data: {
+          ...configFlags,
+          healthy: false,
+          issueToken: false,
+          warnings: [],
+          checks: {},
+          code: guard.code,
+          message: guard.message,
+        },
+      },
+      { status: 503 },
+    );
+  }
+
+  let issueToken = false;
   const paths = ["/auth/me", "/catalog", "/telehealth/encounter-types"] as const;
   const checks: Record<string, Check> = {};
 
   for (const path of paths) {
     try {
-      await prescribeRxFetch(path);
+      const data = await prescribeRxFetch(path);
       checks[path] = { path, status: 200, ok: true };
+      if (path === "/auth/me") {
+        issueToken = orgTokenCanIssuePatientToken(extractAbilitiesFromMe(data));
+      }
     } catch (err) {
       const status =
         err && typeof err === "object" && "status" in err
@@ -33,19 +64,21 @@ export async function GET() {
     }
   }
 
-  const healthy = Object.values(checks).every((c) => c.ok);
+  const upstreamHealthy = Object.values(checks).every((c) => c.ok);
+  const healthy = upstreamHealthy && guard.warnings.length === 0;
+
   return Response.json(
     {
       success: true,
       data: {
         configured: true,
-        baseUrl: env.baseUrl,
-        sandbox: env.sandbox,
-        defaultEncounterTypeId: env.defaultEncounterTypeId,
+        ...configFlags,
+        issueToken,
         checks,
+        warnings: guard.warnings,
         healthy,
       },
     },
-    { status: healthy ? 200 : 503 },
+    { status: upstreamHealthy ? 200 : 503 },
   );
 }

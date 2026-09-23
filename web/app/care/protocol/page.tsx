@@ -2,6 +2,7 @@ import { CarePortalChrome } from "@/components/care/CarePortalChrome";
 import { ProtocolOrder } from "@/components/care/ProtocolOrder";
 import { resolveCareProtocol } from "@/content/fixtures/care-protocol";
 import { assertEncounterReadyForProtocol } from "@/lib/prescriberx/protocol-gate";
+import { isSandboxDemoQuery } from "@/lib/prescriberx/sandbox-demo";
 
 export const metadata = {
   title: "TIDL · Your care protocol",
@@ -30,7 +31,7 @@ export default async function CareProtocolPage({ searchParams }: PageProps) {
         entrySlug={entrySlug}
         encounterId={params.encounter}
         approved
-        demo={params.demo === "1"}
+        demo={isSandboxDemoQuery(params.demo)}
       />
     </CarePortalChrome>
   );

@@ -1,7 +1,7 @@
 # PrescribeRx sandbox — wired locally (website-main)
 
 **Status:** sandbox wired for local care + curated PDP overlays  
-**Verified:** 2026-09-22 (catalog smoke FAILS=0; Phase D patient-auth smoke FAILS=0)  
+**Verified:** 2026-09-23 (catalog FAILS=0; Phase D FAILS=0; L/M/N smokes pass)  
 **Cross-check:** tidl-main saw the same catalog (162 products / 11 packages)
 
 This note records what we built across the sandbox wiring phases, what the
@@ -67,6 +67,20 @@ API actually contains, and what is still a sandbox/tenant gap (not a site bug).
 
 - Smoke checklist below passed with FAILS=0 on 2026-09-22.
 
+### Phases J–N — Portal polish + production hardening (2026-09-22 – 2026-09-23)
+
+See [`docs/handoff-patient-portal.md`](handoff-patient-portal.md) for full narrative.
+
+| Phase | Summary |
+|---|---|
+| **J** | Live `/care/home` maps PRX honestly; no invented molecules; prescriptions/tracking by UUID |
+| **H** | Fail-closed webhook receiver; waiting still polls live PRX (projector is not source of truth) |
+| **E** | Demo/prod host guards; health flags; merge-safe sandbox token refresh |
+| **F** | Reset-first password UX after failed bind; login 404 → 401 |
+| **L** | `?demo=1` locked to sandbox dev/test; live pages hide fixture controls and fake checkout |
+| **M** | Shared in-memory rate limits on intake (5/min/IP) and status (20/min/IP); session-gated status GET; intake file validation |
+| **N** | Waiting poll backoff 6→12→24→30s; tab visibility pause; 30min timeout; sessionStorage-only handoff; prod security headers |
+
 ---
 
 ## Routes in play
@@ -82,7 +96,7 @@ API actually contains, and what is still a sandbox/tenant gap (not a site bug).
 | `POST /api/prescriberx/intake` | `/telehealth/intake/unified` |
 | `GET /api/prescriberx/encounters/[id]/status` | `.../status` |
 | `GET /api/prescriberx/patient/*` | `/me/patient/*` (patient token) |
-| `POST /api/webhooks/prescriberx` | inbound (public URL later) |
+| `POST /api/webhooks/prescriberx` | inbound (HMAC; public URL later) |
 
 Key libs: `web/lib/prescriberx/*`  
 Entry map: `web/content/clinical/entry-map.ts`  
@@ -146,6 +160,66 @@ Sandbox designers may use `?demo=1` only.
 Patient auth closeout: `npx tsx scripts/smoke-phase-d.ts` (see
 `docs/patient-auth-smoke.md`). Phase D verified 2026-09-22.
 
+Webhook HMAC self-test (dev server up; set the same secret in `.env.local`):
+
+```bash
+PRESCRIBERX_WEBHOOK_SECRET=dev-secret npm run smoke:webhook
+```
+
+Unsigned POST must be 401 (or 503 if the secret is unset). Signed POST 200;
+replay of the same `webhook_id` reports `duplicate`. Do not register a
+localhost URL with PrescribeRx.
+
+Phase E env smoke (dev server up):
+
+```bash
+npm run smoke:phase-e
+```
+
+Expect `sandboxHostConsistent`, `sessionSecretConfigured`,
+`webhookSecretConfigured`, and `issueToken` all true on a correctly wired
+sandbox `.env.local`. Token refresh:
+
+```bash
+bash build/tools/refresh-prescriberx-sandbox.sh
+```
+
+Refuses when `PRESCRIBERX_SANDBOX=false`; preserves session/webhook secrets.
+
+Phase F login smoke (dev server up):
+
+```bash
+npm run smoke:phase-f
+```
+
+Unknown-email `POST /api/prescriberx/auth/login` must return **401**, never 404.
+
+Phase L demo lock (dev server up):
+
+```bash
+npm run smoke:phase-l
+```
+
+`?demo=1` works only in sandbox dev/test. Production ignores it.
+
+Phase M abuse limits (dev server up):
+
+```bash
+npm run smoke:phase-m
+```
+
+Status route requires session cookie. Intake/status return `429` + `Retry-After`
+when burst.
+
+Phase N waiting + headers:
+
+```bash
+npm run smoke:phase-n
+```
+
+Production build: `npm run build && npx next start -p 3001` then
+`SMOKE_BASE=http://localhost:3001 npm run smoke:phase-n` for security headers.
+
 ---
 
 ## Still out of scope / ask Andrew
@@ -155,14 +229,14 @@ Patient auth closeout: `npx tsx scripts/smoke-phase-d.ts` (see
 - Add estradiol/progesterone (and link to `female-hrt`)
 - Link products to `universal-encounter` if open intake should attach SKUs
 - Pain topicals only if sold through PrescribeRx
-- Patient portal auth Phases A–D wired (auth cookie, AccountWizard, live `/care/home`, protocol gate, smoke).
-- MoR payment (`reference_captured`), public webhook URL
+- Patient portal Phases A–F, J, H, L–N wired (see handoff). MoR payment
+  (`reference_captured`), visit scheduling, tenant UUID cutover, public webhook URL.
 
 ---
 
 ## Related docs
 
-- `docs/handoff-patient-portal.md` — **start here for next team** (A–D + lessons)
+- `docs/handoff-patient-portal.md` — **start here for next team** (A–F, J, H, L–N + lessons)
 - `docs/specs/prescriberx-integration.md`
 - `docs/specs/clinical-flow.md`
 - `docs/specs/intake-schema.md`

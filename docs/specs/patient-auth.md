@@ -1,6 +1,6 @@
-# Patient auth (Phase A–D)
+# Patient auth (Phases A–F, J, H, L–N)
 
-Status: implemented (foundation + account bind + live home / protocol gate + smoke)
+Status: implemented (foundation through production hardening; see handoff)
 Depends on: decision 0004, decision 0005, `prescriberx-integration`
 
 ## Cookie contract
@@ -36,7 +36,9 @@ Patient `/me/patient/*` proxies never fall back to the organization token.
 
 ## Protocol / payment gate (Phase C)
 
-`/care/protocol` and `/care/confirmation` call org `GET /telehealth/encounters/{id}/status` on the server. Allowed only when status is `prescribed`, `provider_signed`, `completed`, `order_placed`, or `order_paid` (and the entry is not visit-gated). Pending, On Hold, missing encounter, fetch failure, or cancelled → redirect to `/care/waiting`. Waiting no longer shows Continue to protocol unless `?demo=1` and `PRESCRIBERX_SANDBOX`. `/care/home` uses live patient data or an empty/pending state (`?demo=1` keeps fixtures).
+`/care/protocol` and `/care/confirmation` call org `GET /telehealth/encounters/{id}/status` on the server. Allowed only when status is `prescribed`, `provider_signed`, `completed`, `order_placed`, or `order_paid` (and the entry is not visit-gated). Pending, On Hold, missing encounter, fetch failure, or cancelled → redirect to `/care/waiting`. Waiting no longer shows Continue to protocol unless `?demo=1`, `PRESCRIBERX_SANDBOX !== "false"`, and `NODE_ENV !== "production"` (see `isSandboxDemoQuery` in `web/lib/prescriberx/sandbox-demo.ts`). `/care/home` uses live patient data or an empty/pending state; demo fixtures only under that same sandbox demo flag.
+
+Browser waiting polls `GET /api/prescriberx/encounters/{id}/status` with the session cookie. That route requires a valid sealed `tidl_prx_session` (local check via `readSessionFromRequest`; no `/auth/me` on each poll). Missing or expired session → **401**; waiting stops polling and redirects to `/care/account?mode=login` with `next` preserved. The route still live-fetches PrescribeRx org status; it does not read the webhook projector.
 
 ## Ownership (register)
 
@@ -87,9 +89,18 @@ Gate: local unseal only in [`web/proxy.ts`](../../web/proxy.ts) (Next.js 16; do 
 Concurrent callers with the same bearer share one in-flight `/auth/refresh`.
 Different bearers never share that flight. `POST /auth/refresh` uses the same path.
 
-## Rate limits
+## Rate limits (Phase M)
 
-Auth routes: 10 / minute / IP (in-process). PrescribeRx also enforces Auth 10/min.
+Shared in-memory limiter: `web/lib/prescriberx/auth-rate-limit.ts`.
+
+| Route | Limit | Notes |
+|---|---|---|
+| Auth routes (`/api/prescriberx/auth/*`) | 10 / min / IP | unchanged from Phase A |
+| Intake `POST /api/prescriberx/intake` | 5 / min / IP | 429 + `Retry-After`; file slug/base64 + 6MB encoded cap validated server-side |
+| Status `GET /api/prescriberx/encounters/[id]/status` | 20 / min / IP | requires sealed session cookie; still live-fetches PRX |
+
+IP order: `x-real-ip` → `x-vercel-forwarded-for` → first `x-forwarded-for` →
+`unknown`. PrescribeRx also enforces Auth 10/min upstream.
 
 ## Register preflight
 
@@ -100,9 +111,19 @@ Auth routes: 10 / minute / IP (in-process). PrescribeRx also enforces Auth 10/mi
 ## Smoke
 
 See [`docs/patient-auth-smoke.md`](../patient-auth-smoke.md).
-`npx tsx scripts/smoke-phase-d.ts` from `web/`.
+
+| Script | Phase |
+|---|---|
+| `npx tsx scripts/smoke-phase-d.ts` | D — auth + protocol gate |
+| `npm run smoke:phase-e` | E — env guards |
+| `npm run smoke:phase-f` | F — login 404 → 401 |
+| `npm run smoke:phase-l` | L — demo lock |
+| `npm run smoke:phase-m` | M — rate limits + session-gated status |
+| `npm run smoke:phase-n` | N — waiting poll + prod headers |
+
+All from `web/` with dev server up unless noted in handoff.
 
 ## Handoff
 
 Next team: [`docs/handoff-patient-portal.md`](../handoff-patient-portal.md)
-(phases A–D, manual lessons, deferred work, Andrew blockers).
+(phases A–F, J, H, L–N, manual lessons, deferred work, Andrew blockers).

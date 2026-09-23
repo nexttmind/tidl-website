@@ -11,11 +11,7 @@ import {
   unwrapEncounterStatus,
   type ProtocolAccess,
 } from "./encounter-status";
-
-export function isSandboxDemoQuery(demo?: string | null): boolean {
-  if (demo !== "1") return false;
-  return (process.env.PRESCRIBERX_SANDBOX ?? "true").toLowerCase() !== "false";
-}
+import { isSandboxDemoQuery } from "./sandbox-demo";
 
 export function carePathQuery(
   entrySlug: string,

@@ -75,3 +75,18 @@ export function mapAuthError(err: unknown): Response {
     500,
   );
 }
+
+/**
+ * Returning login: PRX 404 (unknown email) and 401 both become TIDL 401
+ * with the generic auth message. Do not surface 404 to the browser.
+ * Other routes keep mapAuthError (order 404 must not look like logout).
+ */
+export function mapLoginError(err: unknown): Response {
+  if (err instanceof PrescribeRxError && err.status === 404) {
+    return authJson(
+      { success: false, message: GENERIC_AUTH_FAILURE, code: "unauthorized" },
+      401,
+    );
+  }
+  return mapAuthError(err);
+}

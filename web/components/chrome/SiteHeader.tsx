@@ -16,6 +16,7 @@ import {
 } from "@/content/clinical/entry-map";
 import { CATALOG_HREF } from "@/content/fixtures/catalog";
 import { PEPTIDE_GUIDE_HREF, peptideGuideCopy } from "@/content/fixtures/peptide-guide";
+import { usePatientSession } from "@/lib/auth/use-patient-session";
 import styles from "./SiteHeader.module.css";
 
 type CatalogKey = "treatments" | "programs";
@@ -351,6 +352,7 @@ export function SiteHeader({
   askAiAccent,
 }: SiteHeaderProps) {
   const { openModal } = useAskTidl();
+  const { email: sessionEmail, busy: sessionBusy, logout } = usePatientSession();
   const mobileNavId = useId();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [headerPinned, setHeaderPinned] = useState(forcePinned);
@@ -530,13 +532,32 @@ export function SiteHeader({
               </span>
             </button>
             <div className={styles.auth}>
-              <Link href={ACCOUNT_LOGIN_HREF} className={styles.login}>
-                Log In
-              </Link>
-              <span className={styles.authRule} aria-hidden />
-              <Link href={ACCOUNT_SIGNUP_HREF} className={styles.signup}>
-                Sign Up
-              </Link>
+              {sessionEmail ? (
+                <>
+                  <span className={styles.sessionEmail} title={sessionEmail}>
+                    {sessionEmail}
+                  </span>
+                  <span className={styles.authRule} aria-hidden />
+                  <button
+                    type="button"
+                    className={styles.logout}
+                    onClick={() => void logout()}
+                    disabled={sessionBusy}
+                  >
+                    {sessionBusy ? "Leaving…" : "Log out"}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link href={ACCOUNT_LOGIN_HREF} className={styles.login}>
+                    Log In
+                  </Link>
+                  <span className={styles.authRule} aria-hidden />
+                  <Link href={ACCOUNT_SIGNUP_HREF} className={styles.signup}>
+                    Sign Up
+                  </Link>
+                </>
+              )}
             </div>
             <button
               type="button"
@@ -611,20 +632,39 @@ export function SiteHeader({
             Ask TIDL AI
           </button>
           <div className={styles.mobileAuth}>
-            <Link
-              href={ACCOUNT_LOGIN_HREF}
-              className={`${styles.mobileLink} ${styles.mobileAuthLogin}`}
-              onClick={() => setMobileOpen(false)}
-            >
-              Log In
-            </Link>
-            <Link
-              href={ACCOUNT_SIGNUP_HREF}
-              className={`${styles.mobileLink} ${styles.mobileAuthSignup}`}
-              onClick={() => setMobileOpen(false)}
-            >
-              Sign Up
-            </Link>
+            {sessionEmail ? (
+              <>
+                <p className={styles.mobileSessionEmail}>{sessionEmail}</p>
+                <button
+                  type="button"
+                  className={`${styles.mobileLink} ${styles.mobileAuthLogout}`}
+                  disabled={sessionBusy}
+                  onClick={() => {
+                    setMobileOpen(false);
+                    void logout();
+                  }}
+                >
+                  {sessionBusy ? "Leaving…" : "Log out"}
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href={ACCOUNT_LOGIN_HREF}
+                  className={`${styles.mobileLink} ${styles.mobileAuthLogin}`}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Log In
+                </Link>
+                <Link
+                  href={ACCOUNT_SIGNUP_HREF}
+                  className={`${styles.mobileLink} ${styles.mobileAuthSignup}`}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         </nav>
       ) : null}

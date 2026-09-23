@@ -1,9 +1,9 @@
-# Handoff — patient portal + clinical care path (2026-09-22)
+# Handoff — patient portal + clinical care path (2026-09-22, updated 2026-09-23)
 
 **Audience:** next eng team continuing from this workspace  
 **Repo root:** `website-main/` (Next app in `web/`)  
-**Status:** PrescribeRx sandbox wired; patient auth Phases **A–D complete**  
-**Smoke:** catalog FAILS=0; Phase D patient-auth FAILS=0 (same day)
+**Status:** PrescribeRx sandbox wired; portal Phases **A–F, J, H, L–N** complete  
+**Smoke:** catalog FAILS=0; Phase D FAILS=0 (2026-09-22); L/M/N smokes pass (2026-09-23)
 
 Start here. Specs and decisions below are canonical; this file is the
 narrative of what shipped, what broke in manual test, and what to build next.
@@ -56,7 +56,7 @@ Documented in [sandbox-wired.md](sandbox-wired.md):
 - Org token → `/api/prescriberx/*` (health, catalog, encounter-types, schema,
   products, intake, encounter status)
 - Entry map: `web/content/clinical/entry-map.ts` (sandbox UUIDs)
-- Waiting poll every 6s; PDP live price overlay (`CategoryPdpLive`)
+- Waiting poll with backoff (6s → 30s cap); PDP live price overlay (`CategoryPdpLive`)
 - Intake: silent product attach; address/shipping normalization; ID photo
   compression; `experimental.proxyClientMaxBodySize: "50mb"` in
   `web/next.config.ts` (intake was hitting Next’s 10MB limit)
@@ -76,8 +76,8 @@ Documented in [sandbox-wired.md](sandbox-wired.md):
 ### Phase B — Account UI
 
 - Intake handoff stores `patientChartId`, `encounterNumber`, `userId` (+ email
-  names) in sessionStorage **and** localStorage —
-  `web/lib/prescriberx/intake-flow.ts`
+  names) in **sessionStorage only** — `web/lib/prescriberx/intake-flow.ts`
+  (Phase N removes legacy `localStorage` key on read)
 - `AccountWizard` calls register / login / forgot; honest
   `password.status`; clears passwords after success but keeps encounter
   handoff for recovery
@@ -95,7 +95,7 @@ Documented in [sandbox-wired.md](sandbox-wired.md):
   and `orders/[order]/tracking`
 - Mapper: `web/lib/prescriberx/map-account-home.ts` → AccountHome chrome;
   empty / pending states; never invent molecule names; `?demo=1` = fixtures
-- `CarePortalSession` logout chip on `CarePortalChrome`
+- Signed-in header: email + Log out in the SiteHeader auth slot (no second overlay chip)
 - Reorder on AccountHome starts a **new intake**, not ungated protocol
 
 ### Phase D — Harden + smoke
@@ -106,6 +106,111 @@ Documented in [sandbox-wired.md](sandbox-wired.md):
 - Checklist: [patient-auth-smoke.md](patient-auth-smoke.md)
 - Specs updated: patient-auth, clinical-flow, sandbox-wired, open-questions,
   decision 0005
+
+### Phase J — Account home (live, honest)
+
+- Mapper treats patient `encounters` / `orders` / `prescriptions` as a bare
+  array or a wrapped object. Live On Hold encounters show waiting CTA.
+- Prescriptions are their own list; attach to an order only when `order_id`
+  is that order’s UUID. Tracking fetch uses order UUID only.
+- Hide Convert / Skip / Pause unless `?demo=1`. No invented pharmacy, survey,
+  care-team names, or carrier copy.
+
+### Phase H — Webhook receiver (poll stays source of truth)
+
+- `POST /api/webhooks/prescriberx` is fail-closed: missing
+  `PRESCRIBERX_WEBHOOK_SECRET` → 503; bad HMAC → 401.
+- Verify `X-PrescribeRx-Signature` as HMAC-SHA256 of the **raw** body.
+  Idempotency: same `webhook_id` / `X-Webhook-ID` → 200, skip re-project.
+- Projector stores encounter id + status slug only. **Waiting and protocol
+  gate still poll live PRX.** Do not cache pending as source of truth.
+- Local proof: `PRESCRIBERX_WEBHOOK_SECRET=dev-secret npm run smoke:webhook`
+  (dev server up). PrescribeRx rejects localhost callback URLs — subscribe
+  only after a public URL exists. Do **not** `POST /api/v1/webhooks` from
+  the app.
+
+How to subscribe later (portal or API, public HTTPS only):
+
+```bash
+# After a public URL exists (ngrok or deployed host). Copy signing_secret once.
+curl -X POST "https://demo.prescribe-rx.com/api/v1/webhooks" \
+  -H "Authorization: Bearer $PRESCRIBERX_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "url": "https://YOUR_PUBLIC_HOST/api/webhooks/prescriberx",
+    "events": ["encounter.*"],
+    "is_active": true
+  }'
+```
+
+Store `signing_secret` as `PRESCRIBERX_WEBHOOK_SECRET`. Starter events:
+`encounter.created`, `encounter.status_changed`, `encounter.prescribed`,
+`encounter.completed`, `encounter.cancelled`. Wildcards like `encounter.*`
+are accepted.
+
+### Phase E — Env guards (no UUID swap)
+
+- Demo host + `PRESCRIBERX_SANDBOX=false` → **503** on health, register, intake
+  (`sandbox_host_mismatch`). Production host + sandbox still true → health
+  **200** with `warnings` and `healthy: false` (dry-run allowed).
+- Health adds `webhookSecretConfigured`, `sessionSecretConfigured`,
+  `issueToken`, `sandboxHostConsistent`. Never returns the bearer token.
+- `build/tools/refresh-prescriberx-sandbox.sh` merges token/base/sandbox only;
+  refuses when `SANDBOX=false`; preserves `TIDL_SESSION_SECRET` and webhook secret.
+- Cutover checklist lives in root `.env.example`. Entry-map UUIDs unchanged.
+
+Smoke: `npm run smoke:phase-e` (dev server up).
+
+### Phase F — Password UX (honest path)
+
+- Login upstream **404** (unknown email) maps to TIDL **401** + generic auth
+  copy. `mapAuthError` still forwards 404 on other routes (orders/tracking).
+- Register `password.status === "failed"` still **201** with a session.
+  Keep **Continue to physician review**. Persist `tidl_password_needs_reset`
+  + email in sessionStorage. Show reset as the way later login works.
+  Do **not** auto-send forgot.
+- Login failure with that flag: reset-first copy; email stays filled.
+  Forgot success keeps email and stays on login.
+- Never label password `bound` unless the bind API said so.
+  No invented set-password API.
+
+Smoke: `npm run smoke:phase-f` (dev server up). Unknown-email login → 401.
+
+### Phase L — Demo lock
+
+- `?demo=1` is honored only when `PRESCRIBERX_SANDBOX !== "false"` **and**
+  `NODE_ENV !== "production"`. Helper: `web/lib/prescriberx/sandbox-demo.ts`.
+- Live `/care/home`, `/care/protocol`, and `/care/visit` never show fixture
+  subscription controls, fake 4242/USDT checkout, or demo visit bypass.
+- Protocol/visit/confirmation gates still fail closed; demo skips gates only in
+  sandbox dev/test.
+
+Smoke: `npm run smoke:phase-l` (dev server up, session via register).
+
+### Phase M — Shared abuse limits
+
+- One in-memory limiter (`web/lib/prescriberx/auth-rate-limit.ts`), per Node
+  process. Auth stays 10/min/IP unchanged.
+- Intake `POST`: 5/min/IP with `429` + `Retry-After`. Server validates file
+  slug/base64 and 6MB encoded cap (`web/lib/prescriberx/intake-files.ts`).
+- Status `GET`: requires sealed `tidl_prx_session` (`readSessionFromRequest`,
+  no refresh on poll); 20/min/IP backstop; still live-fetches PRX (never webhook
+  projector).
+- Health omits `baseUrl` and `defaultEncounterTypeId` when `NODE_ENV=production`.
+
+Smoke: `npm run smoke:phase-m`.
+
+### Phase N — Waiting backoff + headers
+
+- Waiting poll backoff 6s → 12s → 24s → 30s cap; pauses when tab hidden;
+  30-minute wall-clock stop with honest refresh copy; no overlapping polls; 401
+  stops poll and redirects to login with `next` preserved.
+- Intake handoff writes sessionStorage only; legacy `localStorage` key removed on
+  read.
+- Production responses add security headers via `web/next.config.ts` (no CSP).
+
+Smoke: `npm run smoke:phase-n` (dev); production headers on `next start -p 3001`.
 
 ---
 
@@ -152,6 +257,16 @@ npm test
 
 # Phase D smoke (dev server must be up)
 npx tsx scripts/smoke-phase-d.ts
+
+# Production hardening (dev server must be up unless noted)
+npm run smoke:phase-l   # demo lock — requires dev (NODE_ENV !== production)
+npm run smoke:phase-m   # intake/status rate limits + session-gated status
+npm run smoke:phase-n   # waiting poll + prod headers on next start -p 3001
+
+# Unit tests (includes L/M/N)
+npm test
+npm run typecheck
+npm run build
 ```
 
 Token refresh: `https://demo.prescribe-rx.com/api/docs/tokens` (prefer
@@ -169,16 +284,23 @@ Token refresh: `https://demo.prescribe-rx.com/api/docs/tokens` (prefer
 | Patient fetch | `web/lib/prescriberx/patient-client.ts` |
 | Ownership / register resolve | `web/lib/prescriberx/auth-ownership.ts` |
 | Password bind | `web/lib/prescriberx/password-bind.ts` |
+| Password reset hint | `web/lib/prescriberx/password-reset-hint.ts` |
+| Demo lock (`?demo=1`) | `web/lib/prescriberx/sandbox-demo.ts` |
+| Rate limits | `web/lib/prescriberx/auth-rate-limit.ts`, `rate-limit-response.ts` |
+| Intake file validation | `web/lib/prescriberx/intake-files.ts` |
+| Health config (prod omits secrets) | `web/lib/prescriberx/health-config.ts` |
+| Waiting poll backoff | `web/lib/prescriberx/waiting-poll.ts` |
 | Status / protocol access | `web/lib/prescriberx/encounter-status.ts`, `protocol-gate.ts` |
 | Account home mapper | `web/lib/prescriberx/map-account-home.ts` |
 | Intake handoff | `web/lib/prescriberx/intake-flow.ts` |
+| Production security headers | `web/next.config.ts` |
 | Entry → encounter UUID | `web/content/clinical/entry-map.ts` |
 | Session gate | `web/proxy.ts` |
 | Account UI | `web/components/care/AccountWizard.tsx` |
 | Waiting | `web/components/care/WaitingReview.tsx` |
 | Protocol pay UI (fixture) | `web/components/care/ProtocolOrder.tsx` |
 | Account home UI | `web/components/care/AccountHome.tsx` |
-| Portal logout chip | `web/components/care/CarePortalSession.tsx` |
+| Portal logout | `SiteHeader` auth slot (signed-in replaces Log In / Sign Up) |
 
 Auth + patient API routes under `web/app/api/prescriberx/`.
 
@@ -191,8 +313,10 @@ Auth + patient API routes under `web/app/api/prescriberx/`.
 | Protocol payment UI | Fixture card/tether; Complete purchase only navigates |
 | MoR `reference_captured` into PRX | Not wired |
 | Visit scheduling | Visit page is a stub continue |
-| Webhook public URL + verify | Route shell exists; no live host |
-| Password on first create | Fails; use forgot/reset |
+| Webhook receiver | Fail-closed HMAC on `POST /api/webhooks/prescriberx`; in-memory id+status only. Waiting still polls PRX. Public URL not pointed yet. |
+| Rate limits | In-memory per Node process (Phase M). Not Redis/Upstash — multi-instance deploy needs shared store later. |
+| Intake handoff | sessionStorage only (Phase N). Legacy localStorage key removed on read. |
+| Password on first create | Bind still fails in sandbox; session stays valid; reset-first UX + `tidl_password_needs_reset` |
 | Reset email host | May still be PrescribeRx domain |
 | AccountHome care team / agents | Mapped only when PRX returns them; no invented molecules |
 | Neon | Leads only — **not** auth/PHI |
@@ -215,12 +339,18 @@ From [open-questions.md](open-questions.md):
 
 ## 9. Suggested next build order
 
+**Done (eng-only, no Andrew blockers):** Phases J, H, E, F, L, M, N.
+
+**Next — blocked on ops / product lead:**
+
 1. **Ops:** durable token + password-bootstrap answer from Andrew  
-2. **Payment:** TIDL MoR capture + `reference_captured` (or prepaid omit) on protocol  
-3. **Visit:** scheduling APIs + gate matrix  
-4. **Webhooks:** public URL, signature verify, drive waiting/protocol without poll-only  
-5. **AccountHome:** richer live payloads (tracking, prescriptions) as PRX returns them  
-6. **Cutover:** production `PRESCRIBERX_*`, `SANDBOX=false`, tidl.com DNS (0004)
+2. **Payment (Phase G):** TIDL MoR capture + `reference_captured` (or prepaid omit) on protocol  
+3. **Visit (Phase I):** scheduling APIs + gate matrix  
+4. **Webhooks:** public HTTPS URL pointed at this receiver (localhost rejected)  
+5. **Cutover (Phase K):** production `PRESCRIBERX_*`, `SANDBOX=false`, tidl.com DNS (0004)
+
+Parallel tracks (not portal launch blockers): Ask TIDL backend, product catalog
+merchandising, marketing restyle — see specs under `docs/specs/`.
 
 ---
 

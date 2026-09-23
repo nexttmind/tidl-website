@@ -55,10 +55,12 @@ export function ProtocolOrder({
 }: Props) {
   const router = useRouter();
   const [handoff, setHandoff] = useState<IntakeHandoff | null>(null);
-  const [cardNumber, setCardNumber] = useState("4242 4242 4242 4242");
-  const [expiry, setExpiry] = useState("12 / 28");
-  const [cvc, setCvc] = useState("123");
-  const [zip, setZip] = useState("90405");
+  const [cardNumber, setCardNumber] = useState(
+    demo ? "4242 4242 4242 4242" : "",
+  );
+  const [expiry, setExpiry] = useState(demo ? "12 / 28" : "");
+  const [cvc, setCvc] = useState(demo ? "123" : "");
+  const [zip, setZip] = useState(demo ? "90405" : "");
   const [payMethod, setPayMethod] = useState<PayMethod>("card");
   const [tetherRail, setTetherRail] = useState<TetherRailId>("tron");
   const [copied, setCopied] = useState(false);
@@ -189,6 +191,7 @@ export function ProtocolOrder({
               <p className={styles.linePrice}>{protocol.price}</p>
             </div>
 
+            {demo ? (
             <form className={styles.payForm} onSubmit={onSubmit} noValidate>
               <div className={styles.payMethods}>
                 <p className={styles.label} id="pay-method-label">
@@ -343,6 +346,15 @@ export function ProtocolOrder({
               </Button>
               <p className={styles.disclaimer}>{protocol.paymentDisclaimer}</p>
             </form>
+            ) : (
+              <div className={styles.payForm}>
+                <p className={styles.body}>
+                  Payment is not connected on TIDL yet. When checkout is
+                  available, you will complete your order here after physician
+                  approval.
+                </p>
+              </div>
+            )}
 
             <div className={styles.team}>
               <p className={styles.sectionEyebrow}>Your care team</p>

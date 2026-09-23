@@ -30,9 +30,11 @@ env only: base URL, durable token, `PRESCRIBERX_SANDBOX=false`.
 
 Health check: `GET /api/prescriberx/health` should return `healthy: true`.
 
-**Patient portal handoff (Phases A–D, 2026-09-22):** start at
-[`docs/handoff-patient-portal.md`](docs/handoff-patient-portal.md). Smoke:
-`cd web && npx tsx scripts/smoke-phase-d.ts` with the dev server up.
+**Patient portal handoff (Phases A–F, J, H, L–N):** start at
+[`docs/handoff-patient-portal.md`](docs/handoff-patient-portal.md). Smokes from
+`web/` with dev server up: `npx tsx scripts/smoke-phase-d.ts`,
+`npm run smoke:phase-l`, `npm run smoke:phase-m`, `npm run smoke:phase-n`.
+Unit tests: `npm test`.
 
 ## GitHub → Vercel
 

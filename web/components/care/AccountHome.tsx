@@ -14,20 +14,17 @@ import {
 import type { ValueFieldCard } from "@/content/fixtures/value-fields";
 import { CATALOG_HREF } from "@/content/fixtures/catalog";
 import { intakeHref } from "@/content/clinical/entry-map";
-import { mapAccountHome } from "@/lib/prescriberx/map-account-home";
+import {
+  isOrderUuid,
+  mapAccountHome,
+  mergeOrderTracking,
+} from "@/lib/prescriberx/map-account-home";
 import styles from "./AccountHome.module.css";
 
 type Props = {
   entrySlug: string;
   demo?: boolean;
 };
-
-const TASKS = [
-  { href: "#current", label: "Track order", detail: "Live shipment" },
-  { href: "#orders", label: "Past orders", detail: "Reorder a protocol" },
-  { href: "#care", label: "Care team", detail: "Clinician and pharmacy" },
-  { href: "#browse", label: "Browse related", detail: "Stacks beside this one" },
-] as const;
 
 function VialPlate({
   src,
@@ -68,6 +65,40 @@ function TrackingList({ events }: { events: readonly TrackingEvent[] }) {
   );
 }
 
+function TrackingFacts({
+  tracking,
+}: {
+  tracking: NonNullable<AccountOrder["tracking"]>;
+}) {
+  return (
+    <div className={styles.trackWrap}>
+      <dl className={styles.trackFacts}>
+        {tracking.carrier ? (
+          <div>
+            <dt>Carrier</dt>
+            <dd>{tracking.carrier}</dd>
+          </div>
+        ) : null}
+        {tracking.number ? (
+          <div>
+            <dt>Tracking</dt>
+            <dd>{tracking.number}</dd>
+          </div>
+        ) : null}
+        {tracking.shipTo ? (
+          <div>
+            <dt>Ships to</dt>
+            <dd>{tracking.shipTo}</dd>
+          </div>
+        ) : null}
+      </dl>
+      {tracking.events.length ? (
+        <TrackingList events={tracking.events} />
+      ) : null}
+    </div>
+  );
+}
+
 function reorderHref(order: AccountOrder, demo: boolean): string {
   if (demo) return `/care/protocol?entry=${order.entrySlug}&demo=1`;
   return intakeHref(order.entrySlug);
@@ -89,7 +120,7 @@ function OrderActions({
       <Button href={reorderHref(order, demo)}>
         {demo ? "Reorder" : "Start a new intake"}
       </Button>
-      {!subscribed ? (
+      {demo && !subscribed ? (
         <Button styleVariant="Secondary" onClick={onSubscribe}>
           Convert to monthly
         </Button>
@@ -120,19 +151,20 @@ function RelatedCard({ item }: { item: ValueFieldCard }) {
 
 async function fetchPatientJson(path: string): Promise<{
   unauthorized?: boolean;
+  ok: boolean;
   data: unknown;
 }> {
   const res = await fetch(path, {
     headers: { Accept: "application/json" },
     cache: "no-store",
   });
-  if (res.status === 401) return { unauthorized: true, data: null };
-  if (!res.ok) return { data: null };
+  if (res.status === 401) return { unauthorized: true, ok: false, data: null };
+  if (!res.ok) return { ok: false, data: null };
   try {
     const json = (await res.json()) as { data?: unknown };
-    return { data: json.data ?? null };
+    return { ok: true, data: json.data ?? null };
   } catch {
-    return { data: null };
+    return { ok: false, data: null };
   }
 }
 
@@ -147,14 +179,18 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
   const [subscribedIds, setSubscribedIds] = useState<Set<string>>(new Set());
   const [openPastId, setOpenPastId] = useState<string | null>(null);
   const [cadenceNote, setCadenceNote] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (demo) {
       setHome(fixtureHome);
+      setLoadError(null);
       return;
     }
     let cancelled = false;
     void (async () => {
+      setLoadError(null);
+      setHome(null);
       const [dashboard, orders, encounters, prescriptions] = await Promise.all([
         fetchPatientJson("/api/prescriberx/patient/dashboard"),
         fetchPatientJson("/api/prescriberx/patient/orders"),
@@ -171,16 +207,39 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
         router.replace("/care/account?mode=login");
         return;
       }
+      if (!dashboard.ok && !orders.ok && !encounters.ok && !prescriptions.ok) {
+        setLoadError("Unable to load your account right now.");
+        return;
+      }
       try {
-        setHome(
-          mapAccountHome({
-            entrySlug,
-            dashboard: dashboard.data,
-            orders: orders.data,
-            encounters: encounters.data,
-            prescriptions: prescriptions.data,
-          }),
-        );
+        let mapped = mapAccountHome({
+          entrySlug,
+          dashboard: dashboard.data,
+          orders: orders.data,
+          encounters: encounters.data,
+          prescriptions: prescriptions.data,
+        });
+        const currentId = mapped.currentOrder?.id;
+        if (currentId && isOrderUuid(currentId)) {
+          const tracking = await fetchPatientJson(
+            `/api/prescriberx/patient/orders/${encodeURIComponent(currentId)}/tracking`,
+          );
+          if (cancelled) return;
+          if (tracking.unauthorized) {
+            router.replace("/care/account?mode=login");
+            return;
+          }
+          if (tracking.ok && mapped.currentOrder) {
+            mapped = {
+              ...mapped,
+              currentOrder: mergeOrderTracking(
+                mapped.currentOrder,
+                tracking.data,
+              ),
+            };
+          }
+        }
+        setHome(mapped);
         setLoadError(null);
       } catch {
         setLoadError("Unable to load your account right now.");
@@ -189,7 +248,7 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [demo, entrySlug, fixtureHome, router]);
+  }, [demo, entrySlug, fixtureHome, router, reloadKey]);
 
   if (!home) {
     return (
@@ -200,6 +259,18 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
             <p className={styles.sectionLede}>
               {loadError || "Loading your care…"}
             </p>
+            {loadError ? (
+              <div className={styles.emptyCard}>
+                <p className={styles.emptyTitle}>Account unavailable</p>
+                <p className={styles.emptyBody}>{loadError}</p>
+                <Button
+                  styleVariant="Secondary"
+                  onClick={() => setReloadKey((n) => n + 1)}
+                >
+                  Retry
+                </Button>
+              </div>
+            ) : null}
           </div>
         </section>
       </div>
@@ -208,6 +279,18 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
 
   const current = home.currentOrder;
   const currentSubscribed = current ? subscribedIds.has(current.id) : false;
+  const showTrack = Boolean(current);
+  const showPast = home.pastOrders.length > 0;
+  const tasks = [
+    ...(showTrack
+      ? [{ href: "#current", label: "Track order", detail: "Live shipment" }]
+      : []),
+    ...(showPast
+      ? [{ href: "#orders", label: "Past orders", detail: "Reorder a protocol" }]
+      : []),
+    { href: "#care", label: "Care team", detail: "Clinician and pharmacy" },
+    { href: "#browse", label: "Browse related", detail: "Stacks beside this one" },
+  ];
 
   const subscribe = (orderId: string) => {
     setSubscribedIds((prev) => new Set(prev).add(orderId));
@@ -220,15 +303,17 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
           <h1 id="account-home-title" className={styles.eyebrow}>
             Your account
           </h1>
-          <ul className={styles.goalRow} aria-label="Your goals">
-            {home.goals.map((goal) => (
-              <li key={goal} className={styles.goalChip}>
-                {goal}
-              </li>
-            ))}
-          </ul>
+          {home.goals.length ? (
+            <ul className={styles.goalRow} aria-label="Your goals">
+              {home.goals.map((goal) => (
+                <li key={goal} className={styles.goalChip}>
+                  {goal}
+                </li>
+              ))}
+            </ul>
+          ) : null}
           <nav className={styles.tasks} aria-label="Account shortcuts">
-            {TASKS.map((task) => (
+            {tasks.map((task) => (
               <a key={task.href} href={task.href} className={styles.task}>
                 <span className={styles.taskLabel}>{task.label}</span>
                 <span className={styles.taskDetail}>{task.detail}</span>
@@ -284,15 +369,19 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
                   <p className={styles.orderId}>{current.id}</p>
                   <h3 className={styles.orderName}>{current.stackName}</h3>
                   <p className={styles.orderSub}>
-                    Placed {current.placedOn} · {current.total} ·{" "}
-                    {currentSubscribed
-                      ? "Monthly cadence"
-                      : "Single purchase"}
+                    Placed {current.placedOn} · {current.total}
+                    {demo
+                      ? currentSubscribed
+                        ? " · Monthly cadence"
+                        : " · Single purchase"
+                      : current.purchaseType === "subscription"
+                        ? " · Subscription"
+                        : ""}
                   </p>
                 </div>
               </header>
 
-              {currentSubscribed ? (
+              {demo && currentSubscribed ? (
                 <div className={styles.subscribeNote} role="status">
                   <p className={styles.subscribeKicker}>Monthly cadence</p>
                   <p className={styles.subscribeBody}>
@@ -328,35 +417,23 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
               ) : null}
 
               {current.tracking ? (
-                <div className={styles.trackWrap}>
-                  <dl className={styles.trackFacts}>
-                    <div>
-                      <dt>Carrier</dt>
-                      <dd>{current.tracking.carrier}</dd>
-                    </div>
-                    <div>
-                      <dt>Tracking</dt>
-                      <dd>{current.tracking.number}</dd>
-                    </div>
-                    <div>
-                      <dt>Ships to</dt>
-                      <dd>{current.tracking.shipTo}</dd>
-                    </div>
-                  </dl>
-                  <TrackingList events={current.tracking.events} />
-                </div>
+                <TrackingFacts tracking={current.tracking} />
               ) : null}
 
-              <p className={styles.inProtocol}>In this protocol</p>
-              <ul className={styles.agentList}>
-                {current.agents.map((agent) => (
-                  <li key={agent.name} className={styles.agentRow}>
-                    <VialPlate src={agent.vialSrc} className={styles.agentVial} />
-                    <span>{agent.name}</span>
-                    <span className={styles.agentDose}>{agent.dosage}</span>
-                  </li>
-                ))}
-              </ul>
+              {current.agents.length ? (
+                <>
+                  <p className={styles.inProtocol}>In this protocol</p>
+                  <ul className={styles.agentList}>
+                    {current.agents.map((agent) => (
+                      <li key={agent.name} className={styles.agentRow}>
+                        <VialPlate src={agent.vialSrc} className={styles.agentVial} />
+                        <span>{agent.name}</span>
+                        <span className={styles.agentDose}>{agent.dosage}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : null}
 
               <OrderActions
                 order={current}
@@ -373,6 +450,22 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
                 </p>
               </div>
             ) : null}
+
+            {!demo && home.prescriptions.length ? (
+              <div className={styles.emptyCard}>
+                <p className={styles.emptyTitle}>Prescriptions</p>
+                <ul className={styles.agentList}>
+                  {home.prescriptions.map((rx) => (
+                    <li key={rx.id} className={styles.agentRow}>
+                      <span>{rx.name}</span>
+                      {rx.dosage ? (
+                        <span className={styles.agentDose}>{rx.dosage}</span>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </div>
         </section>
       </ScrollReveal>
@@ -387,38 +480,52 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
             <div className={styles.careGrid}>
               <div className={styles.panel}>
                 <p className={styles.panelEyebrow}>Care team</p>
-                <ul className={styles.teamList}>
-                  {home.careTeam.map((member) => (
-                    <li key={member.id} className={styles.teamRow}>
-                      <div
-                        className={styles.avatar}
-                        aria-hidden
-                      >
-                        {member.imageSrc ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={member.imageSrc} alt="" />
-                        ) : (
-                          member.name.slice(0, 1)
-                        )}
-                      </div>
-                      <div>
-                        <p className={styles.teamName}>{member.name}</p>
-                        <p className={styles.teamRole}>{member.role}</p>
-                        <p className={styles.teamStatus}>{member.status}</p>
-                      </div>
-                    </li>
-                  ))}
-                  <li className={styles.teamRow}>
-                    <div className={`${styles.avatar} ${styles.avatarMuted}`} aria-hidden>
-                      {home.pharmacy.name.slice(0, 1)}
-                    </div>
-                    <div>
-                      <p className={styles.teamName}>{home.pharmacy.name}</p>
-                      <p className={styles.teamRole}>{home.pharmacy.detail}</p>
-                      <p className={styles.teamStatus}>{home.pharmacy.status}</p>
-                    </div>
-                  </li>
-                </ul>
+                {home.careTeam.length || home.pharmacy ? (
+                  <ul className={styles.teamList}>
+                    {home.careTeam.map((member) => (
+                      <li key={member.id} className={styles.teamRow}>
+                        <div className={styles.avatar} aria-hidden>
+                          {member.imageSrc ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={member.imageSrc} alt="" />
+                          ) : (
+                            member.name.slice(0, 1)
+                          )}
+                        </div>
+                        <div>
+                          <p className={styles.teamName}>{member.name}</p>
+                          <p className={styles.teamRole}>{member.role}</p>
+                          <p className={styles.teamStatus}>{member.status}</p>
+                        </div>
+                      </li>
+                    ))}
+                    {home.pharmacy ? (
+                      <li className={styles.teamRow}>
+                        <div
+                          className={`${styles.avatar} ${styles.avatarMuted}`}
+                          aria-hidden
+                        >
+                          {home.pharmacy.name.slice(0, 1)}
+                        </div>
+                        <div>
+                          <p className={styles.teamName}>{home.pharmacy.name}</p>
+                          {home.pharmacy.detail ? (
+                            <p className={styles.teamRole}>{home.pharmacy.detail}</p>
+                          ) : null}
+                          {home.pharmacy.status ? (
+                            <p className={styles.teamStatus}>
+                              {home.pharmacy.status}
+                            </p>
+                          ) : null}
+                        </div>
+                      </li>
+                    ) : null}
+                  </ul>
+                ) : (
+                  <p className={styles.emptyBody}>
+                    Care team appears after physician review.
+                  </p>
+                )}
                 <Button
                   styleVariant="Secondary"
                   onClick={() =>
@@ -432,22 +539,32 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
               <div className={styles.panel}>
                 <p className={styles.panelEyebrow}>{home.surveyTitle}</p>
                 <p className={styles.panelLede}>{home.surveyLede}</p>
-                <p className={styles.panelEyebrow}>Goals</p>
-                <ul className={styles.goalRow}>
-                  {home.goals.map((goal) => (
-                    <li key={`survey-${goal}`} className={styles.goalChip}>
-                      {goal}
-                    </li>
-                  ))}
-                </ul>
-                <dl className={styles.survey}>
-                  {home.surveyRows.map((row) => (
-                    <div key={row.label} className={styles.surveyRow}>
-                      <dt>{row.label}</dt>
-                      <dd>{row.value}</dd>
-                    </div>
-                  ))}
-                </dl>
+                {home.goals.length ? (
+                  <>
+                    <p className={styles.panelEyebrow}>Goals</p>
+                    <ul className={styles.goalRow}>
+                      {home.goals.map((goal) => (
+                        <li key={`survey-${goal}`} className={styles.goalChip}>
+                          {goal}
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
+                {home.surveyRows.length ? (
+                  <dl className={styles.survey}>
+                    {home.surveyRows.map((row) => (
+                      <div key={row.label} className={styles.surveyRow}>
+                        <dt>{row.label}</dt>
+                        <dd>{row.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                ) : (
+                  <p className={styles.emptyBody}>
+                    Survey answers appear here when your chart includes them.
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -466,8 +583,9 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
               Past protocols
             </h2>
             <p className={styles.sectionLede}>
-              Reorder the same stack, or convert a one time purchase to a
-              monthly cadence if your clinician keeps it in protocol.
+              {demo
+                ? "Reorder the same stack, or convert a one time purchase to a monthly cadence if your clinician keeps it in protocol."
+                : "Start a new intake to reorder. A physician reviews anything new."}
             </p>
             {home.pastOrders.length === 0 ? (
               <p className={styles.emptyBody}>No past protocols yet.</p>
@@ -485,7 +603,7 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
                         <h3 className={styles.orderName}>{order.stackName}</h3>
                         <p className={styles.orderSub}>
                           {order.placedOn} · {order.total} · {order.statusLabel}
-                          {subscribed ? " · Monthly cadence" : ""}
+                          {demo && subscribed ? " · Monthly cadence" : ""}
                         </p>
                       </div>
                     </div>
@@ -493,42 +611,31 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
                       <Button href={reorderHref(order, demo)}>
                         {demo ? "Reorder" : "Start a new intake"}
                       </Button>
-                      {!subscribed ? (
+                      {demo && !subscribed ? (
                         <Button
                           styleVariant="Secondary"
                           onClick={() => subscribe(order.id)}
                         >
                           Convert to monthly
                         </Button>
-                      ) : (
+                      ) : null}
+                      {demo && subscribed ? (
                         <p className={styles.subscribedMark}>Monthly</p>
-                      )}
-                      <Button
-                        styleVariant="Tertiary"
-                        onClick={() =>
-                          setOpenPastId(open ? null : order.id)
-                        }
-                      >
-                        {open ? "Hide tracking" : "Tracking"}
-                      </Button>
+                      ) : null}
+                      {order.tracking ? (
+                        <Button
+                          styleVariant="Tertiary"
+                          onClick={() =>
+                            setOpenPastId(open ? null : order.id)
+                          }
+                        >
+                          {open ? "Hide tracking" : "Tracking"}
+                        </Button>
+                      ) : null}
                     </div>
                     {open && order.tracking ? (
                       <div className={styles.pastTrack}>
-                        <dl className={styles.trackFacts}>
-                          <div>
-                            <dt>Carrier</dt>
-                            <dd>{order.tracking.carrier}</dd>
-                          </div>
-                          <div>
-                            <dt>Tracking</dt>
-                            <dd>{order.tracking.number}</dd>
-                          </div>
-                          <div>
-                            <dt>Shipped to</dt>
-                            <dd>{order.tracking.shipTo}</dd>
-                          </div>
-                        </dl>
-                        <TrackingList events={order.tracking.events} />
+                        <TrackingFacts tracking={order.tracking} />
                       </div>
                     ) : null}
                   </li>

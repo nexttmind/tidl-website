@@ -1,6 +1,7 @@
 import { CarePortalChrome } from "@/components/care/CarePortalChrome";
 import { VisitContinue } from "@/components/care/VisitContinue";
 import { assertEncounterReadyForVisit } from "@/lib/prescriberx/protocol-gate";
+import { isSandboxDemoQuery } from "@/lib/prescriberx/sandbox-demo";
 
 export const metadata = {
   title: "TIDL · Physician visit",
@@ -25,7 +26,7 @@ export default async function CareVisitPage({ searchParams }: PageProps) {
       <VisitContinue
         entrySlug={entrySlug}
         encounterId={params.encounter}
-        demo={params.demo === "1"}
+        demo={isSandboxDemoQuery(params.demo)}
       />
     </CarePortalChrome>
   );

@@ -215,11 +215,19 @@
   min-height: 0;
 }
 
-.centered .login {
+.centered .login,
+.centered .sessionEmail,
+.centered .logout {
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+.centered .sessionEmail {
+  max-width: 9rem;
+  text-transform: none;
+  letter-spacing: 0.01em;
 }
 
 .brandMenu {
@@ -289,10 +297,14 @@
 .overlay.glassNav:not(.pinned) .askAi,
 .overlay.glassNav:not(.pinned) .login,
 .overlay.glassNav:not(.pinned) .signup,
+.overlay.glassNav:not(.pinned) .sessionEmail,
+.overlay.glassNav:not(.pinned) .logout,
 .overlay.glassNav:not(.pinned) .menuBtn,
 .overlay.inverse:not(.pinned) .askAi,
 .overlay.inverse:not(.pinned) .login,
 .overlay.inverse:not(.pinned) .signup,
+.overlay.inverse:not(.pinned) .sessionEmail,
+.overlay.inverse:not(.pinned) .logout,
 .overlay.inverse:not(.pinned) .menuBtn {
   color: var(--text-inverse);
 }
@@ -327,7 +339,9 @@
 .root[data-pin-dir="out"] .askAi,
 .root[data-pin-dir="out"] .auth,
 .root[data-pin-dir="out"] .login,
-.root[data-pin-dir="out"] .signup {
+.root[data-pin-dir="out"] .signup,
+.root[data-pin-dir="out"] .sessionEmail,
+.root[data-pin-dir="out"] .logout {
   transition-delay: 0ms;
 }
 
@@ -1081,7 +1095,9 @@
 }
 
 .login,
-.signup {
+.signup,
+.sessionEmail,
+.logout {
   display: inline-flex;
   align-items: center;
   min-height: 32px;
@@ -1098,10 +1114,30 @@
     opacity 180ms ease-out;
 }
 
+.sessionEmail {
+  max-width: 11rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logout {
+  appearance: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.logout:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
 .login:hover,
 .login:focus-visible,
 .signup:hover,
-.signup:focus-visible {
+.signup:focus-visible,
+.logout:hover,
+.logout:focus-visible {
   opacity: 0.65;
   outline: none;
 }
@@ -1283,6 +1319,35 @@
   border: none;
   border-radius: 0;
   background: transparent;
+}
+
+.mobileAuth:has(.mobileSessionEmail) {
+  grid-template-columns: 1fr;
+}
+
+.mobileSessionEmail {
+  margin: 0;
+  padding: 0 4px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.mobileAuthLogout {
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.mobileAuthLogout:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }
 
 .mobileAuth .mobileLink {
@@ -1478,7 +1543,9 @@
 }
 
 .pinned .login,
-.pinned .signup {
+.pinned .signup,
+.pinned .sessionEmail,
+.pinned .logout {
   color: var(--text-inverse);
   min-height: 32px;
 }
@@ -1917,6 +1984,8 @@
   .askAi,
   .login,
   .signup,
+  .sessionEmail,
+  .logout,
   .menuBtn,
   .menuDots,
   .chevron,

@@ -46,14 +46,32 @@ const nextConfig: NextConfig = {
     root: path.join(__dirname),
   },
   async headers() {
-    if (process.env.NODE_ENV !== "development") return [];
+    const securityHeaders = [
+      { key: "X-Content-Type-Options", value: "nosniff" },
+      { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+      { key: "X-Frame-Options", value: "DENY" },
+      {
+        key: "Permissions-Policy",
+        value: "camera=(), microphone=(), geolocation=()",
+      },
+    ];
+
+    if (process.env.NODE_ENV === "development") {
+      return [
+        {
+          source:
+            "/:path((?!landing|pdp|pain-relief|brand|favicon.png).*)",
+          headers: [
+            { key: "Cache-Control", value: "no-store, must-revalidate" },
+          ],
+        },
+      ];
+    }
+
     return [
       {
-        source:
-          "/:path((?!landing|pdp|pain-relief|brand|favicon.png).*)",
-        headers: [
-          { key: "Cache-Control", value: "no-store, must-revalidate" },
-        ],
+        source: "/:path*",
+        headers: securityHeaders,
       },
     ];
   },

@@ -11,6 +11,11 @@ import {
   readIntakeHandoff,
   type IntakeHandoff,
 } from "@/lib/prescriberx/intake-flow";
+import {
+  clearPasswordNeedsReset,
+  persistPasswordNeedsReset,
+  readPasswordNeedsReset,
+} from "@/lib/prescriberx/password-reset-hint";
 import styles from "./AccountWizard.module.css";
 
 type Mode = "create" | "login";
@@ -35,6 +40,8 @@ type AuthJson = {
 
 const GENERIC_AUTH =
   "Unable to complete authentication. Check your details and try again.";
+const RESET_FIRST =
+  "This password was not saved on create. Email a reset link to set one, then log in. Your session can still continue to physician review if you are already signed in.";
 
 const ALLOWED_NEXT = [
   "/care/waiting",
@@ -100,11 +107,15 @@ export function AccountWizard({
   const [forgotBusy, setForgotBusy] = useState(false);
   const [continueHref, setContinueHref] = useState<string | null>(null);
   const [alreadySignedIn, setAlreadySignedIn] = useState(false);
+  const [needsReset, setNeedsReset] = useState(false);
 
   useEffect(() => {
     const data = readIntakeHandoff();
     setHandoff(data);
+    const resetHint = readPasswordNeedsReset();
+    if (resetHint) setNeedsReset(true);
     if (data?.email) setEmail(data.email);
+    else if (resetHint?.email) setEmail(resetHint.email);
   }, []);
 
   useEffect(() => {
@@ -162,8 +173,7 @@ export function AccountWizard({
   const finishSession = () => {
     setPassword("");
     setConfirm("");
-    // Keep the intake encounter in localStorage so header Sign up still
-    // has the chart link if the patient returns to this page.
+    // Encounter remains in the URL and sessionStorage handoff for this tab.
   };
 
   const onForgot = async () => {
@@ -252,11 +262,17 @@ export function AccountWizard({
         finishSession();
         const passwordStatus = json.data?.password?.status;
         if (passwordStatus === "failed") {
+          persistPasswordNeedsReset(email.trim().toLowerCase());
+          setNeedsReset(true);
           setContinueHref(href);
           setNotice(
-            "Your session is active. This password was not saved. Email a reset link, or continue to physician review.",
+            "Your session is active. This password was not saved. Email a reset link to make later login work, or continue to physician review.",
           );
           return;
+        }
+        if (passwordStatus === "bound") {
+          clearPasswordNeedsReset();
+          setNeedsReset(false);
         }
         router.push(href);
         return;
@@ -276,11 +292,13 @@ export function AccountWizard({
       const json = await readAuthJson(res);
       if (!res.ok || json.success === false) {
         setError(authMessage(json));
-        setNotice(
-          "If this is your first sign-in, your password may not be saved yet. Use Email me a reset link to set one.",
-        );
+        if (needsReset || readPasswordNeedsReset()) {
+          setNotice(RESET_FIRST);
+        }
         return;
       }
+      clearPasswordNeedsReset();
+      setNeedsReset(false);
       const href = destination();
       finishSession();
       router.push(href);
@@ -347,7 +365,9 @@ export function AccountWizard({
                   : "Create an account after intake so physician review stays with you. Header Sign up alone cannot create one."
                 : resolvedEncounter || handoff
                   ? "Log in to continue to physician review for your submitted intake."
-                  : "Log in to see your orders and care. If this is your first visit, the password from create account may not be saved yet — use Email me a reset link."}
+                  : needsReset
+                    ? "Log in after you set a password from the reset email. Email is kept filled."
+                    : "Log in to see your orders and care."}
         </p>
 
         {(handoff?.firstName || resolvedEncounter) &&

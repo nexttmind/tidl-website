@@ -1,6 +1,6 @@
-# Patient auth smoke (Phase D)
+# Patient auth + portal smoke (Phases D–N)
 
-Verified locally 2026-09-22. Full narrative for the next team:
+Verified locally 2026-09-22 (Phase D) and 2026-09-23 (L/M/N). Full narrative:
 [`docs/handoff-patient-portal.md`](handoff-patient-portal.md).
 
 Run from `web/` with the Next dev server up:
@@ -29,6 +29,20 @@ npx tsx scripts/smoke-phase-d.ts
 - Waiting screen has no **Continue to protocol** unless `?demo=1` on sandbox
 - `/care/home` without `?demo=1` does not invent past orders
 - Log out chip on portal chrome clears the session
+
+## Production hardening smokes (L/M/N)
+
+Dev server must be up (`npm run dev`). Phase L requires dev — not production
+`next start` (demo fixtures are correctly blocked in prod).
+
+```bash
+npm run smoke:phase-l   # ?demo=1 only in sandbox dev/test
+npm run smoke:phase-m   # intake/status 429; status 401 without cookie
+npm run smoke:phase-n   # waiting with session; prod headers on next start -p 3001
+```
+
+Unit tests cover helpers: `npm test` (includes `sandbox-demo`, `rate-limit`,
+`intake-files`, `health-config`, `waiting-poll`, `intake-flow`).
 
 ## Known sandbox notes
 

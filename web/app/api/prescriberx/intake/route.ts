@@ -1,9 +1,16 @@
 import { buildUnifiedIntakePayload } from "@/lib/prescriberx/build-intake-payload";
+import {
+  clientIpFromRequest,
+  consumeRateLimit,
+} from "@/lib/prescriberx/auth-rate-limit";
 import { errorResponse, prescribeRxFetch } from "@/lib/prescriberx/client";
 import {
   getPrescribeRxEnv,
+  guardPrescribeRxEnv,
   missingPrescribeRxResponse,
 } from "@/lib/prescriberx/env";
+import { validateIntakeFiles } from "@/lib/prescriberx/intake-files";
+import { rateLimitedResponse } from "@/lib/prescriberx/rate-limit-response";
 import type {
   EncounterSchemaData,
   UploadedDoc,
@@ -29,6 +36,12 @@ type RawBody = {
 export async function POST(request: Request) {
   const env = getPrescribeRxEnv();
   if (!env) return missingPrescribeRxResponse();
+  const envBlocked = guardPrescribeRxEnv(env);
+  if (envBlocked) return envBlocked;
+
+  const ip = clientIpFromRequest(request);
+  const limit = consumeRateLimit(`intake:${ip}`, 5, 60_000);
+  if (!limit.allowed) return rateLimitedResponse(limit.retryAfterSec);
 
   let body: RawBody & Record<string, unknown>;
   try {
@@ -44,9 +57,19 @@ export async function POST(request: Request) {
     );
   }
 
+  const fileCheck = validateIntakeFiles(body.files);
+  if (!fileCheck.ok) {
+    return Response.json(
+      { success: false, message: fileCheck.message },
+      { status: fileCheck.message.includes("too large") ? 400 : 422 },
+    );
+  }
+
   // Passthrough for already-shaped payloads (advanced callers).
   if (body.prebuilt) {
-    const { prebuilt: _p, ...payload } = body;
+    const payload = { ...body };
+    delete payload.prebuilt;
+    delete payload.files;
     if (env.sandbox) payload.is_sandbox = true;
     try {
       const data = await prescribeRxFetch("/telehealth/intake/unified", {
@@ -86,16 +109,14 @@ export async function POST(request: Request) {
     const payload = buildUnifiedIntakePayload({
       schema,
       values: body.values ?? {},
-      files: body.files ?? [],
+      files: fileCheck.files,
       productIds,
       acceptedConsentKeys: body.consents ?? [],
       isSandbox: env.sandbox,
       clientId: env.clientId,
       salesOrgId: env.salesOrgId,
       meta: {
-        ip_address:
-          request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-          undefined,
+        ip_address: ip === "unknown" ? undefined : ip,
         user_agent: request.headers.get("user-agent") || undefined,
         source_domain: request.headers.get("host") || undefined,
       },

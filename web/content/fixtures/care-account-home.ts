@@ -46,6 +46,14 @@ export type AccountOrder = {
   agents: readonly { name: string; dosage: string; vialSrc: string }[];
 };
 
+export type AccountPrescription = {
+  id: string;
+  name: string;
+  dosage: string;
+  /** UUID of a related order, when PRX sends one. */
+  orderId?: string;
+};
+
 export type PendingEncounter = {
   encounterId: string;
   entrySlug: string;
@@ -58,12 +66,13 @@ export type AccountHomeData = {
   stackName: string;
   goals: readonly string[];
   careTeam: readonly CareTeamMember[];
-  pharmacy: PharmacyInfo;
+  pharmacy: PharmacyInfo | null;
   surveyTitle: string;
   surveyLede: string;
   surveyRows: readonly ClinicalSummaryRow[];
   currentOrder: AccountOrder | null;
   pastOrders: readonly AccountOrder[];
+  prescriptions: readonly AccountPrescription[];
   pendingEncounter: PendingEncounter | null;
   related: readonly ValueFieldCard[];
 };
@@ -247,6 +256,7 @@ export function resolveAccountHome(
       deliveredOrder("TIDL-1904", "recovery-performance", "3 Aug 2026", "$197"),
       deliveredOrder("TIDL-1766", "athletes", "12 Jun 2026", "$395"),
     ],
+    prescriptions: [],
     pendingEncounter: null,
     related: relatedFor(protocol.entrySlug),
   };
