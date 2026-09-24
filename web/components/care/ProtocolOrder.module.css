@@ -769,6 +769,17 @@
   }
 }
 
+.checkoutSection {
+  padding: clamp(2rem, 5vw, 4rem) 0 4rem;
+  max-width: 36rem;
+}
+
+.inlineLink {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .mediaCol {
     position: relative;

@@ -21,6 +21,7 @@ const REMOVED = [
 const PROTECTED_PREFIXES = [
   "/care/waiting",
   "/care/protocol",
+  "/care/checkout",
   "/care/visit",
   "/care/confirmation",
   "/care/home",

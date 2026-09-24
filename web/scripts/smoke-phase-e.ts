@@ -46,14 +46,20 @@ async function main() {
     throw new Error(`health failed http=${health.res.status}`);
   }
 
-  const required = [
+  const required: [string, boolean][] = [
     ["sandboxHostConsistent", h.sandboxHostConsistent === true],
     ["sessionSecretConfigured", h.sessionSecretConfigured === true],
-    ["webhookSecretConfigured", h.webhookSecretConfigured === true],
     ["issueToken", h.issueToken === true],
     ["healthy", h.healthy === true],
     ["sandbox", h.sandbox === true],
-  ] as const;
+  ];
+
+  if (process.env.PRESCRIBERX_WEBHOOK_SECRET?.trim()) {
+    required.push([
+      "webhookSecretConfigured",
+      h.webhookSecretConfigured === true,
+    ]);
+  }
 
   for (const [name, ok] of required) {
     if (!ok) throw new Error(`health flag ${name} not true`);

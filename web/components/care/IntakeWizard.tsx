@@ -146,9 +146,18 @@ function validateStep(
     const value = values[field.slug];
     if (type === FieldType.ADDRESS) {
       const addr = normalizeIntakeAddress(value);
-      if (!addr || !addr.street || !addr.city || !addr.zip || !/^[A-Z]{2}$/.test(addr.state)) {
+      if (
+        !addr ||
+        !addr.street ||
+        !addr.city ||
+        !addr.zip ||
+        !/^[A-Z]{2}$/.test(addr.state)
+      ) {
         errors[field.slug] =
           "Enter street, city, 2-letter state, and ZIP.";
+      } else if (addr.zip.length > 10 || addr.zip.length < 5) {
+        errors[field.slug] =
+          "Use a 5-digit ZIP or ZIP+4 (example: 11201 or 11201-1234).";
       }
       continue;
     }
@@ -304,6 +313,7 @@ export function IntakeWizard({ entrySlug }: Props) {
         data?: {
           encounter_id?: string;
           encounter_number?: string;
+          patient_number?: string;
           patient_chart_id?: string;
           user_id?: string;
           id?: string;
@@ -320,6 +330,7 @@ export function IntakeWizard({ entrySlug }: Props) {
         (json as unknown as Record<string, unknown>)) as {
         encounter_id?: string;
         encounter_number?: string;
+        patient_number?: string;
         patient_chart_id?: string;
         user_id?: string;
         id?: string;
@@ -329,16 +340,22 @@ export function IntakeWizard({ entrySlug }: Props) {
         typeof data.patient_chart_id === "string" ? data.patient_chart_id : "";
       const encounterNumber =
         typeof data.encounter_number === "string" ? data.encounter_number : "";
+      const patientNumber =
+        typeof data.patient_number === "string" ? data.patient_number : "";
       const userId = typeof data.user_id === "string" ? data.user_id : "";
+      const handoffEmail = String(values.patient_email ?? values.email ?? "")
+        .trim()
+        .toLowerCase();
       writeIntakeHandoff({
         encounterId,
         entrySlug: entry.slug,
-        email: String(values.patient_email ?? values.email ?? ""),
+        ...(handoffEmail.includes("@") ? { email: handoffEmail } : {}),
         firstName: String(values.patient_first_name ?? values.first_name ?? ""),
         lastName: String(values.patient_last_name ?? values.last_name ?? ""),
         phone: String(values.patient_phone ?? values.phone ?? ""),
         ...(patientChartId ? { patientChartId } : {}),
         ...(encounterNumber ? { encounterNumber } : {}),
+        ...(patientNumber ? { patientNumber } : {}),
         ...(userId ? { userId } : {}),
       });
       const params = new URLSearchParams();

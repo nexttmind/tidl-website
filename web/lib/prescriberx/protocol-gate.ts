@@ -39,6 +39,15 @@ function visitHref(entrySlug: string, encounterId?: string): string {
   return qs ? `/care/visit?${qs}` : "/care/visit";
 }
 
+export function checkoutHref(
+  entrySlug: string,
+  encounterId?: string,
+  extra?: Record<string, string | undefined>,
+): string {
+  const qs = carePathQuery(entrySlug, encounterId, extra);
+  return qs ? `/care/checkout?${qs}` : "/care/checkout";
+}
+
 async function resolveAccess(input: {
   encounterId?: string;
   entrySlug: string;

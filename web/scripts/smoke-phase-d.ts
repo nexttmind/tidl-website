@@ -123,6 +123,7 @@ async function main() {
   const unauthPages = [
     "/care/waiting",
     "/care/protocol",
+    "/care/checkout",
     "/care/visit",
     "/care/confirmation",
     "/care/home",

@@ -166,7 +166,14 @@ export type IntakeHandoff = {
   patientChartId?: string;
   userId?: string;
   encounterNumber?: string;
+  patientNumber?: string;
 };
+
+export function normalizeIntakeEmail(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const email = value.trim().toLowerCase();
+  return email.includes("@") ? email : undefined;
+}
 
 export const INTAKE_HANDOFF_KEY = "tidl_intake_handoff";
 

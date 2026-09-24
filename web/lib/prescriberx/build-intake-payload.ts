@@ -162,6 +162,26 @@ function normalizeState(raw: string): string {
   return US_STATE_NAMES[trimmed.toLowerCase()] ?? trimmed;
 }
 
+/** PrescribeRx caps postal codes at 10 chars (12345 or 12345-6789). */
+export function normalizeUsPostalCode(raw: string): string {
+  const s = raw.trim();
+  if (!s) return "";
+  const parts = s.split("-");
+  if (parts.length === 2 && /^\d{5}$/.test(parts[0] ?? "")) {
+    const tail = parts[1] ?? "";
+    if (/^\d{4}$/.test(tail)) return `${parts[0]}-${tail}`;
+    return parts[0]!;
+  }
+  const match = s.match(/^(\d{5})/);
+  if (match) return match[1];
+  const digits = s.replace(/\D/g, "");
+  if (digits.length >= 9) {
+    return `${digits.slice(0, 5)}-${digits.slice(5, 9)}`;
+  }
+  if (digits.length >= 5) return digits.slice(0, 5);
+  return s.slice(0, 10);
+}
+
 export function normalizeIntakeAddress(
   value: unknown,
 ): Record<string, string> | null {
@@ -171,7 +191,9 @@ export function normalizeIntakeAddress(
   const street2 = String(raw.street2 ?? raw.line2 ?? raw.street_2 ?? "").trim();
   const city = String(raw.city ?? "").trim();
   const state = normalizeState(String(raw.state ?? ""));
-  const zip = String(raw.zip ?? raw.postal_code ?? raw.zip_code ?? "").trim();
+  const zip = normalizeUsPostalCode(
+    String(raw.zip ?? raw.postal_code ?? raw.zip_code ?? ""),
+  );
   if (!street && !city && !state && !zip) return null;
   return {
     street,
@@ -181,6 +203,47 @@ export function normalizeIntakeAddress(
     zip,
     country: "US",
   };
+}
+
+function sanitizeIdentification(payload: Record<string, unknown>) {
+  const identification = payload.identification as
+    | Record<string, unknown>
+    | undefined;
+  if (!identification) return;
+
+  const idStateRaw = identification.id_state;
+  if (idStateRaw != null && String(idStateRaw).trim() !== "") {
+    const idState = normalizeState(String(idStateRaw));
+    if (/^[A-Z]{2}$/.test(idState)) {
+      identification.id_state = idState;
+    } else {
+      delete identification.id_state;
+    }
+  }
+
+  const idNumber = identification.id_number;
+  const hasNumber =
+    typeof idNumber === "string" && idNumber.trim().length > 0;
+
+  if (
+    hasNumber &&
+    !identification.id_state &&
+    typeof identification.id_type === "string"
+  ) {
+    const patient = payload.patient as Record<string, unknown> | undefined;
+    const addr = patient?.address as Record<string, string> | undefined;
+    if (addr?.state && /^[A-Z]{2}$/.test(addr.state)) {
+      identification.id_state = addr.state;
+    }
+  }
+
+  if (isEmpty(identification.id_number)) {
+    delete payload.identification;
+    return;
+  }
+  if (!identification.id_state) {
+    delete payload.identification;
+  }
 }
 
 function place(
@@ -212,8 +275,14 @@ function place(
   const route = MAPS_TO_ROUTES[mapsTo];
   if (route) {
     const [block, key] = route;
+    let stored: unknown = value;
+    if (mapsTo === "drivers_license_state_of_issue") {
+      stored = normalizeState(String(value ?? ""));
+      if (!/^[A-Z]{2}$/.test(String(stored))) return;
+    }
+    if (isEmpty(stored)) return;
     const bucket = (payload[block] as Record<string, unknown>) ?? {};
-    bucket[key] = value;
+    bucket[key] = stored;
     payload[block] = bucket;
     if (mapsTo === "drivers_license_number") {
       bucket.id_type = "drivers_license";
@@ -338,6 +407,8 @@ export function buildUnifiedIntakePayload(input: {
   if (input.isSandbox) payload.is_sandbox = true;
   if (input.clientId) payload.client_id = input.clientId;
   if (input.salesOrgId) payload.sales_org_id = input.salesOrgId;
+
+  sanitizeIdentification(payload);
 
   return payload;
 }

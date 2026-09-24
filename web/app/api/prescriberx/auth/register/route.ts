@@ -28,6 +28,11 @@ import {
   guardPrescribeRxEnv,
   missingPrescribeRxResponse,
 } from "@/lib/prescriberx/env";
+import {
+  triggerPasswordForgot,
+  verifyPatientLogin,
+} from "@/lib/prescriberx/auth-password-setup";
+import { normalizeIntakeEmail } from "@/lib/prescriberx/intake-flow";
 import { bindPatientPassword } from "@/lib/prescriberx/password-bind";
 import { extractAuthToken } from "@/lib/prescriberx/token-parse";
 
@@ -39,6 +44,8 @@ type RegisterBody = {
   password_confirmation?: string;
   patient_chart_id?: string;
   encounter_id?: string;
+  /** From intake handoff — must match email when present. */
+  intake_email?: string;
 };
 
 function isEmail(value: string): boolean {
@@ -102,6 +109,19 @@ export async function POST(request: Request) {
   if (!encounterId) {
     return authJson(
       { success: false, message: GENERIC_VALIDATION, code: "validation" },
+      422,
+    );
+  }
+
+  const intakeEmail = normalizeIntakeEmail(body.intake_email);
+  if (intakeEmail && intakeEmail !== email) {
+    return authJson(
+      {
+        success: false,
+        message:
+          "Email must match the address used on intake. Use the same email or complete intake again.",
+        code: "email_mismatch",
+      },
       422,
     );
   }
@@ -171,6 +191,20 @@ export async function POST(request: Request) {
     password,
   });
 
+  const loginVerified = await verifyPatientLogin(env.baseUrl, email, password);
+  let needsPasswordSetup = !loginVerified;
+  let passwordResetEmailSent = false;
+  if (needsPasswordSetup) {
+    passwordResetEmailSent = await triggerPasswordForgot(env.baseUrl, email);
+  }
+
+  const effectivePasswordStatus =
+    loginVerified && passwordBind.status !== "skipped"
+      ? "bound"
+      : passwordBind.status === "bound" && !loginVerified
+        ? "failed"
+        : passwordBind.status;
+
   const session: PatientSessionPayload = {
     token: parsed.token,
     expiresAt: parsed.expiresAt,
@@ -199,8 +233,11 @@ export async function POST(request: Request) {
         email,
         expiresAt: session.expiresAt,
         patientChartId: resolvedChartId,
+        loginVerified,
+        needsPasswordSetup,
+        passwordResetEmailSent,
         password: {
-          status: passwordBind.status,
+          status: effectivePasswordStatus,
           ...(passwordBind.status === "failed"
             ? { reason: passwordBind.reason }
             : {}),

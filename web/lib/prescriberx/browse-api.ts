@@ -90,3 +90,95 @@ export async function fetchCatalogSnapshot(): Promise<CatalogSnapshot> {
     packages: Array.isArray(data?.packages) ? data.packages : [],
   };
 }
+
+export type ProtocolPayMethod = "card" | "hsa_fsa";
+
+export type CheckoutConfig = {
+  sandbox: boolean;
+  collector_enabled: boolean;
+  record_only_sandbox: boolean;
+  accept_js: {
+    api_login_id: string;
+    client_key: string;
+    script_url: string;
+    gateway_provider: string;
+  } | null;
+};
+
+export async function fetchCheckoutConfig(): Promise<CheckoutConfig | null> {
+  const res = await fetch("/api/prescriberx/checkout/config", {
+    headers: { Accept: "application/json" },
+    cache: "no-store",
+  });
+  if (!res.ok) return null;
+  const json = (await res.json()) as { data?: CheckoutConfig };
+  return json.data ?? null;
+}
+
+export type ProtocolBillingAddress = {
+  first_name: string;
+  last_name: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+};
+
+export type RecordProtocolPaymentResult = {
+  transactionId: string | null;
+  hasMerchantAccount?: boolean;
+  encounterLinked?: boolean;
+  sandbox?: boolean;
+  record_only: boolean;
+  prx_collector?: boolean;
+  paymentMethodId?: string;
+  orderId?: string | null;
+  alreadyPaid?: boolean;
+};
+
+/** Protocol checkout payment — sandbox record-only or PrescribeRx collector. */
+export async function recordProtocolPayment(input: {
+  entrySlug: string;
+  encounterId: string;
+  payMethod: ProtocolPayMethod;
+  priceLabel: string;
+  opaque_data?: { data_descriptor: string; data_value: string };
+  card_brand?: string;
+  last_four?: string;
+  exp_month?: number;
+  exp_year?: number;
+  billing_address?: ProtocolBillingAddress;
+}): Promise<RecordProtocolPaymentResult> {
+  const q = new URLSearchParams({ entry: input.entrySlug });
+  const res = await fetch(
+    `/api/prescriberx/protocol/payment?${q.toString()}`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        encounter_id: input.encounterId,
+        pay_method: input.payMethod,
+        price_label: input.priceLabel,
+        opaque_data: input.opaque_data,
+        card_brand: input.card_brand,
+        last_four: input.last_four,
+        exp_month: input.exp_month,
+        exp_year: input.exp_year,
+        billing_address: input.billing_address,
+      }),
+    },
+  );
+  const json = (await res.json()) as {
+    success?: boolean;
+    message?: string;
+    data?: RecordProtocolPaymentResult;
+  };
+  if (!res.ok || !json.success || !json.data) {
+    throw new Error(json.message ?? `Payment record failed (${res.status})`);
+  }
+  return json.data;
+}

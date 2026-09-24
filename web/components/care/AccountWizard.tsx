@@ -32,6 +32,9 @@ type AuthJson = {
   message?: string;
   email?: string;
   data?: {
+    loginVerified?: boolean;
+    needsPasswordSetup?: boolean;
+    passwordResetEmailSent?: boolean;
     password?: {
       status?: string;
     };
@@ -46,6 +49,7 @@ const RESET_FIRST =
 const ALLOWED_NEXT = [
   "/care/waiting",
   "/care/protocol",
+  "/care/checkout",
   "/care/visit",
   "/care/confirmation",
   "/care/home",
@@ -250,6 +254,9 @@ export function AccountWizard({
             password_confirmation: confirm,
             encounter_id: resolvedEncounter,
             ...(chartId ? { patient_chart_id: chartId } : {}),
+            ...(handoff?.email
+              ? { intake_email: handoff.email.trim().toLowerCase() }
+              : {}),
           }),
         });
         const json = await readAuthJson(res);
@@ -260,20 +267,25 @@ export function AccountWizard({
 
         const href = destination();
         finishSession();
+        const loginVerified = json.data?.loginVerified === true;
+        const needsSetup =
+          json.data?.needsPasswordSetup === true || !loginVerified;
         const passwordStatus = json.data?.password?.status;
-        if (passwordStatus === "failed") {
+        const resetSent = json.data?.passwordResetEmailSent === true;
+
+        if (needsSetup || passwordStatus === "failed" || passwordStatus === "skipped") {
           persistPasswordNeedsReset(email.trim().toLowerCase());
           setNeedsReset(true);
           setContinueHref(href);
           setNotice(
-            "Your session is active. This password was not saved. Email a reset link to make later login work, or continue to physician review.",
+            resetSent
+              ? "Your session is active for physician review. We emailed password setup instructions — use that link before you log in later with this password."
+              : "Your session is active. This password was not saved on PrescribeRx. Use Email me a reset link below, then log in after you set a password — or continue to physician review now.",
           );
           return;
         }
-        if (passwordStatus === "bound") {
-          clearPasswordNeedsReset();
-          setNeedsReset(false);
-        }
+        clearPasswordNeedsReset();
+        setNeedsReset(false);
         router.push(href);
         return;
       }
@@ -291,7 +303,11 @@ export function AccountWizard({
       });
       const json = await readAuthJson(res);
       if (!res.ok || json.success === false) {
-        setError(authMessage(json));
+        setError(
+          needsReset || readPasswordNeedsReset()
+            ? "Email or password incorrect. If you just created your account, set your password from the reset email first."
+            : authMessage(json),
+        );
         if (needsReset || readPasswordNeedsReset()) {
           setNotice(RESET_FIRST);
         }

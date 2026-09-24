@@ -109,8 +109,18 @@ async function main() {
     cookie,
   );
   if (demoProtocol.res.status === 200) {
-    if (!demoProtocol.text.includes("4242 4242 4242 4242")) {
-      throw new Error("demo protocol missing walkthrough payment");
+    if (!demoProtocol.text.includes("Continue to checkout")) {
+      throw new Error("demo protocol missing checkout CTA");
+    }
+  }
+
+  const demoCheckout = await fetchHtml(
+    `/care/checkout?demo=1&entry=executives&encounter=${ENCOUNTER}`,
+    cookie,
+  );
+  if (demoCheckout.res.status === 200) {
+    if (!demoCheckout.text.includes("4242 4242 4242 4242")) {
+      throw new Error("demo checkout missing walkthrough payment");
     }
   }
 
@@ -122,8 +132,21 @@ async function main() {
     if (liveProtocol.text.includes("4242 4242 4242 4242")) {
       throw new Error("live protocol must not show fake payment fields");
     }
-    if (!liveProtocol.text.includes("Payment is not connected")) {
-      throw new Error("live protocol missing honest payment copy");
+    if (!liveProtocol.text.includes("Continue to checkout")) {
+      throw new Error("live protocol missing checkout CTA");
+    }
+  }
+
+  const liveCheckout = await fetchHtml(
+    `/care/checkout?entry=executives&encounter=${ENCOUNTER}`,
+    cookie,
+  );
+  if (liveCheckout.res.status === 200) {
+    if (
+      !liveCheckout.text.includes("Sandbox payment") &&
+      !liveCheckout.text.includes("Payment is not connected")
+    ) {
+      throw new Error("live checkout missing sandbox or disconnected payment copy");
     }
   }
 

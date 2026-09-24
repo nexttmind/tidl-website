@@ -340,14 +340,20 @@ export function IntakeField({ field, values, onChange, onFile, error }: Props) {
           <div className={styles.heightRow}>
             <input
               className={styles.input}
-              placeholder="State (FL)"
-              maxLength={20}
+              placeholder="State (NY)"
+              maxLength={2}
+              autoComplete="address-level1"
               value={addr.state ?? ""}
-              onChange={(e) => set("state", e.target.value)}
+              onChange={(e) =>
+                set("state", e.target.value.replace(/[^a-zA-Z]/g, "").toUpperCase())
+              }
             />
             <input
               className={styles.input}
-              placeholder="ZIP"
+              placeholder="ZIP (11201 or 11201-1234)"
+              maxLength={10}
+              autoComplete="postal-code"
+              inputMode="numeric"
               value={addr.zip ?? addr.postal_code ?? ""}
               onChange={(e) => set("zip", e.target.value)}
             />
