@@ -17,6 +17,7 @@ describe("mapAccountHome", () => {
     assert.equal(home.pharmacy, null);
     assert.equal(home.prescriptions.length, 0);
     assert.equal(home.surveyRows.length, 0);
+    assert.equal(home.threads.length, 0);
     assert.equal(home.stackName, "Weight Loss");
   });
 
@@ -48,6 +49,7 @@ describe("mapAccountHome", () => {
       encounterId: "enc-1",
       entrySlug: "weight-loss",
       statusLabel: "On Hold",
+      next: "wait",
     });
   });
 
@@ -73,6 +75,64 @@ describe("mapAccountHome", () => {
     const joined = JSON.stringify(home);
     assert.equal(joined.includes("Sermorelin"), false);
     assert.equal(joined.includes("tirzepatide"), false);
+  });
+
+  it("maps chart allergies and vitals onto survey rows when dashboard has none", () => {
+    const home = mapAccountHome({
+      entrySlug: "weight-loss",
+      allergies: { allergies: [{ name: "Penicillin" }] },
+      vitals: [{ type: "Weight", value: "190 lb" }],
+    });
+    assert.equal(home.surveyRows.some((row) => row.value === "Penicillin"), true);
+    assert.equal(home.surveyRows.some((row) => row.value === "190 lb"), true);
+  });
+
+  it("maps conversations, preferences, and payment methods when PRX sends them", () => {
+    const home = mapAccountHome({
+      entrySlug: "weight-loss",
+      communicationPreferences: {
+        global_enabled: true,
+        channels: { email: true, sms: false },
+      },
+      paymentMethods: [{ brand: "Visa", exp_month: "09", exp_year: "27" }],
+      conversations: [
+        {
+          id: "convo-1",
+          title: "Visit follow-up",
+          last_message: { content: "See you Thursday." },
+        },
+      ],
+    });
+    assert.equal(
+      home.surveyRows.some((row) => row.label === "Email alerts" && row.value === "On"),
+      true,
+    );
+    assert.equal(
+      home.surveyRows.some((row) => row.value.includes("Visa on file")),
+      true,
+    );
+    assert.equal(home.threads[0]?.preview, "See you Thursday.");
+  });
+
+  it("keeps a prescribed encounter so home can open protocol", () => {
+    const home = mapAccountHome({
+      entrySlug: "weight-loss",
+      encounters: [{ id: "enc-prescribed", status: "prescribed" }],
+    });
+    assert.deepEqual(home.pendingEncounter, {
+      encounterId: "enc-prescribed",
+      entrySlug: "weight-loss",
+      statusLabel: "Prescribed",
+      next: "protocol",
+    });
+  });
+
+  it("sends visit-gated encounters to the visit step", () => {
+    const home = mapAccountHome({
+      entrySlug: "testosterone",
+      encounters: [{ id: "enc-visit", status: "unassigned" }],
+    });
+    assert.equal(home.pendingEncounter?.next, "visit");
   });
 
   it("does not invent pharmacy copy when PRX omits pharmacy", () => {

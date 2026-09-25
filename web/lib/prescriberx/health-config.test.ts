@@ -35,9 +35,12 @@ describe("buildHealthConfigFlags", () => {
 
   it("includes baseUrl and defaultEncounterTypeId outside production", () => {
     mutableEnv().NODE_ENV = "development";
-    const flags = buildHealthConfigFlags(env()) as Record<string, unknown>;
+    const flags = buildHealthConfigFlags(
+      env({ salesOrgId: "019f3d35-afc4-72f8-b055-6c86c27ac1b3" }),
+    ) as Record<string, unknown>;
     assert.equal(flags.baseUrl, "https://demo.prescribe-rx.com/api/v1");
     assert.equal(flags.defaultEncounterTypeId, "enc-type-uuid");
+    assert.equal(flags.salesOrgId, "019f3d35-afc4-72f8-b055-6c86c27ac1b3");
     assert.equal(flags.sandbox, true);
   });
 
@@ -46,6 +49,7 @@ describe("buildHealthConfigFlags", () => {
     const flags = buildHealthConfigFlags(env()) as Record<string, unknown>;
     assert.equal("baseUrl" in flags, false);
     assert.equal("defaultEncounterTypeId" in flags, false);
+    assert.equal("salesOrgId" in flags, false);
     assert.equal(flags.sandbox, true);
     assert.equal(flags.webhookSecretConfigured, true);
   });

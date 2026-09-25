@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
 import {
   parseProtocolPriceAmount,
   sandboxGatewayTransactionId,
@@ -6,13 +7,13 @@ import {
 
 describe("sandbox-payment", () => {
   it("parses dollar amounts from protocol labels", () => {
-    expect(parseProtocolPriceAmount("$349")).toBe(349);
-    expect(parseProtocolPriceAmount("Starting at $197 if prescribed")).toBe(197);
+    assert.equal(parseProtocolPriceAmount("$349"), 349);
+    assert.equal(parseProtocolPriceAmount("Starting at $197 if prescribed"), 197);
   });
 
   it("builds stable-ish sandbox transaction ids", () => {
     const id = sandboxGatewayTransactionId("01a0-test");
-    expect(id.startsWith("tidl-sandbox-")).toBe(true);
-    expect(id.includes("01a0-test")).toBe(true);
+    assert.ok(id.startsWith("tidl-sandbox-"));
+    assert.ok(id.includes("01a0-test"));
   });
 });

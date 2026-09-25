@@ -72,6 +72,11 @@ export function evaluatePrescribeRxEnvGuard(env: PrescribeRxEnv): PrescribeRxEnv
       "PRESCRIBERX_SANDBOX=true against production host; set false before live patient traffic.",
     );
   }
+  if (env.salesOrgId && env.clientId) {
+    warnings.push(
+      "Both PRESCRIBERX_SALES_ORG_ID and PRESCRIBERX_CLIENT_ID are set; unified intake sends sales_org_id only. Clear PRESCRIBERX_CLIENT_ID for TIDL Sandbox (org has no clients).",
+    );
+  }
   return { ok: true, warnings };
 }
 

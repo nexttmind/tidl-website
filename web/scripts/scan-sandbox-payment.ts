@@ -56,6 +56,14 @@ async function getJson(
   return { status: res.status, body };
 }
 
+type ScanReport = {
+  env_pins: Record<string, string>;
+  probes: Record<string, unknown>;
+  token_identity?: Record<string, unknown> | null;
+  transaction_probes?: Record<string, unknown>;
+  recommendation?: Record<string, unknown>;
+};
+
 async function main() {
   const env = loadEnv();
   const base = env.PRESCRIBERX_API_BASE;
@@ -65,7 +73,7 @@ async function main() {
     process.exit(1);
   }
 
-  const report: Record<string, unknown> = {
+  const report: ScanReport = {
     env_pins: {
       PRESCRIBERX_SANDBOX: env.PRESCRIBERX_SANDBOX ?? "(unset)",
       PRESCRIBERX_CLIENT_ID: env.PRESCRIBERX_CLIENT_ID || "(unset)",
@@ -73,7 +81,7 @@ async function main() {
       PRESCRIBERX_MERCHANT_ACCOUNT_ID:
         env.PRESCRIBERX_MERCHANT_ACCOUNT_ID || "(unset)",
     },
-    probes: {} as Record<string, unknown>,
+    probes: {},
   };
 
   const endpoints = [

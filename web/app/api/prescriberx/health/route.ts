@@ -9,6 +9,7 @@ import {
   missingPrescribeRxResponse,
 } from "@/lib/prescriberx/env";
 import { buildHealthConfigFlags } from "@/lib/prescriberx/health-config";
+import { buildSandboxAdminHints } from "@/lib/prescriberx/sandbox-admin";
 
 export const dynamic = "force-dynamic";
 
@@ -66,6 +67,7 @@ export async function GET() {
 
   const upstreamHealthy = Object.values(checks).every((c) => c.ok);
   const healthy = upstreamHealthy && guard.warnings.length === 0;
+  const adminHints = buildSandboxAdminHints(env);
 
   return Response.json(
     {
@@ -77,6 +79,7 @@ export async function GET() {
         checks,
         warnings: guard.warnings,
         healthy,
+        ...(adminHints ? { adminHints } : {}),
       },
     },
     { status: upstreamHealthy ? 200 : 503 },

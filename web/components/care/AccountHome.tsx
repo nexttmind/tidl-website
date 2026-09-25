@@ -13,12 +13,16 @@ import {
 } from "@/content/fixtures/care-account-home";
 import type { ValueFieldCard } from "@/content/fixtures/value-fields";
 import { CATALOG_HREF } from "@/content/fixtures/catalog";
-import { intakeHref } from "@/content/clinical/entry-map";
+import { intakeHref, resolveClinicalEntry } from "@/content/clinical/entry-map";
+import { unwrapEncounterStatus } from "@/lib/prescriberx/encounter-status";
 import {
+  applyLiveEncounterStatus,
   isOrderUuid,
   mapAccountHome,
   mergeOrderTracking,
 } from "@/lib/prescriberx/map-account-home";
+import { nextWaitPollMs } from "@/lib/prescriberx/waiting-poll";
+import { PatientCareActions } from "./PatientCareActions";
 import styles from "./AccountHome.module.css";
 
 type Props = {
@@ -180,6 +184,9 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
   const [openPastId, setOpenPastId] = useState<string | null>(null);
   const [cadenceNote, setCadenceNote] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const [snapshot, setSnapshot] = useState<Record<string, unknown> | null>(
+    null,
+  );
 
   useEffect(() => {
     if (demo) {
@@ -190,34 +197,44 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
     let cancelled = false;
     void (async () => {
       setLoadError(null);
-      setHome(null);
-      const [dashboard, orders, encounters, prescriptions] = await Promise.all([
-        fetchPatientJson("/api/prescriberx/patient/dashboard"),
-        fetchPatientJson("/api/prescriberx/patient/orders"),
-        fetchPatientJson("/api/prescriberx/patient/encounters"),
-        fetchPatientJson("/api/prescriberx/patient/prescriptions"),
-      ]);
+      const snapshot = await fetchPatientJson(
+        "/api/prescriberx/patient/snapshot",
+      );
       if (cancelled) return;
-      if (
-        dashboard.unauthorized ||
-        orders.unauthorized ||
-        encounters.unauthorized ||
-        prescriptions.unauthorized
-      ) {
+      if (snapshot.unauthorized) {
         router.replace("/care/account?mode=login");
         return;
       }
-      if (!dashboard.ok && !orders.ok && !encounters.ok && !prescriptions.ok) {
+      if (!snapshot.ok) {
         setLoadError("Unable to load your account right now.");
         return;
       }
+      const snap =
+        snapshot.data && typeof snapshot.data === "object"
+          ? (snapshot.data as Record<string, unknown>)
+          : {};
+      setSnapshot(snap);
       try {
         let mapped = mapAccountHome({
           entrySlug,
-          dashboard: dashboard.data,
-          orders: orders.data,
-          encounters: encounters.data,
-          prescriptions: prescriptions.data,
+          dashboard: snap.dashboard,
+          orders: snap.orders,
+          encounters: snap.encounters,
+          prescriptions: snap.prescriptions,
+          chart: snap.chart,
+          vitals: snap.vitals,
+          vitalGoals: snap.vitalGoals,
+          allergies: snap.allergies,
+          medications: snap.medications,
+          conditions: snap.conditions,
+          approvals: snap.approvals,
+          communicationPreferences: snap.communicationPreferences,
+          paymentMethods: snap.paymentMethods,
+          vitalTrends: snap.vitalTrends,
+          profile: snap.profile,
+          conversations: snap.conversations,
+          conversationMessages: snap.conversationMessages,
+          settings: snap.settings,
         });
         const currentId = mapped.currentOrder?.id;
         if (currentId && isOrderUuid(currentId)) {
@@ -249,6 +266,52 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
       cancelled = true;
     };
   }, [demo, entrySlug, fixtureHome, router, reloadKey]);
+
+  useEffect(() => {
+    if (demo || !home?.pendingEncounter || home.currentOrder) return;
+    const encounterId = home.pendingEncounter.encounterId;
+    const visitGate = resolveClinicalEntry(entrySlug).visitGateDefault;
+    let cancelled = false;
+    let timer: number | null = null;
+    let step = 0;
+
+    const poll = async () => {
+      if (cancelled || document.visibilityState === "hidden") return;
+      const res = await fetch(
+        `/api/prescriberx/encounters/${encodeURIComponent(encounterId)}/status`,
+        { headers: { Accept: "application/json" }, credentials: "include" },
+      );
+      if (cancelled) return;
+      if (res.status === 401) {
+        router.replace("/care/account?mode=login");
+        return;
+      }
+      if (res.ok) {
+        const json: unknown = await res.json();
+        const live = unwrapEncounterStatus(json);
+        if (live) {
+          setHome((prev) =>
+            prev ? applyLiveEncounterStatus(prev, live, visitGate) : prev,
+          );
+        }
+      }
+      step += 1;
+      timer = window.setTimeout(() => {
+        void poll();
+      }, nextWaitPollMs(step));
+    };
+
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") void poll();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    void poll();
+    return () => {
+      cancelled = true;
+      if (timer != null) window.clearTimeout(timer);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [demo, entrySlug, home?.currentOrder, home?.pendingEncounter?.encounterId, router]);
 
   if (!home) {
     return (
@@ -289,6 +352,9 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
       ? [{ href: "#orders", label: "Past orders", detail: "Reorder a protocol" }]
       : []),
     { href: "#care", label: "Care team", detail: "Clinician and pharmacy" },
+    ...(home.threads.length
+      ? [{ href: "#messages", label: "Messages", detail: "From your care team" }]
+      : []),
     { href: "#browse", label: "Browse related", detail: "Stacks beside this one" },
   ];
 
@@ -341,23 +407,51 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
             <p className={styles.sectionLede}>
               {current?.eta
                 ? `Arriving ${current.eta.toLowerCase()}. Tracking stays on this page.`
-                : home.pendingEncounter
-                  ? "A physician is still reviewing your information. Payment opens after they accept."
-                  : "When a physician accepts a protocol, your order will land here."}
+                : home.pendingEncounter?.next === "protocol"
+                  ? "Your physician accepted this request. Review the protocol to continue."
+                  : home.pendingEncounter?.next === "visit"
+                    ? "This care path needs a live visit before payment."
+                    : home.pendingEncounter
+                      ? "A physician is still reviewing your information. Payment opens after they accept."
+                      : "When a physician accepts a protocol, your order will land here."}
             </p>
 
             {home.pendingEncounter && !current ? (
               <div className={styles.emptyCard}>
-                <p className={styles.emptyTitle}>Waiting for physician review</p>
-                <p className={styles.emptyBody}>
-                  Status: {home.pendingEncounter.statusLabel}. You cannot open
-                  checkout until this request is accepted.
+                <p className={styles.emptyTitle}>
+                  {home.pendingEncounter.next === "protocol"
+                    ? "Ready for your protocol"
+                    : home.pendingEncounter.next === "visit"
+                      ? "A visit is next"
+                      : "Waiting for physician review"}
                 </p>
-                <Button
-                  href={`/care/waiting?entry=${encodeURIComponent(home.pendingEncounter.entrySlug)}&encounter=${encodeURIComponent(home.pendingEncounter.encounterId)}`}
-                >
-                  View review status
-                </Button>
+                <p className={styles.emptyBody}>
+                  Status: {home.pendingEncounter.statusLabel}.
+                  {home.pendingEncounter.next === "wait"
+                    ? " You cannot open checkout until this request is accepted."
+                    : home.pendingEncounter.next === "visit"
+                      ? " Book a time, then your physician can continue."
+                      : " Checkout opens after you review the protocol."}
+                </p>
+                {home.pendingEncounter.next === "protocol" ? (
+                  <Button
+                    href={`/care/protocol?entry=${encodeURIComponent(home.pendingEncounter.entrySlug)}&encounter=${encodeURIComponent(home.pendingEncounter.encounterId)}`}
+                  >
+                    Continue to protocol
+                  </Button>
+                ) : home.pendingEncounter.next === "visit" ? (
+                  <Button
+                    href={`/care/visit?entry=${encodeURIComponent(home.pendingEncounter.entrySlug)}&encounter=${encodeURIComponent(home.pendingEncounter.encounterId)}`}
+                  >
+                    Book your visit
+                  </Button>
+                ) : (
+                  <Button
+                    href={`/care/waiting?entry=${encodeURIComponent(home.pendingEncounter.entrySlug)}&encounter=${encodeURIComponent(home.pendingEncounter.encounterId)}`}
+                  >
+                    View review status
+                  </Button>
+                )}
               </div>
             ) : null}
 
@@ -470,6 +564,38 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
         </section>
       </ScrollReveal>
 
+      {!demo && snapshot ? (
+        <PatientCareActions
+          snapshot={snapshot}
+          onChanged={() => setReloadKey((n) => n + 1)}
+        />
+      ) : null}
+
+      {!demo && home.threads.length ? (
+        <ScrollReveal>
+          <section
+            id="messages"
+            className={styles.section}
+            aria-labelledby="messages-title"
+          >
+            <div className="layout-container">
+              <p className={styles.sectionEyebrow}>Messages</p>
+              <h2 id="messages-title" className={styles.sectionTitle}>
+                From your care team
+              </h2>
+              <ul className={styles.pastList}>
+                {home.threads.map((thread) => (
+                  <li key={thread.id} className={styles.emptyCard}>
+                    <p className={styles.emptyTitle}>{thread.title}</p>
+                    <p className={styles.emptyBody}>{thread.preview}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        </ScrollReveal>
+      ) : null}
+
       <ScrollReveal>
         <section id="care" className={styles.section} aria-labelledby="care-title">
           <div className="layout-container">
@@ -553,8 +679,8 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
                 ) : null}
                 {home.surveyRows.length ? (
                   <dl className={styles.survey}>
-                    {home.surveyRows.map((row) => (
-                      <div key={row.label} className={styles.surveyRow}>
+                    {home.surveyRows.map((row, index) => (
+                      <div key={`${row.label}-${index}`} className={styles.surveyRow}>
                         <dt>{row.label}</dt>
                         <dd>{row.value}</dd>
                       </div>

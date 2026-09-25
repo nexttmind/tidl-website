@@ -20,6 +20,8 @@ type RequestOptions = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   query?: Record<string, string | number | boolean | undefined | null>;
   body?: unknown;
+  form?: FormData;
+  headers?: Record<string, string>;
   /** Explicit patient token (e.g. right after issue-token, before cookie set). */
   token?: string;
 };
@@ -57,9 +59,12 @@ async function patientFetchRaw<T>(
   const headers: Record<string, string> = {
     Accept: "application/json",
     Authorization: `Bearer ${token}`,
+    ...options.headers,
   };
-  let body: string | undefined;
-  if (options.body !== undefined) {
+  let body: string | FormData | undefined;
+  if (options.form) {
+    body = options.form;
+  } else if (options.body !== undefined) {
     headers["Content-Type"] = "application/json";
     body = JSON.stringify(options.body);
   }

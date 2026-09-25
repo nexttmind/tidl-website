@@ -41,9 +41,10 @@ export type ClinicalEntry = {
  * Open symptoms / find care → universal encounter (multi pathway)
  *
  * Phase 1 verified 2026-09-22 against live token: every encounterTypeId below
- * returns 200 on GET .../encounter-types/{id}/schema. Note: male-trt-consult and
- * female-hrt are schema-reachable but may not appear in the encounter-types list
- * for the playground system_admin token.
+ * returns 200 on GET .../encounter-types/{id}/schema. Visit-gated entries use
+ * sandbox `quick-video-visit` (019f11f4-69a6-72d7-8e63-2c1f0fee3c4a) because
+ * male-trt-consult / female-hrt are not in the playground token's available
+ * types (intake 422). Restore tenant TRT/HRT IDs at cutover.
  */
 
 /** Open symptom path: no care protocol or health goal preselected. */
@@ -107,8 +108,8 @@ export const CLINICAL_ENTRIES: readonly ClinicalEntry[] = [
     brandImage: "/landing/hero/mens-health.jpg?v=3",
     brandVideo: "/landing/hero/mens-health.mp4?v=3",
     brandPoster: "/landing/hero/mens-health.jpg?v=3",
-    encounterTypeId: "019d000e-a554-721d-a727-08f65de4fd0b",
-    encounterTypeSlug: "male-trt-consult",
+    encounterTypeId: "019f11f4-69a6-72d7-8e63-2c1f0fee3c4a",
+    encounterTypeSlug: "quick-video-visit",
     visitGateDefault: true,
   },
   {
@@ -120,8 +121,8 @@ export const CLINICAL_ENTRIES: readonly ClinicalEntry[] = [
     brandImage: "/landing/hero/womens-balance.jpg?v=3",
     brandVideo: "/landing/hero/womens-balance.mp4?v=3",
     brandPoster: "/landing/hero/womens-balance.jpg?v=3",
-    encounterTypeId: "019d0461-7ee9-7092-be92-c7fa5ae73b19",
-    encounterTypeSlug: "female-hrt",
+    encounterTypeId: "019f11f4-69a6-72d7-8e63-2c1f0fee3c4a",
+    encounterTypeSlug: "quick-video-visit",
     visitGateDefault: true,
   },
   {

@@ -25,6 +25,7 @@ Malformed, tampered, or expired cookies → unauthenticated.
 | `POST /api/prescriberx/auth/refresh` | `POST /auth/refresh` | patient |
 | `GET /api/prescriberx/auth/session` | `GET /auth/me` (+ soft refresh) | patient |
 | `POST /api/prescriberx/auth/forgot` | `POST /auth/password/forgot` | none |
+| `GET /api/prescriberx/patient/snapshot` | every patient-token GET (`/me/patient/*`, conversations, prefs, trends, `/me`) | patient |
 | `GET /api/prescriberx/patient/dashboard` | `GET /me/patient/dashboard` | patient |
 | `GET /api/prescriberx/patient/orders` | `GET /me/patient/orders` | patient |
 | `GET /api/prescriberx/patient/orders/[order]/tracking` | `GET /me/patient/orders/{order}/tracking` | patient |

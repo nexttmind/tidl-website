@@ -71,6 +71,10 @@ export async function POST(request: Request) {
     delete payload.prebuilt;
     delete payload.files;
     if (env.sandbox) payload.is_sandbox = true;
+    if (env.salesOrgId) {
+      if (payload.sales_org_id == null) payload.sales_org_id = env.salesOrgId;
+      delete payload.client_id;
+    }
     try {
       const data = await prescribeRxFetch("/telehealth/intake/unified", {
         method: "POST",

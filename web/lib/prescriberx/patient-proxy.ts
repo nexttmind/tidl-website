@@ -14,9 +14,9 @@ import {
   prescribeRxPatientFetch,
 } from "./patient-client";
 
-const SECRET_KEY = /token|password|authorization|secret|bearer/i;
+const SECRET_KEY = /token|password|authorization|secret|bearer|card_number|last_four|cvv/i;
 
-function stripSecrets(value: unknown): unknown {
+export function stripSecrets(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(stripSecrets);
   if (!value || typeof value !== "object") return value;
   const out: Record<string, unknown> = {};

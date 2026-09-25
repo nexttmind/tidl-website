@@ -33,6 +33,31 @@
   line-height: 1.5;
 }
 
+.holdForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 28rem;
+}
+
+.holdField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.holdField input {
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-control);
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font: inherit;
+}
+
 .demo {
   display: flex;
   flex-direction: column;

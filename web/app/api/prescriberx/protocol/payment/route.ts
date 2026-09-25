@@ -9,10 +9,8 @@ import {
   authJson,
   mapAuthError,
 } from "@/lib/prescriberx/auth-errors";
-import {
-  clientIpFromRequest,
-  consumeRateLimit,
-} from "@/lib/prescriberx/auth-rate-limit";
+import { clientIpFromRequest } from "@/lib/prescriberx/auth-rate-limit";
+import { consumeProtocolPaymentRateLimit } from "@/lib/prescriberx/protocol-payment-rate-limit";
 import { collectPrxProtocolPayment } from "@/lib/prescriberx/collect-prx-protocol-payment";
 import { errorResponse, prescribeRxFetch } from "@/lib/prescriberx/client";
 import {
@@ -121,8 +119,9 @@ export async function POST(request: Request) {
   }
 
   const ip = clientIpFromRequest(request);
-  if (!consumeRateLimit(`protocol-pay:${ip}`, 20, 60_000)) {
-    return rateLimitedResponse();
+  const payLimit = consumeProtocolPaymentRateLimit(ip);
+  if (!payLimit.allowed) {
+    return rateLimitedResponse(payLimit.retryAfterSec);
   }
 
   const session = await readSessionFromRequest(request);
@@ -262,14 +261,17 @@ export async function POST(request: Request) {
         expYear,
         billingAddress: billing,
       });
-      return authJson({
-        success: true,
-        data: {
-          ...collected,
-          prx_collector: true,
-          record_only: false,
+      return authJson(
+        {
+          success: true,
+          data: {
+            ...collected,
+            prx_collector: true,
+            record_only: false,
+          },
         },
-      });
+        200,
+      );
     } catch (err) {
       return errorResponse(err);
     }
@@ -293,14 +295,17 @@ export async function POST(request: Request) {
       payMethod: body.pay_method,
       billedOnDomain: host,
     });
-    return authJson({
-      success: true,
-      data: {
-        ...recorded,
-        sandbox: true,
-        record_only: true,
+    return authJson(
+      {
+        success: true,
+        data: {
+          ...recorded,
+          sandbox: true,
+          record_only: true,
+        },
       },
-    });
+      200,
+    );
   } catch (err) {
     return errorResponse(err);
   }

@@ -20,6 +20,10 @@ describe("evaluateProtocolAccess", () => {
 
   it("sends visit-gated entries to visit, not payment", () => {
     assert.equal(evaluateProtocolAccess("prescribed", true), "visit");
+    assert.equal(evaluateProtocolAccess("unassigned", true), "visit");
+    assert.equal(classifyWaitingBranch("scheduled", true), "visit");
+    assert.equal(evaluateProtocolAccess("on_hold", true), "wait");
+    assert.equal(evaluateProtocolAccess("provider_signed", true), "allow");
   });
 
   it("keeps pending and hold on waiting", () => {

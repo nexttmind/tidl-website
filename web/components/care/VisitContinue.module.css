@@ -33,6 +33,44 @@
   font-size: 15px;
 }
 
+.note a {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.slotList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.slotButton {
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md, 8px);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-raised, #fff);
+  font: inherit;
+  cursor: pointer;
+}
+
+.slotButton[data-active="true"] {
+  border-color: var(--footer-bg-base, #1a1a1a);
+  box-shadow: 0 0 0 1px var(--footer-bg-base, #1a1a1a);
+}
+
+.slotButton:focus-visible {
+  outline: 2px solid var(--footer-bg-base, #1a1a1a);
+  outline-offset: 2px;
+}
+
 .cta {
   align-self: flex-start;
   width: auto;

@@ -405,8 +405,13 @@ export function buildUnifiedIntakePayload(input: {
   if (consents.length) payload.consents = consents;
 
   if (input.isSandbox) payload.is_sandbox = true;
-  if (input.clientId) payload.client_id = input.clientId;
-  if (input.salesOrgId) payload.sales_org_id = input.salesOrgId;
+  // Sales-org integrators (TIDL): pin org on the encounter. Do not also send a
+  // stale demo client_id — that can mis-assign encounters in admin filters.
+  if (input.salesOrgId) {
+    payload.sales_org_id = input.salesOrgId;
+  } else if (input.clientId) {
+    payload.client_id = input.clientId;
+  }
 
   sanitizeIdentification(payload);
 

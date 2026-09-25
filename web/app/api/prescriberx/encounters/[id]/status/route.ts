@@ -4,7 +4,8 @@ import {
   consumeRateLimit,
 } from "@/lib/prescriberx/auth-rate-limit";
 import { GENERIC_UNAUTHENTICATED } from "@/lib/prescriberx/auth-errors";
-import { errorResponse, prescribeRxFetch } from "@/lib/prescriberx/client";
+import { errorResponse } from "@/lib/prescriberx/client";
+import { fetchEnrichedEncounterStatus } from "@/lib/prescriberx/encounter-enrich";
 import {
   getPrescribeRxEnv,
   missingPrescribeRxResponse,
@@ -38,10 +39,8 @@ export async function GET(request: Request, { params }: Params) {
 
   const { id } = await params;
   try {
-    const data = await prescribeRxFetch(
-      `/telehealth/encounters/${encodeURIComponent(id)}/status`,
-    );
-    return Response.json(data);
+    const data = await fetchEnrichedEncounterStatus(id, session.token);
+    return Response.json({ success: true, data });
   } catch (err) {
     return errorResponse(err);
   }

@@ -21,7 +21,7 @@ import {
   type CheckoutConfig,
   type ProtocolPayMethod,
 } from "@/lib/prescriberx/browse-api";
-import styles from "./ProtocolOrder.module.css";
+import styles from "./ProtocolCheckout.module.css";
 
 type AcceptDispatchResponse = {
   opaqueData?: { dataDescriptor?: string; dataValue?: string };
@@ -147,6 +147,8 @@ export function ProtocolCheckout({
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [coupon, setCoupon] = useState("");
+  const [couponNote, setCouponNote] = useState<string | null>(null);
 
   useEffect(() => {
     const h = readIntakeHandoff();
@@ -343,6 +345,73 @@ export function ProtocolCheckout({
     }
   };
 
+  const checkCoupon = () => {
+    const amount = Number(protocol.price.replace(/[^0-9.]/g, ""));
+    setCouponNote(null);
+    void fetch("/api/prescriberx/patient/actions", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        action: "validate_coupon",
+        code: coupon,
+        ...(Number.isFinite(amount) ? { subtotal: amount } : {}),
+      }),
+    })
+      .then(async (res) => {
+        const json = (await res.json().catch(() => ({}))) as {
+          message?: string;
+          data?: {
+            valid?: boolean;
+            message?: string;
+            discount_amount?: number;
+          };
+        };
+        if (!res.ok) {
+          setCouponNote(json.message || "Could not check that code.");
+          return;
+        }
+        const discount = json.data?.discount_amount;
+        setCouponNote(
+          json.data?.message ||
+            (json.data?.valid === false
+              ? "That code is not valid."
+              : discount
+                ? `Code accepted. Discount ${discount}.`
+                : "Code checked."),
+        );
+      })
+      .catch(() => setCouponNote("Could not check that code."));
+  };
+
+  const couponFields = !demo ? (
+    <div className={styles.couponBlock}>
+      <label className={styles.field}>
+        <span className={styles.label}>Coupon</span>
+        <div className={styles.couponRow}>
+          <input
+            className={styles.input}
+            value={coupon}
+            onChange={(e) => setCoupon(e.target.value)}
+            autoComplete="off"
+            placeholder="Enter code"
+          />
+          <button
+            type="button"
+            className={styles.couponBtn}
+            disabled={!coupon.trim()}
+            onClick={checkCoupon}
+          >
+            Check code
+          </button>
+        </div>
+      </label>
+      {couponNote ? <p className={styles.note}>{couponNote}</p> : null}
+    </div>
+  ) : null;
+
   const copyAddress = async () => {
     try {
       await navigator.clipboard.writeText(rail.address);
@@ -356,30 +425,42 @@ export function ProtocolCheckout({
   return (
     <div className={styles.root}>
       <section
-        className={`layout-constrain ${styles.checkoutSection}`}
+        className={`layout-bleed ${styles.split}`}
         aria-labelledby="checkout-title"
       >
+        <div className={styles.mediaCol}>
+          <div className={styles.mediaStage}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className={styles.media}
+              src={protocol.hero.image}
+              alt=""
+            />
+          </div>
+        </div>
+        <div className={styles.panel}>
+          <div className={styles.formCol}>
         <p className={styles.eyebrow}>Checkout</p>
         <h1 id="checkout-title" className={styles.title}>
           Complete your order
         </h1>
-        <p className={styles.body}>
+        <p className={styles.lede}>
           Physician-approved protocol ·{" "}
           <Link href={protocolHref} className={styles.inlineLink}>
             Review protocol
           </Link>
         </p>
 
-        <div className={styles.lineItem}>
-          <div className={styles.lineThumb}>
+        <div className={styles.summary}>
+          <div className={styles.thumb}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={protocol.gallery[0]?.src} alt="" />
           </div>
-          <div className={styles.lineCopy}>
-            <p className={styles.lineName}>{protocol.stackName}</p>
-            <p className={styles.lineMeta}>{protocol.stackMeta}</p>
+          <div>
+            <p className={styles.itemName}>{protocol.stackName}</p>
+            <p className={styles.itemMeta}>{protocol.stackMeta}</p>
           </div>
-          <p className={styles.linePrice}>{protocol.price}</p>
+          <p className={styles.itemPrice}>{protocol.price}</p>
         </div>
 
         {demo ? (
@@ -503,7 +584,8 @@ export function ProtocolCheckout({
             noValidate
             data-prx-collector="true"
           >
-            <p className={styles.body}>
+            {couponFields}
+            <p className={styles.note}>
               Secure checkout — your card is vaulted and charged through
               PrescribeRx (Authorize.net). TIDL never stores your card number.
             </p>
@@ -644,7 +726,8 @@ export function ProtocolCheckout({
             noValidate
             data-sandbox-payment="true"
           >
-            <p className={styles.body}>
+            {couponFields}
+            <p className={styles.note}>
               Sandbox payment — no real charge on your card. PrescribeRx records
               the transaction for reconciliation.
             </p>
@@ -700,12 +783,14 @@ export function ProtocolCheckout({
           </form>
         ) : (
           <div className={styles.payForm}>
-            <p className={styles.body}>
+            <p className={styles.lede}>
               Payment is not connected on TIDL yet. When checkout is available,
               you will complete your order here after physician approval.
             </p>
           </div>
         )}
+          </div>
+        </div>
       </section>
     </div>
   );

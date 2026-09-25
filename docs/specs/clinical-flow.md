@@ -177,7 +177,8 @@ user is authenticated and a prescription exists. Webhook
 | `GET /api/prescriberx/encounter-types/[id]/schema` | `GET /telehealth/encounter-types/{id}/schema` |
 | `GET /api/prescriberx/products` | `GET /telehealth/products` |
 | `POST /api/prescriberx/intake` | `POST /telehealth/intake/unified` |
-| `GET /api/prescriberx/encounters/[id]/status` | `GET /telehealth/encounters/{id}/status` |
+| `GET /api/prescriberx/encounters/[id]/status` | status + encounter detail + video-room + messages + labs + hold requirements |
+| `GET /api/prescriberx/patient/snapshot` | every patient-token GET (`/me/patient/*`, conversations, prefs, trends, `/me`) |
 | `GET /api/prescriberx/patient/dashboard` | `GET /me/patient/dashboard` (patient token) |
 | `GET /api/prescriberx/patient/orders` | `GET /me/patient/orders` |
 | `GET /api/prescriberx/patient/orders/[order]/tracking` | `GET /me/patient/orders/{order}/tracking` |
@@ -198,8 +199,8 @@ Server module: `web/content/clinical/entry-map.ts`.
 |---|---|---|---|
 | symptoms | general | universal-encounter | no |
 | weight-loss, transformation | treatment / stack | glp-1-screening | no |
-| testosterone | treatment | male-trt-consult | yes |
-| womens-balance | treatment | female-hrt | yes |
+| testosterone | treatment | quick-video-visit (sandbox; TRT id at cutover) | yes |
+| womens-balance | treatment | quick-video-visit (sandbox; HRT id at cutover) | yes |
 | sexual-health | treatment | mens-sexual-health-ed-assessment | no |
 | recovery-performance, skin-hair, athletes | treatment / program | peptide-assessment | no |
 | executives, healthspan, parents, creators, travelers | program | universal-encounter | no |
@@ -219,7 +220,7 @@ Shipped (see `docs/handoff-patient-portal.md`):
 
 Still open:
 
-- Visit scheduling UX + PrescribeRx scheduling bind
+- ~~Visit scheduling UX + PrescribeRx scheduling bind~~ — `/care/visit` books via `POST /encounters/{id}/schedule` (2026-09-25); protocol unlocks after post-visit statuses on visit-gated entries
 - Formal amend of decision 0002 (pay at protocol vs pay before intake)
 - Exact waiting copy legal review
 - Agent → video visit matrix from clinical ops

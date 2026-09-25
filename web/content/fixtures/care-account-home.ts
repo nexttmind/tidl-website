@@ -58,6 +58,14 @@ export type PendingEncounter = {
   encounterId: string;
   entrySlug: string;
   statusLabel: string;
+  /** What the patient should do next from this encounter. */
+  next: "wait" | "visit" | "protocol";
+};
+
+export type AccountThread = {
+  id: string;
+  title: string;
+  preview: string;
 };
 
 export type AccountHomeData = {
@@ -74,6 +82,7 @@ export type AccountHomeData = {
   pastOrders: readonly AccountOrder[];
   prescriptions: readonly AccountPrescription[];
   pendingEncounter: PendingEncounter | null;
+  threads: readonly AccountThread[];
   related: readonly ValueFieldCard[];
 };
 
@@ -258,6 +267,7 @@ export function resolveAccountHome(
     ],
     prescriptions: [],
     pendingEncounter: null,
+    threads: [],
     related: relatedFor(protocol.entrySlug),
   };
 }

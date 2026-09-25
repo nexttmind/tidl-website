@@ -96,11 +96,11 @@ async function main() {
     cookie,
   );
   if (liveVisit.res.status === 200) {
-    if (liveVisit.text.includes("Continue to protocol")) {
+    if (liveVisit.text.includes("Continue to protocol (demo)")) {
       throw new Error("live visit must not show demo bypass");
     }
-    if (!liveVisit.text.includes("not open on TIDL yet")) {
-      throw new Error("live visit missing honest scheduling copy");
+    if (liveVisit.text.includes("Book your video visit")) {
+      throw new Error("weight-loss must not show visit booking UI");
     }
   }
 

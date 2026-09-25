@@ -1,7 +1,7 @@
 # PrescribeRx sandbox — wired locally (website-main)
 
 **Status:** sandbox wired for local care + curated PDP overlays  
-**Verified:** 2026-09-23 (catalog FAILS=0; Phase D FAILS=0; L/M/N smokes pass)  
+**Verified:** 2026-09-23 (catalog FAILS=0; Phase D FAILS=0; L/M/N smokes pass); full PM walkthrough 2026-09-25  
 **Cross-check:** tidl-main saw the same catalog (162 products / 11 packages)
 
 This note records what we built across the sandbox wiring phases, what the
@@ -13,12 +13,15 @@ API actually contains, and what is still a sandbox/tenant gap (not a site bug).
 
 1. Env lives in `web/.env.local` (gitignored). Keys: `PRESCRIBERX_API_BASE`,
    `PRESCRIBERX_API_TOKEN`, `PRESCRIBERX_SANDBOX=true`, optional
-   `PRESCRIBERX_CLIENT_ID`, `PRESCRIBERX_DEFAULT_ENCOUNTER_TYPE_ID`.
-2. Tokens rotate ~every 12h. Refresh from
+   `PRESCRIBERX_CLIENT_ID`, `PRESCRIBERX_DEFAULT_ENCOUNTER_TYPE_ID`,
+   `PRESCRIBERX_SALES_ORG_ID` (TIDL Sandbox `019f3d35-afc4-72f8-b055-6c86c27ac1b3`).
+2. Product-manager script (Weight Loss live path + Peak Performance checkout):
+   [`docs/sandbox-pm-demo.md`](sandbox-pm-demo.md).
+3. Tokens rotate ~every 12h. Refresh from
    `https://demo.prescribe-rx.com/api/docs/tokens` (prefer `system_admin` for
    playground encounter-types) or run `bash build/tools/refresh-prescriberx-sandbox.sh`.
-3. From `web/`: `npm run dev` → open `http://localhost:3000`.
-4. Smoke: `GET /api/prescriberx/health` should return `healthy: true`.
+4. From `web/`: `npm run dev` → open `http://localhost:3000`.
+5. Smoke: `GET /api/prescriberx/health` should return `healthy: true`.
 
 ---
 
@@ -94,11 +97,13 @@ See [`docs/handoff-patient-portal.md`](handoff-patient-portal.md) for full narra
 | `GET /api/prescriberx/encounter-types/[id]/schema` | `.../schema` |
 | `GET /api/prescriberx/products?encounter_type_id=` | `/telehealth/products` |
 | `POST /api/prescriberx/intake` | `/telehealth/intake/unified` |
-| `GET /api/prescriberx/encounters/[id]/status` | `.../status` |
-| `GET /api/prescriberx/patient/*` | `/me/patient/*` (patient token) |
+| `GET /api/prescriberx/encounters/[id]/status` | status + encounter detail + video-room + messages + labs + hold requirements |
+| `GET /api/prescriberx/patient/snapshot` | every patient-token GET (`/me/patient/*`, conversations, prefs, trends, `/me`) |
+| `GET /api/prescriberx/patient/*` | individual `/me/patient/*` proxies (patient token) |
 | `POST /api/webhooks/prescriberx` | inbound (HMAC; public URL later) |
 
 Key libs: `web/lib/prescriberx/*`  
+Admin ↔ API matrix: [`prescriberx-admin-wiring.md`](prescriberx-admin-wiring.md)
 Entry map: `web/content/clinical/entry-map.ts`  
 PDP live wrapper: `web/components/pdp/CategoryPdpLive.tsx`
 
@@ -231,11 +236,16 @@ Production build: `npm run build && npx next start -p 3001` then
 - Pain topicals only if sold through PrescribeRx
 - Patient portal Phases A–F, J, H, L–N wired (see handoff). MoR payment
   (`reference_captured`), visit scheduling, tenant UUID cutover, public webhook URL.
+- Active merchant account on TIDL Sandbox (admin shows none, 2026-09-25) +
+  Authorize.net sandbox keys; until then checkout stays sandbox record-only.
+- Webhook subscription for TIDL Sandbox (none in admin yet). Not needed for
+  status: admin Status → Prescribed is picked up by waiting's poll.
 
 ---
 
 ## Related docs
 
+- `docs/sandbox-pm-demo.md` — product-manager walkthrough (Weight Loss + checkout)
 - `docs/handoff-patient-portal.md` — **start here for next team** (A–F, J, H, L–N + lessons)
 - `docs/specs/prescriberx-integration.md`
 - `docs/specs/clinical-flow.md`

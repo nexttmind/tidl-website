@@ -27,3 +27,6 @@ complete). Full handoff:
 - Refund UX when clinical screening fails after payment
 - MoR live capture on `/care/protocol` (`reference_captured` / prepaid) — UI gated; charge not wired
 - Visit scheduling APIs after physician accept when `visitGateDefault`
+- Ask Andrew: create and assign an active merchant account to TIDL Sandbox (`ORG-7144184834`); admin shows none as of 2026-09-25. Also need Authorize.net sandbox API login + client key for collector checkout
+- Webhook subscription for TIDL Sandbox: org **Webhook Integration** is **Enabled** (admin → TIDL Sandbox → Settings, verified 2026-09-25). **TIDL Sandbox** is selectable as Sales Organization subscriber on admin Create Webhook Subscription. Still missing: a **public HTTPS** callback URL (ngrok/preview/prod), create the subscription, copy PRX **signing secret** once into `PRESCRIBERX_WEBHOOK_SECRET` — eng/ops on TIDL side, not an Andrew toggle
+- Public HTTPS host (ngrok or preview) for the sandbox webhook subscription; PRX shows the signing secret once, which replaces the local `PRESCRIBERX_WEBHOOK_SECRET`

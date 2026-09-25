@@ -20,20 +20,23 @@ export async function GET() {
   const collector = isPrxCollectorPaymentsEnabled();
   const accept = getPrxAcceptJsConfig();
 
-  return authJson({
-    success: true,
-    data: {
-      sandbox: env.sandbox,
-      collector_enabled: collector && !!accept,
-      record_only_sandbox: env.sandbox && !collector,
-      accept_js: accept
-        ? {
-            api_login_id: accept.apiLoginId,
-            client_key: accept.clientKey,
-            script_url: accept.acceptJsUrl,
-            gateway_provider: accept.gatewayProvider,
-          }
-        : null,
+  return authJson(
+    {
+      success: true,
+      data: {
+        sandbox: env.sandbox,
+        collector_enabled: collector && !!accept,
+        record_only_sandbox: env.sandbox && !collector,
+        accept_js: accept
+          ? {
+              api_login_id: accept.apiLoginId,
+              client_key: accept.clientKey,
+              script_url: accept.acceptJsUrl,
+              gateway_provider: accept.gatewayProvider,
+            }
+          : null,
+      },
     },
-  });
+    200,
+  );
 }

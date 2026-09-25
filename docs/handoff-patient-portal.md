@@ -1,9 +1,9 @@
-# Handoff — patient portal + clinical care path (2026-09-22, updated 2026-09-23)
+# Handoff — patient portal + clinical care path (2026-09-22, updated 2026-09-25)
 
 **Audience:** next eng team continuing from this workspace  
 **Repo root:** `website-main/` (Next app in `web/`)  
-**Status:** PrescribeRx sandbox wired; portal Phases **A–F, J, H, L–N** complete  
-**Smoke:** catalog FAILS=0; Phase D FAILS=0 (2026-09-22); L/M/N smokes pass (2026-09-23)
+**Status:** PrescribeRx sandbox wired; portal Phases **A–F, J, H, L–N** complete; `/care/checkout` with sandbox record-only payment; full sandbox walkthrough verified 2026-09-25  
+**Smoke:** catalog FAILS=0; Phase D FAILS=0 (2026-09-22, re-run 2026-09-25); L/M/N smokes pass (2026-09-23; L re-run 2026-09-25); unit tests 98/98
 
 Start here. Specs and decisions below are canonical; this file is the
 narrative of what shipped, what broke in manual test, and what to build next.
@@ -37,7 +37,9 @@ Merchandising (/treatments|programs|stacks)
   → /care/waiting                 poll encounter status
   → /care/protocol                ONLY if prescribed-like status
        or /care/visit             if entry visitGateDefault
-  → /care/confirmation            fixture navigate after pay UI
+  → /care/checkout                sandbox: record-only payment into PRX
+                                  (PRX Accept.js collector if Authorize.net keys set)
+  → /care/confirmation
   → /care/home                    live AccountHome (or empty/pending)
 ```
 
@@ -93,6 +95,10 @@ Documented in [sandbox-wired.md](sandbox-wired.md):
   visit pages
 - Patient proxies: `web/app/api/prescriberx/patient/{dashboard,orders,encounters,prescriptions}/`
   and `orders/[order]/tracking`
+- Patient snapshot: `GET /api/prescriberx/patient/snapshot` pulls every
+  patient-token GET (`/me/patient/*`, conversations + messages, prefs, trends,
+  `/me`, `/me/settings`). Writes (chat send, export request, provide-information,
+  chart edits) stay off tidl.com until a dedicated screen exists.
 - Mapper: `web/lib/prescriberx/map-account-home.ts` → AccountHome chrome;
   empty / pending states; never invent molecule names; `?demo=1` = fixtures
 - Signed-in header: email + Log out in the SiteHeader auth slot (no second overlay chip)
@@ -212,6 +218,70 @@ Smoke: `npm run smoke:phase-m`.
 
 Smoke: `npm run smoke:phase-n` (dev); production headers on `next start -p 3001`.
 
+### Checkout merge + build health (2026-09-24 – 2026-09-25)
+
+Teammate commit `5669b5e` ("Add care checkout with PrescribeRx sandbox record
+and collector payment flow") added:
+
+- `/care/checkout` (`web/app/care/checkout/page.tsx`,
+  `web/components/care/ProtocolCheckout.tsx`), gated like protocol.
+- `POST /api/prescriberx/protocol/payment`: sandbox mode records an external
+  transaction on the encounter (`record-external-payment.ts`); collector mode
+  vaults Accept.js opaque data and charges through PRX
+  (`collect-prx-protocol-payment.ts`, `vault-prx-payment-method.ts`).
+- `GET /api/prescriberx/checkout/config` for Accept.js keys.
+- Register password verify + auto forgot-password; intake address normalization.
+
+Mode selection (`web/lib/prescriberx/prx-collector-config.ts`): collector only
+when `PRESCRIBERX_AUTHORIZE_NET_API_LOGIN_ID` and `…_CLIENT_KEY` are set;
+otherwise sandbox record-only. `?demo=1` checkout is still fixture-only and
+never writes to PRX.
+
+Follow-up fixes after the merge:
+
+- `authJson(…, 200)` on checkout config and payment success (typecheck).
+- Payment route rate limit was a no-op: it tested `!consumeRateLimit(...)` but
+  that returns `{ allowed, retryAfterSec }`. Now
+  `web/lib/prescriberx/protocol-payment-rate-limit.ts` (`protocol-pay:{ip}`,
+  20/min, `429` + `Retry-After`) with a unit test.
+- `sandbox-payment.test.ts` moved from vitest to `node:test`;
+  `scan-sandbox-payment.ts` report typing.
+
+Verified: `npm test` 98/98, typecheck, build.
+
+### PrescribeRx admin audit (2026-09-25)
+
+Full admin menu ↔ TIDL API matrix: [`prescriberx-admin-wiring.md`](prescriberx-admin-wiring.md).
+
+Logged in as platform admin on `demo.prescribe-rx.com`:
+
+| Area | Finding |
+|---|---|
+| Org | **TIDL Sandbox**, `ORG-7144184834`, id `019f3d35-afc4-72f8-b055-6c86c27ac1b3`, Sales Group, Active, owner `tidl@prescribe-rx.com` |
+| Catalog / types | 131 products priced on the org; GLP-1 Screening11, Peptide Assessment, Universal Encounter, etc. enabled |
+| Encounters | ~499 on the org, mostly On Hold / Pending (test intakes) |
+| Clients / orders | 0 / 0 (API intakes land as encounters) |
+| Merchant accounts | **None active** for the org; global merchant search for TIDL empty |
+| Webhooks | **No subscription** for TIDL yet (other sandboxes have one). Org **Webhook Integration** setting is **Enabled**; admin Create Subscription lists **TIDL Sandbox** under Sales Organization |
+
+Admin can move a case: encounter → **Manage** → **Status** tab → choose
+**Prescribed** → **Apply Transition**. PRX status API then returns
+`prescribed` and TIDL waiting advances by polling. No webhook required.
+
+New intakes can arrive with **no sales org** assigned in admin. Setting
+`PRESCRIBERX_SALES_ORG_ID` (sent as `sales_org_id` on intake), **clearing**
+`PRESCRIBERX_CLIENT_ID`, and restarting dev should attach them; otherwise pick
+TIDL Sandbox on Manage and save. Stale demo `client_id` on intake was a common
+cause of “missing” encounters under the org filter (fixed in intake builder).
+
+### Product-manager walkthrough (2026-09-25)
+
+Runbook: [`sandbox-pm-demo.md`](sandbox-pm-demo.md). Dry run on local dev:
+fresh GLP-1 intake `ENC-5674296131` → admin Prescribed → waiting moved to
+protocol without `demo=1` → executives checkout `demo=1` (fixture) and live
+sandbox record → confirmation. Account create still reports the password not
+saved on PRX; session continues.
+
 ---
 
 ## 4. Manual test lessons (do not re-learn)
@@ -226,6 +296,10 @@ Smoke: `npm run smoke:phase-n` (dev); production headers on `next start -p 3001`
 | Protocol / $349 while On Hold | Old demo Continue button | Removed; server redirects to waiting |
 | Mobile “real portal” vs TIDL | PrescribeRx hosted portal vs `/care/home` | Expected until white-label emails point at tidl.com |
 | Dev health slow / 127.0.0.1 timeout | Windows host binding | Prefer `http://localhost:3000` for smoke |
+| Health 503, `/me` 401 | Playground token expired (~12h) | Refresh `system_admin` from `/api/docs/tokens`, restart dev |
+| New encounter missing from TIDL Sandbox filter | No sales org on the encounter | Set `PRESCRIBERX_SALES_ORG_ID` + restart, or assign on Manage |
+| Admin banner "missing vitals, health_questions" | Thin API intake (scripts), not the full form | Use `/care/intake` for demos; status can still be set |
+| Waiting stuck even after admin change | Status not prescribed-like, or no TIDL session | Use Status → Prescribed; log in first |
 
 **Verified patient (manual):** intake weight-loss succeeded; patient visible in
 PrescribeRx admin; account created; waiting showed On Hold; after Phase C,
@@ -299,6 +373,8 @@ Token refresh: `https://demo.prescribe-rx.com/api/docs/tokens` (prefer
 | Account UI | `web/components/care/AccountWizard.tsx` |
 | Waiting | `web/components/care/WaitingReview.tsx` |
 | Protocol pay UI (fixture) | `web/components/care/ProtocolOrder.tsx` |
+| Checkout (sandbox record / collector) | `web/components/care/ProtocolCheckout.tsx`, `web/app/api/prescriberx/protocol/payment/route.ts` |
+| Payment mode + rate limit | `web/lib/prescriberx/prx-collector-config.ts`, `protocol-payment-rate-limit.ts` |
 | Account home UI | `web/components/care/AccountHome.tsx` |
 | Portal logout | `SiteHeader` auth slot (signed-in replaces Log In / Sign Up) |
 
@@ -310,10 +386,11 @@ Auth + patient API routes under `web/app/api/prescriberx/`.
 
 | Item | State |
 |---|---|
-| Protocol payment UI | Fixture card/tether; Complete purchase only navigates |
+| Checkout payment | Sandbox: records a reference on the PRX encounter, no card charged. `?demo=1`: fixture only, nothing written |
+| Live card charge (PRX collector) | Code present; blocked — no active merchant on TIDL Sandbox, no Authorize.net keys in env |
 | MoR `reference_captured` into PRX | Not wired |
 | Visit scheduling | Visit page is a stub continue |
-| Webhook receiver | Fail-closed HMAC on `POST /api/webhooks/prescriberx`; in-memory id+status only. Waiting still polls PRX. Public URL not pointed yet. |
+| Webhook receiver | Fail-closed HMAC on `POST /api/webhooks/prescriberx`; in-memory id+status only. Waiting still polls PRX. No subscription in PRX admin yet; needs a public HTTPS URL and the PRX-issued signing secret. |
 | Rate limits | In-memory per Node process (Phase M). Not Redis/Upstash — multi-instance deploy needs shared store later. |
 | Intake handoff | sessionStorage only (Phase N). Legacy localStorage key removed on read. |
 | Password on first create | Bind still fails in sandbox; session stays valid; reset-first UX + `tidl_password_needs_reset` |
@@ -334,12 +411,26 @@ From [open-questions.md](open-questions.md):
 5. Agent → video visit matrix
 6. Live payment + refund UX if screening fails after charge
 7. Webhook receiver URL on live TIDL host
+8. Create and assign an active merchant account to TIDL Sandbox (and Authorize.net sandbox API login + client key) so collector checkout can be tested
+9. ~~Enable Webhook Integration~~ — **already enabled** on TIDL Sandbox (2026-09-25). **Do not ask Andrew for this.** Create the subscription once TIDL has a public HTTPS webhook URL; copy the PRX signing secret once
 
 ---
 
 ## 9. Suggested next build order
 
-**Done (eng-only, no Andrew blockers):** Phases J, H, E, F, L, M, N.
+**Done (eng-only, no Andrew blockers):** Phases J, H, E, F, L, M, N; checkout merge fixes; sandbox PM walkthrough.
+
+**Where we stand (2026-09-25):** the full patient path runs end to end on
+sandbox. Remaining work is ops and product decisions, not portal build:
+
+| Waiting on | Owner | Unblocks |
+|---|---|---|
+| Active merchant on TIDL Sandbox + Authorize.net sandbox keys | PrescribeRx ops | Real card entry via PRX collector |
+| Durable sales-org token | PrescribeRx | No 12h token refresh |
+| Public HTTPS URL + webhook subscription + PRX signing secret | Us | Push events (emails, order/shipping updates) |
+| Visit scheduling decision + APIs | Product + PrescribeRx | Visit-gated entries past `/care/visit` |
+| Tenant encounter UUIDs, production env, DNS | PrescribeRx + us | Go-live (Phase K) |
+| First-password answer for issue-token users | PrescribeRx | Clean account create without reset email |
 
 **Next — blocked on ops / product lead:**
 
@@ -363,6 +454,7 @@ merchandising, marketing restyle — see specs under `docs/specs/`.
 | [patient-auth-smoke.md](patient-auth-smoke.md) | How to re-verify |
 | [specs/clinical-flow.md](specs/clinical-flow.md) | Stage map + compliance |
 | [sandbox-wired.md](sandbox-wired.md) | Sandbox catalog + intake wiring |
+| [sandbox-pm-demo.md](sandbox-pm-demo.md) | Product-manager walkthrough + admin status steps |
 | [open-questions.md](open-questions.md) | Unresolved ops/Andrew items |
 | [decisions/0004](decisions/0004-portal-on-tidl-com.md) / [0005](decisions/0005-patient-auth-on-tidl.md) | Locked product decisions |
 | `reference/prescriberx/` | OpenAPI + extracted guides |

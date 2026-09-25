@@ -17,5 +17,6 @@ export function buildHealthConfigFlags(env: PrescribeRxEnv) {
     ...flags,
     baseUrl: env.baseUrl,
     defaultEncounterTypeId: env.defaultEncounterTypeId,
+    salesOrgId: env.salesOrgId,
   };
 }
