@@ -1,3 +1,6 @@
+import { catalogIdFor } from "@/content/catalog/routes";
+import { intakeHref } from "@/content/clinical/entry-map";
+import { catalogVialSrc } from "@/content/fixtures/catalog";
 import { valueFields } from "@/content/fixtures/value-fields";
 import type { ThemeId } from "@/content/brand/peptide-identity";
 import type { CategoryPdpData, PdpBenefitItem } from "@/content/pdp/types";
@@ -80,7 +83,7 @@ function benefits(id: ThemeId, stills: readonly Still[]): PdpBenefitItem[] {
 function buildPdp(spec: HealthGoalSpec): CategoryPdpData {
   const notes = callouts(spec.themeId);
   const card = fieldCard(spec.themeId);
-  const ctaHref = `/care/intake?entry=${spec.entrySlug}`;
+  const ctaHref = intakeHref(spec.entrySlug);
   const [one, two, three] = spec.stills;
 
   return {
@@ -237,7 +240,7 @@ const SPECS: readonly HealthGoalSpec[] = [
     leadTitle: "Energy goals,\nlean mass support,\nclinician guided care",
     whatIsAnswer:
       "A health goal for men whose energy, body composition, and drive have slipped together. The visit covers daytime energy, lean mass, and libido as one protocol. Available if prescribed after clinical review. Molecule details appear only after login, inside intake, and on the prescription.",
-    vialSrc: "/pdp/cutouts/mens-health.png?v=3",
+    vialSrc: catalogVialSrc("mens-health"),
     fieldSrc: "/landing/lifestyle/mens-health-field.png",
     heroVideo: "/landing/hero/mens-health.mp4",
     heroPoster: "/landing/hero/mens-health.jpg",
@@ -259,7 +262,7 @@ const SPECS: readonly HealthGoalSpec[] = [
     leadTitle: "Desire,\nreliability,\nclinician guided care",
     whatIsAnswer:
       "A health goal when intimacy is the reason for the visit. Desire and reliability, reviewed in private by a physician. Available if prescribed after clinical review. Molecule details appear only after login, inside intake, and on the prescription.",
-    vialSrc: "/brand/pills/category-sexual-health.png?v=6",
+    vialSrc: catalogVialSrc("sexual-health"),
     form: "oral",
     fieldSrc: "/landing/lifestyle/sexual-health-field.png",
     heroVideo: "/landing/hero/sexual-health.mp4",
@@ -282,7 +285,7 @@ const SPECS: readonly HealthGoalSpec[] = [
     leadTitle: "Energy,\nmetabolic support,\nclinician guided care",
     whatIsAnswer:
       "A health goal for energy, mood, weight, and desire as physiology shifts across cycle, perimenopause, and menopause. Available if prescribed after clinical review. Molecule details appear only after login, inside intake, and on the prescription.",
-    vialSrc: "/pdp/cutouts/womens-balance.png?v=4",
+    vialSrc: catalogVialSrc("womens-balance"),
     fieldSrc: "/landing/lifestyle/womens-balance-field.png",
     heroVideo: "/landing/hero/womens-balance.mp4",
     heroPoster: "/landing/hero/womens-balance.jpg",
@@ -304,10 +307,10 @@ const SPECS: readonly HealthGoalSpec[] = [
     leadTitle: "Recovery,\ntissue repair,\nclinician guided care",
     whatIsAnswer:
       "A health goal for tissue, soreness, and mobility when the gap is not another training plan. The visit is the days between sessions. Available if prescribed after clinical review. Molecule details appear only after login, inside intake, and on the prescription.",
-    vialSrc: "/pdp/cutouts/recovery-performance.png?v=4",
+    vialSrc: catalogVialSrc("recovery-performance"),
     fieldSrc: "/landing/lifestyle/recovery-performance-field.png",
-    heroVideo: "/landing/hero/recovery-and-performance.mp4",
-    heroPoster: "/landing/hero/recovery-and-performance.jpg",
+    heroVideo: "/landing/hero/transformation.mp4",
+    heroPoster: "/landing/hero/transformation.jpg",
     stills: [
       { src: "/landing/imagery/recovery-performance/01-stretch.png", label: "Stretch", swatch: "#4a5c6a" },
       { src: "/landing/imagery/recovery-performance/02-tape-crop.png", label: "Tape", swatch: "#5c6a4a" },
@@ -326,7 +329,7 @@ const SPECS: readonly HealthGoalSpec[] = [
     leadTitle: "Hair you want to keep,\nskin quality,\nclinician guided care",
     whatIsAnswer:
       "A health goal for thinning hair and for skin quality that a cream does not reach. Built to act while there is still hair to keep. Available if prescribed after clinical review. Molecule details appear only after login, inside intake, and on the prescription.",
-    vialSrc: "/pdp/cutouts/skin-hair.png?v=4",
+    vialSrc: catalogVialSrc("skin-hair"),
     fieldSrc: "/landing/lifestyle/skin-hair-field.png",
     heroVideo: "/landing/hero/skin-and-hair.mp4",
     heroPoster: "/landing/hero/skin-and-hair.jpg",

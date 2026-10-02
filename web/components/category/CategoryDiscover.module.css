@@ -180,7 +180,7 @@
   max-height: 100%;
   min-width: 0;
   min-height: 0;
-  aspect-ratio: 1;
+  aspect-ratio: 330 / 440;
 }
 
 .media > .product {
@@ -197,22 +197,7 @@
   filter: url("#tidl-pill-defringe");
 }
 
-.card.bloomOn :global([data-bloom-stage]),
-.card.bloomOn:hover :global([data-bloom-stage]),
-.card.bloomOn:focus-within :global([data-bloom-stage]) {
-  opacity: 1;
-  transform:
-    translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
-    translate(0, 0)
-    scale(1);
-}
-
-.card.bloomOn :global([data-bloom-vial]),
-.card.bloomOn:hover :global([data-bloom-vial]),
-.card.bloomOn:focus-within :global([data-bloom-vial]) {
-  width: 100%;
-  height: 100%;
-  transform: none;
+.card :global([data-bloom-vial]) {
   filter: url("#tidl-pill-defringe");
 }
 
@@ -292,8 +277,14 @@
 }
 
 @media (width < 721px) {
+  .root {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+  }
+
   .pills {
-    justify-content: center;
+    justify-content: flex-start;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
@@ -304,7 +295,8 @@
   }
 
   .switch {
-    margin-inline: auto;
+    flex: 0 0 auto;
+    margin-inline: 0;
   }
 
   .switchBtn {
@@ -374,6 +366,28 @@
 }
 
 @media (721px <= width < 1025px) {
+  .root {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+  }
+
+  .pills {
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .switch {
+    flex: 0 0 auto;
+    margin-inline: 0;
+  }
+
   .switchBtn {
     padding: 8px 16px;
   }

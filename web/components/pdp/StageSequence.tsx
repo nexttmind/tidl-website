@@ -3,7 +3,10 @@
 import { useEffect, useRef, type CSSProperties } from "react";
 import { MediaSlot } from "@/components/media/MediaSlot";
 import { ShopBloomPair } from "@/components/home/ShopBloomPair";
+import { catalogFieldId, shopCatalogItem } from "@/components/home/shop-catalog";
 import { bloomStyle, shopPlate } from "@/components/home/shop-plates";
+import shop from "@/components/home/LandingShop.module.css";
+import { optCssImageSet } from "@/lib/media/opt-manifest";
 import { heroTheme, type ThemeId } from "@/content/brand/peptide-identity";
 import styles from "./StageSequence.module.css";
 
@@ -39,6 +42,7 @@ type StageSequenceProps = {
   stages: readonly StageStep[];
   collage: StageCollage;
   themeId?: ThemeId;
+  catalogId?: string;
   className?: string;
   liftStills?: boolean;
 };
@@ -53,6 +57,7 @@ export function StageSequence({
   stages,
   collage,
   themeId,
+  catalogId,
   className,
   liftStills = false,
 }: StageSequenceProps) {
@@ -61,8 +66,20 @@ export function StageSequence({
   const listRef = useRef<HTMLOListElement>(null);
   const fillRef = useRef<HTMLSpanElement>(null);
   const field = themeId ? heroTheme(themeId) : null;
+  const catalog = catalogId ? shopCatalogItem(catalogId) : undefined;
   const plate = themeId ? shopPlate(themeId) : null;
-  const roundBloom = Boolean(collage.round.bloom && plate && field);
+  const bloom = catalog?.bloom ?? plate?.bloom;
+  const bloomSrc = catalog?.bloomSrc ?? plate?.bloomSrc ?? "";
+  const plateSrc = catalog?.plateSrc ?? plate?.plateSrc;
+  const fieldKey = catalogFieldId(catalogId, themeId);
+  const fieldPaint = fieldKey
+    ? undefined
+    : plateSrc
+      ? ({ backgroundImage: optCssImageSet(plateSrc, 800) } as CSSProperties)
+      : field
+        ? ({ backgroundImage: field.night.css } as CSSProperties)
+        : undefined;
+  const roundBloom = Boolean(collage.round.bloom && bloom && (fieldKey || fieldPaint));
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -74,26 +91,39 @@ export function StageSequence({
       ...list.querySelectorAll<HTMLElement>("[data-step]"),
     ];
     let raf = 0;
+    let full = 1;
+    let marks: { step: HTMLElement; docTop: number; center: number }[] = [];
+
+    const measure = () => {
+      const wrapTop = wrap.getBoundingClientRect().top;
+      full = Math.max(wrap.clientHeight - 24, 8);
+      fill.style.height = `${full}px`;
+      marks = steps.map((step) => {
+        const mark = step.querySelector<HTMLElement>("[data-index]");
+        const box = step.getBoundingClientRect();
+        const center = mark
+          ? mark.getBoundingClientRect().top + mark.offsetHeight / 2 - wrapTop
+          : box.top - wrapTop;
+        return { step, docTop: box.top + window.scrollY, center };
+      });
+    };
 
     const apply = () => {
       raf = 0;
-      const probe = window.innerHeight * 0.4;
+      const probeDoc = window.scrollY + window.innerHeight * 0.4;
       let current = 0;
-      steps.forEach((step, index) => {
-        if (step.getBoundingClientRect().top < probe) current = index;
-      });
-      steps.forEach((step, index) => {
-        step.dataset.state =
+      for (let index = 0; index < marks.length; index += 1) {
+        if (marks[index].docTop < probeDoc) current = index;
+      }
+      for (let index = 0; index < marks.length; index += 1) {
+        const state =
           index < current ? "done" : index === current ? "active" : "wait";
-      });
-      const active = steps[current];
-      const mark = active?.querySelector<HTMLElement>("[data-index]");
-      if (!active || !mark) return;
-      const y =
-        mark.getBoundingClientRect().top +
-        mark.offsetHeight / 2 -
-        wrap.getBoundingClientRect().top;
-      fill.style.height = `${Math.max(y, 8)}px`;
+        if (marks[index].step.dataset.state !== state) {
+          marks[index].step.dataset.state = state;
+        }
+      }
+      const y = Math.max(marks[current]?.center ?? 8, 8);
+      fill.style.transform = `scaleY(${Math.min(1, y / full)})`;
     };
 
     const onScroll = () => {
@@ -101,10 +131,17 @@ export function StageSequence({
       raf = window.requestAnimationFrame(apply);
     };
 
+    measure();
     apply();
+    const ro = new ResizeObserver(() => {
+      measure();
+      apply();
+    });
+    ro.observe(wrap);
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
+      ro.disconnect();
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       if (raf) window.cancelAnimationFrame(raf);
@@ -165,26 +202,31 @@ export function StageSequence({
               lift={liftStills}
               className={styles.hero}
             />
-            {roundBloom && plate && field ? (
+            {roundBloom && bloom ? (
               <div
-                className={`${styles.round} ${styles.bloomCell}`}
-                data-bloom={plate.id}
+                className={`${styles.round} ${styles.bloomCell} ${shop.bloomSeated}`}
+                data-bloom={catalog?.id ?? plate?.id}
+                data-kind={catalog?.kind}
                 aria-label={collage.round.label}
-                style={
-                  {
-                    ...bloomStyle(plate.bloom),
-                    "--theme-night": field.night.css,
-                  } as CSSProperties
-                }
+                style={bloomStyle(bloom)}
               >
-                <span className={styles.bloomField} aria-hidden />
-                <span className={styles.bloomGrain} aria-hidden />
+                <span
+                  className={styles.bloomField}
+                  data-catalog-field={fieldKey}
+                  style={fieldPaint}
+                  aria-hidden
+                />
+                {fieldKey ? null : <span className={styles.bloomGrain} aria-hidden />}
                 <div className={styles.bloomStage}>
-                  <ShopBloomPair
-                    vialSrc={collage.round.src}
-                    bloomSrc={plate.bloomSrc}
-                    alt={collage.round.label}
-                  />
+                  <span className={shop.bloomFrame}>
+                    <ShopBloomPair
+                      vialSrc={collage.round.src}
+                      bloomSrc={bloomSrc}
+                      alt={collage.round.label}
+                      sizes="(width < 721px) 88vw, (width < 1025px) 44vw, 480px"
+                      vialSizes="(width < 721px) 72vw, (width < 1025px) 36vw, 400px"
+                    />
+                  </span>
                 </div>
               </div>
             ) : (

@@ -1,0 +1,829 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  max-width: 440px;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.formCards,
+.plans,
+.segments {
+  /* legends skip flex gap; keep label-to-card at 12px */
+  margin-top: 12px;
+}
+
+.addonBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: var(--space-4);
+  min-width: 0;
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-media);
+}
+
+.addonBlock > .label {
+  float: left;
+  width: 100%;
+  padding: 0;
+}
+
+.includedBlock {
+  --tile-unselected: color-mix(in srgb, var(--color-white) 10%, transparent);
+  background: var(--tile-unselected);
+  border-color: var(--tile-unselected);
+  border-radius: 4px;
+}
+
+.includedShip {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-ink);
+}
+
+.label {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.segments,
+.formCards {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.formCards {
+  align-items: flex-start;
+  min-width: 0;
+  overflow: visible;
+}
+
+.segment,
+.segmentOn,
+.plan,
+.planOn,
+.form,
+.formOn {
+  appearance: none;
+  font-family: var(--font-ui);
+  color: var(--text-primary);
+  background: transparent;
+  cursor: pointer;
+}
+
+.form.formStatic {
+  cursor: default;
+}
+
+.segment,
+.segmentOn {
+  position: relative;
+  isolation: isolate;
+  flex: 1 1 0;
+  min-height: 42px;
+  padding: 0 10px;
+  border: 1.5px solid var(--border-default);
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.form,
+.formOn {
+  position: relative;
+  isolation: isolate;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  min-height: min-content;
+  padding: 0;
+  overflow: visible;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.formFace {
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  height: 156px;
+  min-width: 0;
+  padding: 10px 10px 14px;
+  overflow: visible;
+  border: 1.5px solid var(--border-default);
+  border-radius: 4px;
+}
+
+.formTileTitle {
+  display: block;
+  width: 100%;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--text-primary);
+}
+
+.formHint {
+  display: block;
+  width: 100%;
+  margin: 0;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.3;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--text-secondary);
+}
+
+.form:has(.thumbLockup),
+.formOn:has(.thumbLockup) {
+  z-index: 1;
+}
+
+.soloForm {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.soloForm .thumb {
+  width: auto;
+}
+
+.soloLabel {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.thumb {
+  position: relative;
+  width: 100%;
+  height: 88px;
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+}
+
+.thumb.thumbBloom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow: visible;
+}
+
+/*
+ * Lockup PNG is pen + vial. The vial is 0.495 of that bitmap
+ * (cap at 0.394, base at 0.889 on the 220x330 lockups). Match
+ * the isolate to that drawn vial, not the whole lockup.
+ * Lockup height is (thumb - 8px) * 2, so isolate / thumb = 0.9.
+ */
+.thumb.thumbBloom [data-bloom] {
+  --vial-h: 0.9;
+}
+
+.addonThumb {
+  position: relative;
+  flex: 0 0 auto;
+  width: 48px;
+  aspect-ratio: 974 / 1300;
+  overflow: hidden;
+  border-radius: var(--radius-media);
+}
+
+.tileThumb {
+  width: 48px;
+  height: 64px;
+  aspect-ratio: auto;
+  border-radius: 4px;
+}
+
+.tileThumb .addonFrame {
+  object-fit: cover;
+}
+
+.tileThumb .addonContain {
+  object-fit: contain;
+  object-position: center;
+}
+
+.addonFrame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.addonCover {
+  object-fit: cover;
+  object-position: center 18%;
+}
+
+.thumbImg,
+.thumbLockup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: calc(100% - 16px);
+  max-height: calc(100% - 8px);
+  min-width: 0;
+  min-height: 0;
+  object-fit: contain;
+  object-position: center;
+  transform: translate(-50%, -50%);
+}
+
+/*
+ * Flex-center the lockup, then shift so the pin lands on the
+ * tile midline. x 0.50 centers the vial. y 0.64 is the lockup
+ * vial centre, so cap and base sit on the isolate beside it.
+ */
+.thumbLockupSeat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.thumbLockup {
+  position: relative;
+  top: auto;
+  left: auto;
+  max-width: calc(100% - 8px);
+  max-height: none;
+  height: calc((100% - 8px) * 2);
+  width: auto;
+  object-fit: contain;
+  transform: translate(
+    calc((0.5 - var(--lockup-vial-x, 0.5)) * 100%),
+    calc((0.5 - var(--lockup-vial-y, 0.64)) * 100%)
+  );
+}
+
+.thumbLockupSeat[data-lockup-wide] {
+  align-items: flex-end;
+}
+
+.thumbLockupSeat[data-lockup-wide] .thumbLockup {
+  height: auto;
+  width: calc(100% - 4px);
+  max-height: none;
+  transform: none;
+}
+
+.addons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.includedList {
+  gap: var(--space-3);
+}
+
+.addon {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 0;
+  border: 0;
+}
+
+.addonIncluded {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 0;
+  border: 0;
+}
+
+.includedMark {
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  border: 2px solid var(--color-ink);
+  border-radius: 4px;
+  background-color: var(--color-ink);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 14px 14px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3.4 8.2L6.4 11.2L12.6 4.6' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.check {
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  flex: 0 0 auto;
+  border: 2px solid var(--border-strong);
+  border-radius: 4px;
+  background-color: var(--color-white);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 14px 14px;
+  box-shadow: 0 1px 2px rgba(26, 26, 26, 0.08);
+  cursor: pointer;
+}
+
+.check:hover {
+  border-color: var(--color-ink);
+}
+
+.check:checked {
+  border-color: var(--color-ink);
+  background-color: var(--color-ink);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3.4 8.2L6.4 11.2L12.6 4.6' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  box-shadow: none;
+}
+
+.check:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 3px;
+}
+
+.addon > span:last-child,
+.addonIncluded > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.formCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  margin: 0;
+}
+
+.formTitle {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-ink);
+}
+
+.formCopy,
+.hint,
+.visit,
+.note,
+.future {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.plans {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+}
+
+.plans[data-single] {
+  grid-template-columns: max-content;
+}
+
+.plan,
+.planOn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-height: 0;
+  padding: 14px 10px 12px;
+  overflow: visible;
+  border: 1.5px solid var(--border-default);
+  border-radius: 4px;
+  text-align: left;
+}
+
+.segment,
+.plan,
+.form {
+  --tile-unselected: color-mix(in srgb, var(--color-white) 10%, transparent);
+}
+
+.segment,
+.plan {
+  background: var(--tile-unselected);
+  border-color: var(--tile-unselected);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.formFace {
+  background: var(--tile-unselected);
+  border-color: var(--tile-unselected);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    background-image 160ms ease;
+}
+
+.formStatic .formFace {
+  background: transparent;
+  border: none;
+}
+
+.thumb,
+.soloLabel,
+.plan > *,
+.planOn > *,
+.tileFace {
+  transition: transform 160ms ease;
+}
+
+.soloLabel,
+.tileFace {
+  display: inline-block;
+}
+
+.plan > *,
+.planOn > * {
+  transform-origin: left center;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .segment:hover,
+  .plan:hover,
+  .form:hover:not(.formStatic) {
+    --tile-unselected: color-mix(in srgb, var(--color-white) 25%, transparent);
+  }
+
+  .form:hover:not(.formStatic) .thumb,
+  .formOn:hover .thumb,
+  .form:hover .soloLabel,
+  .formOn:hover .soloLabel,
+  .plan:hover > *,
+  .planOn:hover > *,
+  .segment:hover .tileFace,
+  .segmentOn:hover .tileFace,
+  .cta:hover .tileFace {
+    transform: scale(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .segment,
+  .plan,
+  .form,
+  .thumb,
+  .soloLabel,
+  .plan > *,
+  .planOn > *,
+  .tileFace {
+    transition: none;
+  }
+}
+
+/* Locked for every PDP. White only. Do not retint from catalog tiles. */
+.segmentOn,
+.planOn,
+.formOn,
+.cta {
+  --tile-selected-fill: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-white) 12%, transparent) 0%,
+    color-mix(in srgb, var(--color-white) 35%, transparent) 100%
+  );
+  --tile-selected-line: linear-gradient(
+    180deg,
+    var(--color-white) 0%,
+    color-mix(in srgb, var(--color-white) 55%, transparent) 100%
+  );
+  color: var(--text-primary);
+  border: 1.5px solid transparent;
+  box-shadow: none;
+}
+
+.segmentOn,
+.planOn,
+.formOn .formFace,
+a.cta,
+button.cta,
+.cta {
+  isolation: isolate;
+  background-color: color-mix(in srgb, var(--color-white) 12%, transparent);
+  background-image: var(--tile-selected-fill);
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.segmentOn::before,
+.planOn::before,
+.formOn .formFace::before,
+.cta::before {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  z-index: -1;
+  padding: 1px;
+  border-radius: inherit;
+  background-color: var(--color-white);
+  background-image: var(--tile-selected-line);
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-clip: content-box, border-box;
+  -webkit-mask-composite: xor;
+  mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+  mask-repeat: no-repeat;
+  mask-clip: content-box, border-box;
+  mask-composite: exclude;
+}
+
+.formOn {
+  background: transparent;
+  color: inherit;
+  border: none;
+}
+
+.formOn .formFace {
+  border-color: transparent;
+  color: var(--text-primary);
+}
+
+.formOn .formTileTitle {
+  color: var(--text-primary);
+}
+
+.formOn .formHint {
+  color: var(--text-secondary);
+}
+
+.planOn .planTerm,
+.planOn .planMo,
+.planOn .planSave,
+.planOn [data-save] {
+  color: var(--text-primary);
+}
+
+.planTerm {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.planMo {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.planSave {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.monthlyBox {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.monthlyBox p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+.consent input,
+.panel input {
+  margin-top: 3px;
+  flex: 0 0 auto;
+}
+
+.panel {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px;
+  border: 1.5px solid var(--border-default);
+  border-radius: 4px;
+}
+
+.panelTitle {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.includes {
+  margin: 0;
+  padding: 0 0 0 1.1em;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.includes li + li {
+  margin-top: 4px;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.summaryTile {
+  --tile-unselected: color-mix(in srgb, var(--color-white) 10%, transparent);
+  padding: var(--space-4);
+  border: 1.5px solid var(--tile-unselected);
+  border-radius: 4px;
+  background: var(--tile-unselected);
+}
+
+.summaryLabel {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.summaryPrice {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+a.cta,
+button.cta,
+.cta {
+  position: relative;
+  align-self: stretch;
+  width: 100%;
+  min-height: 52px;
+  margin-top: 6px;
+  border-radius: var(--radius-pill);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+a.cta:hover:not(:disabled),
+a.cta:focus-visible,
+a.cta:active,
+.cta:hover:not(:disabled),
+.cta:focus-visible {
+  color: var(--text-primary);
+  border: 1.5px solid transparent;
+  outline: none;
+  box-shadow: none;
+  background-color: color-mix(in srgb, var(--color-white) 12%, transparent);
+  background-image: var(--tile-selected-fill);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  filter: none;
+}
+
+.cta:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  color: var(--text-primary);
+}
+
+.plans:has(> :nth-child(5):last-child) {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.plans:has(> :nth-child(5):last-child) .plan,
+.plans:has(> :nth-child(5):last-child) .planOn {
+  grid-column: span 2;
+}
+
+@media (width < 721px) {
+  .root {
+    max-width: none;
+  }
+
+  .cta,
+  .cta::before {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (width < 721px), (721px <= width < 1025px) {
+  .block[data-bundle-molecules] {
+    display: none;
+  }
+
+  .segmentOn,
+  .planOn,
+  .formOn {
+    --tile-selected-fill: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-white) 10%, transparent) 0%,
+      color-mix(in srgb, var(--color-white) 20%, transparent) 100%
+    );
+  }
+
+  .segmentOn,
+  .planOn,
+  .formOn .formFace {
+    background-color: color-mix(in srgb, var(--color-white) 10%, transparent);
+  }
+
+  .segmentOn::before,
+  .planOn::before,
+  .formOn .formFace::before {
+    padding: 1.5px;
+  }
+
+  a.cta,
+  button.cta,
+  .cta,
+  a.cta:hover:not(:disabled),
+  a.cta:focus-visible,
+  a.cta:active,
+  .cta:hover:not(:disabled),
+  .cta:focus-visible,
+  .cta:disabled {
+    background-color: var(--color-white);
+    background-image: none;
+    color: var(--color-night);
+    opacity: 1;
+    text-transform: capitalize;
+  }
+
+  .cta::before {
+    content: none;
+  }
+
+  .cta + .hint {
+    display: none;
+  }
+}

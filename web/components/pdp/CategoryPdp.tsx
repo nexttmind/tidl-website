@@ -1,6 +1,7 @@
 import { CategoryPairing } from "@/components/category/CategoryPairing";
 import { FooterGlobal } from "@/components/chrome/FooterGlobal";
 import { SiteHeader } from "@/components/chrome/SiteHeader";
+import { catalogFieldId } from "@/components/home/shop-catalog";
 import { LandingSocial } from "@/components/home/LandingSocial";
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
 import { BenefitsSection } from "@/components/pdp/BenefitsSection";
@@ -9,6 +10,7 @@ import { CampaignBarrage } from "@/components/pdp/CampaignBarrage";
 import { PdpLeadSplit } from "@/components/pdp/PdpLeadSplit";
 import { barrageFrames } from "@/content/pdp/barrage";
 import { PdpStickyChip } from "@/components/pdp/PdpStickyChip";
+import { PdpFormProvider } from "@/components/pdp/PdpFormContext";
 import { ProductBuyBox } from "@/components/pdp/ProductBuyBox";
 import { QualitySection } from "@/components/pdp/QualitySection";
 import { StageSequence } from "@/components/pdp/StageSequence";
@@ -16,35 +18,47 @@ import type { CategoryPdpData } from "@/content/pdp/types";
 import styles from "./CategoryPdp.module.css";
 
 export function CategoryPdp({ data }: { data: CategoryPdpData }) {
+  const fieldTokens = data.artId ?? catalogFieldId(data.catalogId, data.themeId);
   return (
-    <>
+    <PdpFormProvider catalogId={data.catalogId ?? ""} fallbackHero={data.heroSrc}>
       <a className="sr-only" href="#main">
         Skip to content
       </a>
-      <div className={styles.hero}>
+      <div className={styles.hero} data-catalog-tokens={fieldTokens}>
         <div className={styles.heroChrome}>
-          <SiteHeader overlay />
+          <SiteHeader
+            overlay
+            inverse
+            desktopLoadState
+            loadCatalog
+            menuGlass
+            glassPlate
+          />
         </div>
         <ProductBuyBox
           layout="split"
           heroSrc={data.heroSrc}
           heroCallouts={data.heroCallouts}
           themeId={data.themeId}
+          catalogId={data.catalogId}
+          artId={data.artId}
           title={data.title}
           category={data.category}
           tagline={data.tagline}
+          dek={data.dek}
           stockLabel={data.stockLabel}
+          soldOut={data.soldOut}
           price={data.price}
           compareAtPrice={data.compareAtPrice}
           primaryCta={data.primaryCta}
           primaryCtaHref={data.primaryCtaHref}
+          complianceLine={data.complianceLine}
           body={data.body}
           payLine={data.payLine}
           trust={data.trust}
           planLabel={data.planLabel}
           planOptions={data.planOptions}
           promo={data.promo}
-          sandboxLive={data.sandboxLive}
           gallery={{
             plates: data.gallery.plates,
             proofThumb: data.gallery.proofThumb,
@@ -62,10 +76,10 @@ export function CategoryPdp({ data }: { data: CategoryPdpData }) {
         />
         <CampaignBarrage
           frames={barrageFrames(
-            data.themeId,
-            data.barrageGraphic,
+            data.catalogId ?? data.themeId,
             data.barragePack,
           )}
+          benefits={data.benefits.items.map((item) => item.title)}
         />
         <PdpLeadSplit
           title={data.lead.title}
@@ -81,6 +95,7 @@ export function CategoryPdp({ data }: { data: CategoryPdpData }) {
           mediaFit="cover"
           plate={data.quality.plate}
           themeId={data.themeId}
+          catalogId={data.catalogId}
         />
         {data.bmi ? (
           <BmiCalculator
@@ -97,6 +112,7 @@ export function CategoryPdp({ data }: { data: CategoryPdpData }) {
           stages={data.careFlow.stages}
           collage={data.careFlow.collage}
           themeId={data.themeId}
+          catalogId={data.catalogId}
         />
         {data.pairing ? (
           <div className={styles.pairingWrap}>
@@ -113,7 +129,8 @@ export function CategoryPdp({ data }: { data: CategoryPdpData }) {
         imageSrc={data.heroSrc}
         ctaLabel={data.primaryCta}
         ctaHref={data.primaryCtaHref}
+        soldOut={data.soldOut}
       />
-    </>
+    </PdpFormProvider>
   );
 }

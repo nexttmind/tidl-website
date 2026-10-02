@@ -40,17 +40,17 @@ function withSite(siteUrl: string, spec: EmailSpec): EmailSpec {
 
 const stacks = [
   {
-    src: "/landing/shop/vials/transformation.png?v=4",
+    src: "/landing/shop/catalog/vials/transformation.png?v=13",
     label: "Appetite Balance",
     href: "/stacks/transformation",
   },
   {
-    src: "/landing/shop/vials/athlete.png?v=5",
+    src: "/landing/shop/catalog/vials/athletes.png?v=13",
     label: "Dynamic Training",
     href: "/programs/athletes",
   },
   {
-    src: "/landing/shop/vials/executive.png?v=3",
+    src: "/landing/shop/catalog/vials/mens-health.png?v=13",
     label: "Peak Performance",
     href: "/programs/ceos-and-executives",
   },
@@ -128,13 +128,13 @@ export function shippedEmail(siteUrl: string): EmailSpec {
     headline: "Quiet the food noise.",
     heroSrc: "/landing/hero/weight-loss.jpg",
     heroPrimary: { label: "Track your order", href: "/care/home" },
-    heroSecondary: { label: "Open your care guide", href: "/guide" },
+    heroSecondary: { label: "Browse treatments", href: "/treatments" },
     eyebrow: "On the way",
     bodyHeadline: "Your first protocol just left the pharmacy.",
     bodyCopy: "Unbox. Read the card. Start when your clinician said to.",
     products: [
       {
-        src: "/landing/shop/vials/weight-loss.png?v=3",
+        src: "/landing/shop/catalog/vials/weight-loss.png?v=13",
         label: "Weight Loss",
         href: "/treatments/weight-loss",
       },
@@ -143,7 +143,7 @@ export function shippedEmail(siteUrl: string): EmailSpec {
       kicker: "Shipped",
       lines: ["Your first protocol", "just left the pharmacy."],
     },
-    cta: { label: "Open your care guide", href: "/guide" },
+    cta: { label: "Browse treatments", href: "/treatments" },
     legal:
       "Available if prescribed after clinical review. TIDL does not guarantee outcomes.",
     footer: "Physician guided care. Made in the USA.",

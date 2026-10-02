@@ -6,6 +6,69 @@
   padding-bottom: var(--space-2);
 }
 
+.root[data-nested] {
+  position: relative;
+  z-index: auto;
+  margin-top: 0;
+  padding-inline: 0;
+  padding-bottom: 0;
+}
+
+.root[data-nested] .frame,
+.root[data-nested] .viewport,
+.root[data-nested] .panel,
+.root[data-nested] .glass {
+  border-radius: 0;
+}
+
+.root[data-nested] .frame,
+.root[data-nested] .viewport {
+  overflow: visible;
+}
+
+.root[data-nested] .viewport {
+  min-height: var(--catalog-band-h, 480px);
+}
+
+.root[data-nested] .slide {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: calc(-1 * var(--catalog-chrome-h, 0px));
+}
+
+.root[data-nested] .incoming {
+  inset: auto;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: calc(-1 * var(--catalog-chrome-h, 0px));
+}
+
+.root[data-nested] .slide .panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  background-color: transparent;
+  background-image: none;
+}
+
+.root[data-nested] .field,
+.root[data-nested] .frost,
+.root[data-nested] .scrim {
+  inset: 0;
+}
+
+.root[data-nested] .glass {
+  flex: 0 0 auto;
+  min-height: 480px;
+  background: transparent;
+}
+
 .frame {
   position: relative;
   overflow: hidden;
@@ -16,7 +79,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  min-height: 680px;
+  min-height: 480px;
   border-radius: inherit;
 }
 
@@ -27,7 +90,7 @@
   align-items: stretch;
   justify-content: center;
   box-sizing: border-box;
-  min-height: 680px;
+  min-height: 480px;
   padding: 0;
   overflow: hidden;
   color: var(--text-inverse);
@@ -79,53 +142,16 @@
   }
 }
 
-.jump {
+.field {
   position: absolute;
-  top: 50%;
-  z-index: 4;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border: 1px solid color-mix(in srgb, var(--color-white) 28%, transparent);
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--color-night) 62%, transparent);
-  color: var(--text-inverse);
-  cursor: pointer;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transform: translateY(-50%);
-  transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    transform 160ms ease;
-}
-
-.jumpLeft {
-  left: var(--space-5);
-}
-
-.jumpRight {
-  right: var(--space-5);
-}
-
-.jump:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--color-white) 70%, transparent);
-  outline-offset: 2px;
-}
-
-.jump:active {
-  transform: translateY(-50%) scale(0.96);
-  transition-duration: 90ms;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .jump:hover {
-    background: color-mix(in srgb, var(--color-night) 78%, transparent);
-    border-color: color-mix(in srgb, var(--color-white) 45%, transparent);
-  }
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  background-color: var(--color-night);
+  background-image: var(--field-image);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
 }
 
 .frost {
@@ -145,8 +171,8 @@
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  filter: blur(14px) saturate(1.02);
-  transform: scale(1.08);
+  filter: blur(28px) saturate(1.02);
+  transform: scale(1.12);
 }
 
 .frost::after {
@@ -161,13 +187,14 @@
   z-index: 1;
   display: grid;
   grid-template-columns: minmax(260px, 0.82fr) minmax(420px, 1.28fr);
+  align-items: start;
   gap: var(--space-5);
   box-sizing: border-box;
   flex: 1 1 auto;
   width: 100%;
-  min-height: 680px;
+  min-height: 480px;
   margin: 0;
-  padding: 48px 56px;
+  padding: 55px 56px 55px;
   overflow: hidden;
   border: none;
   border-radius: inherit;
@@ -197,30 +224,9 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  justify-content: center;
   min-width: 0;
   min-height: 100%;
-}
-
-.kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
-  font-family: var(--font-ui);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  line-height: 1;
-  text-transform: uppercase;
-  color: var(--text-inverse);
-}
-
-.kicker img {
-  display: block;
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-  flex: none;
 }
 
 .intro {
@@ -229,7 +235,25 @@
   align-items: flex-start;
   gap: var(--space-4);
   width: 100%;
-  margin-block: auto;
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.kicker {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-white) 72%, transparent);
 }
 
 .foot {
@@ -238,8 +262,8 @@
   align-items: flex-start;
   gap: 10px;
   width: 100%;
-  margin-top: auto;
-  padding-top: var(--space-5);
+  margin-top: var(--space-5);
+  padding-top: 0;
 }
 
 .headline {
@@ -268,14 +292,36 @@
 
 .shopBtn {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   width: max-content;
   max-width: 100%;
   height: auto;
   min-height: 36px;
   margin-top: 0;
   padding: 8px 18px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-white);
+  color: var(--cta-ink, #755f42);
+  font-family: var(--font-ui);
   font-size: 13px;
   font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.shopBtn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-night) 70%, transparent);
+  outline-offset: 2px;
+}
+
+.ctaKind {
+  display: none;
 }
 
 .chip {
@@ -297,16 +343,6 @@
   color: var(--text-inverse);
 }
 
-.footnote {
-  margin: 0;
-  font-family: var(--font-ui);
-  font-size: 11px;
-  font-weight: 400;
-  letter-spacing: 0.01em;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.7);
-}
-
 .product {
   display: flex;
   align-items: center;
@@ -317,39 +353,206 @@
 
 .vialStage {
   position: relative;
-  width: min(580px, 100%);
-  aspect-ratio: 1;
+  width: min(450px, 100%);
+  height: 370px;
 }
 
 .vial {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   display: block;
-  width: 100%;
-  height: 100%;
+  width: 370px;
+  height: 370px;
   object-fit: contain;
   pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.vialStage[data-form="pill"] {
+  width: min(370px, 100%);
+}
+
+.vialStage[data-form="pill"] .vial {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(176px, 48%);
+  height: auto;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+}
+
+.vialStage[data-form="pill"] .callout {
+  width: 24%;
+}
+
+.vialStage[data-form="pill"] .calloutCap {
+  top: 20%;
+}
+
+.vialStage[data-form="pill"] .calloutLabel {
+  top: 50%;
+}
+
+.vialStage[data-form="pill"] .calloutBase {
+  top: 84%;
+}
+
+.vialStage[data-id="methylene-blue"] .vial {
+  width: min(230px, 62%);
+}
+
+.vialStage[data-id="methylene-blue"] .callout {
+  width: 28%;
+}
+
+.vialStage[data-id="methylene-blue"] .calloutCap {
+  top: 32%;
+}
+
+.vialStage[data-id="methylene-blue"] .calloutLabel {
+  top: 50%;
+}
+
+.vialStage[data-id="methylene-blue"] .calloutBase {
+  top: 70%;
+}
+
+/* Lockups are wide. Keep them in the centre so chips stay in the gutters. */
+.vialStage[data-kind="bundle"] {
+  width: min(520px, 100%);
+}
+
+.vialStage[data-kind="bundle"] .vial {
+  width: min(220px, 42%);
+  height: auto;
+  max-height: 200px;
+}
+
+.vialStage[data-kind="bundle"] .callout {
+  width: 26%;
+}
+
+.vialStage[data-kind="bundle"] .calloutCap {
+  top: 28%;
+}
+
+.vialStage[data-kind="bundle"] .calloutLabel {
+  top: 50%;
+}
+
+.vialStage[data-kind="bundle"] .calloutBase {
+  top: 74%;
+}
+
+.vialStage[data-id="at-home-lab"] {
+  width: min(560px, 100%);
+}
+
+.vialStage[data-id="at-home-lab"] .vial {
+  width: min(260px, 46%);
+  height: auto;
+  max-height: 130px;
+}
+
+.vialStage[data-id="at-home-lab"] .callout {
+  width: 24%;
+}
+
+.vialStage[data-id="at-home-lab"] .calloutCap {
+  top: 38%;
+}
+
+.vialStage[data-id="at-home-lab"] .calloutLabel {
+  top: 50%;
+}
+
+.vialStage[data-id="at-home-lab"] .calloutBase {
+  top: 64%;
+}
+
+.vialStage[data-id="sexual-health"] {
+  width: min(400px, 100%);
+}
+
+.vialStage[data-id="sexual-health"] .vial {
+  width: min(168px, 42%);
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.vialStage[data-id="sexual-health"] .callout {
+  width: 28%;
+}
+
+.vialStage[data-id="sexual-health"] .calloutCap {
+  top: 30%;
+}
+
+.vialStage[data-id="sexual-health"] .calloutLabel {
+  top: 50%;
+}
+
+.vialStage[data-id="sexual-health"] .calloutBase {
+  top: 70%;
+}
+
+.vialStage[data-id="sexual-health"] .calloutRow {
+  gap: 6px;
+}
+
+.vialStage[data-id="sexual-health"] .calloutBody {
+  margin-top: 4px;
+}
+
+.vialStage[data-id="pain-relief"] {
+  width: min(580px, 100%);
+}
+
+.vialStage[data-id="pain-relief"] .vial {
+  width: min(150px, 26%);
+  height: auto;
+  max-height: 170px;
+}
+
+.vialStage[data-id="pain-relief"] .callout {
+  width: 32%;
+}
+
+.vialStage[data-id="pain-relief"] .calloutCap {
+  top: 16%;
+}
+
+.vialStage[data-id="pain-relief"] .calloutLabel {
+  top: 46%;
+}
+
+.vialStage[data-id="pain-relief"] .calloutBase {
+  top: 84%;
 }
 
 .callout {
   position: absolute;
   z-index: 2;
-  /* Vial silhouette sits ~29–71% of the PNG. Keep stems in the gutters. */
-  width: 25%;
+  /* Vial is 370 in a 450 stage. Keep stems in the extra gutters. */
+  width: 24%;
 }
 
 .calloutCap {
-  top: 32%;
+  top: 30%;
   left: 0;
   transform: translateY(-50%);
 }
 
 .calloutLabel {
-  top: 46%;
+  top: 48%;
   right: 0;
   transform: translateY(-50%);
 }
 
 .calloutBase {
-  top: 78%;
+  top: 76%;
   left: 0;
   transform: translateY(-50%);
 }
@@ -369,9 +572,9 @@
   margin: 8px 0 0;
   max-width: 100%;
   font-family: var(--font-ui);
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 400;
-  line-height: 1.4;
+  line-height: 1.35;
   color: rgba(255, 255, 255, 0.86);
 }
 
@@ -388,11 +591,28 @@
   pointer-events: none;
 }
 
+.stageCallouts {
+  display: contents;
+}
+
+.previewCallouts {
+  display: none;
+}
+
 @media (721px <= width < 1025px) {
   .root {
     --glass-radius: 24px;
     margin-top: var(--space-8);
     padding-inline: var(--layout-gutter);
+  }
+
+  .root[data-nested] {
+    margin-top: 0;
+    padding-inline: 0;
+  }
+
+  .root[data-nested] .glass {
+    min-height: 0;
   }
 
   .viewport,
@@ -404,42 +624,63 @@
   .glass {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 0;
-    padding: 28px 22px 24px;
+    --glass-inline: 22px;
+    padding: 28px var(--glass-inline) 40px;
     overflow: hidden;
     background: transparent;
+    text-align: center;
   }
 
   .copy {
     display: contents;
   }
 
+  .intro,
+  .heading {
+    align-items: center;
+    text-align: center;
+  }
+
   .intro {
     order: 1;
     position: relative;
     z-index: 2;
-    margin-block: 0 8px;
+    align-self: stretch;
+    margin-block: 0;
     gap: var(--space-3);
   }
 
+  .kicker,
+  .headline,
+  .lede {
+    text-align: center;
+  }
+
+  .kicker {
+    display: none;
+  }
+
+  .lede {
+    max-width: none;
+    width: calc(100% + 2 * (var(--glass-inline) - var(--catalog-gutter, var(--glass-inline))));
+    margin-inline: calc(var(--catalog-gutter, var(--glass-inline)) - var(--glass-inline));
+  }
+
   .product {
-    order: 2;
-    min-height: 0;
-    margin-top: 4px;
+    display: contents;
   }
 
   .foot {
     order: 3;
     position: relative;
     z-index: 2;
-    margin-top: 8px;
-    padding-top: 18px;
+    align-self: stretch;
+    margin-top: 30px;
+    padding-top: 0;
     align-items: center;
-    text-align: center;
-  }
-
-  .footnote {
-    margin-inline: auto;
     text-align: center;
   }
 
@@ -454,89 +695,131 @@
     font-size: 13px;
   }
 
-  .chip {
-    min-height: 0;
-    padding: 0;
-    border: none;
-    border-radius: 0;
-    background: none;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    justify-content: flex-start;
-    color: var(--color-white);
-    -webkit-text-fill-color: var(--color-white);
-    filter: none;
+  .ctaKind {
+    display: inline;
+    margin-inline-start: 0.25em;
   }
 
-  .calloutBody {
-    margin-top: 6px;
-    font-size: 13px;
-    line-height: 1.4;
-    color: rgba(255, 255, 255, 0.88);
-  }
-
-  .vialStage {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-    aspect-ratio: auto;
-  }
-
-  .vial {
-    align-self: center;
-    width: min(220px, 58%);
-    height: auto;
-    aspect-ratio: 1;
-    margin-bottom: 8px;
-  }
-
-  .callout {
-    position: relative;
-    top: auto;
-    right: auto;
-    left: auto;
-    width: 100%;
-    max-width: none;
-    transform: none;
-    margin: 0;
-    padding: 14px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.34);
-  }
-
-  .callout:last-child {
-    padding-bottom: 4px;
-  }
-
-  .calloutLabel .calloutRow,
-  .calloutLabel .calloutBody {
-    justify-content: flex-start;
-    margin-left: 0;
-    text-align: left;
-  }
-
-  .stem {
+  .stageCallouts {
     display: none;
   }
 
+  .vialStage,
+  .vialStage[data-form="pill"] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: center;
+    order: 2;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: auto;
+    margin-top: 30px;
+  }
+
+  .vial,
+  .vialStage[data-form="pill"] .vial {
+    position: static;
+    top: auto;
+    left: auto;
+    align-self: center;
+    width: 245px;
+    height: 250px;
+    aspect-ratio: auto;
+    margin-bottom: 0;
+    transform: none;
+    filter:
+      drop-shadow(0 16px 24px rgb(0 0 0 / 0.42))
+      drop-shadow(0 36px 56px rgb(0 0 0 / 0.26));
+  }
+
+  .vialStage[data-id="methylene-blue"] .vial {
+    width: 281px;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .vialStage[data-kind="bundle"] {
+    width: 100%;
+  }
+
+  .vialStage[data-kind="bundle"] .vial {
+    width: 344px;
+    height: auto;
+    max-height: none;
+    aspect-ratio: auto;
+  }
+
+  .vialStage[data-id="at-home-lab"] {
+    width: 100%;
+  }
+
+  .vialStage[data-id="at-home-lab"] .vial {
+    width: 344px;
+    height: auto;
+    max-height: none;
+    aspect-ratio: auto;
+  }
+
+  .vialStage[data-id="pain-relief"] {
+    width: 100%;
+  }
+
+  .vialStage[data-id="pain-relief"] .vial {
+    width: 313px;
+    height: auto;
+    max-height: none;
+    aspect-ratio: auto;
+  }
+
+  .previewCallouts {
+    display: none;
+  }
+
+  .previewCallouts li {
+    display: flex;
+    flex: 0 1 30%;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+    padding-inline: var(--space-3);
+    text-align: center;
+    color: var(--text-inverse);
+  }
+
+  .previewLabel {
+    display: block;
+    width: 100%;
+    padding-bottom: var(--space-1);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-white) 40%, transparent);
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    line-height: 14px;
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--text-inverse);
+  }
+
+  .previewBody {
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    text-wrap: pretty;
+    color: color-mix(in srgb, var(--color-white) 82%, transparent);
+  }
+
+  .previewTail {
+    white-space: nowrap;
+  }
+
   .frost::before {
-    filter: blur(14px) saturate(1.02);
+    filter: blur(10px) saturate(1.02);
     transform: scale(1.08);
-  }
-
-  .jump {
-    width: 44px;
-    height: 44px;
-  }
-
-  .jumpLeft {
-    left: var(--space-3);
-  }
-
-  .jumpRight {
-    right: var(--space-3);
   }
 
   .scrim {
@@ -548,10 +831,21 @@
     );
   }
 
+  .panel[data-light] .scrim {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-night) 62%, transparent) 0%,
+      color-mix(in srgb, var(--color-night) 50%, transparent) 42%,
+      color-mix(in srgb, var(--color-night) 36%, transparent) 100%
+    );
+  }
+
+  .kicker,
   .headline,
   .lede,
   .calloutBody,
-  .kicker {
+  .previewLabel,
+  .previewBody {
     text-shadow: 0 1px 12px color-mix(in srgb, var(--color-night) 55%, transparent);
   }
 }
@@ -563,6 +857,15 @@
     padding-inline: var(--layout-gutter);
   }
 
+  .root[data-nested] {
+    margin-top: 0;
+    padding-inline: 0;
+  }
+
+  .root[data-nested] .glass {
+    min-height: 0;
+  }
+
   .viewport,
   .panel,
   .glass {
@@ -573,7 +876,8 @@
     display: flex;
     flex-direction: column;
     gap: 0;
-    padding: 28px 22px 24px;
+    --glass-inline: 22px;
+    padding: 28px var(--glass-inline) 40px;
     overflow: hidden;
     background: transparent;
   }
@@ -582,38 +886,74 @@
     display: contents;
   }
 
+  .intro,
+  .heading {
+    align-items: center;
+    text-align: center;
+  }
+
   .intro {
     order: 1;
     position: relative;
     z-index: 2;
-    margin-block: 0 8px;
+    align-self: stretch;
+    margin-block: 0;
     gap: var(--space-3);
   }
 
+  .kicker,
+  .headline,
+  .lede {
+    width: 100%;
+    text-align: center;
+  }
+
+  .kicker {
+    display: none;
+  }
+
+  .lede {
+    max-width: none;
+    width: calc(100% + 2 * (var(--glass-inline) - var(--catalog-gutter, var(--glass-inline))));
+    margin-inline: calc(var(--catalog-gutter, var(--glass-inline)) - var(--glass-inline));
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    min-height: calc(1.45em * 2);
+  }
+
   .product {
+    display: contents;
+  }
+
+  .vialStage {
     order: 2;
-    min-height: 0;
-    margin-top: 4px;
+    align-self: center;
+    align-items: center;
+    width: auto;
+    margin-top: 30px;
   }
 
   .foot {
     order: 3;
     position: relative;
     z-index: 2;
-    margin-top: 8px;
-    padding-top: 18px;
+    margin-top: 30px;
+    padding-top: 0;
     align-items: center;
     text-align: center;
   }
 
-  .footnote {
-    margin-inline: auto;
-    text-align: center;
+  .heading {
+    container-type: inline-size;
   }
 
   .headline {
     max-width: none;
-    font-size: clamp(26px, 7vw, 36px);
+    white-space: nowrap;
+    font-size: 7.5cqi;
   }
 
   .shopBtn {
@@ -622,27 +962,17 @@
     font-size: 13px;
   }
 
-  .chip {
-    min-height: 0;
-    padding: 0;
-    border: none;
-    border-radius: 0;
-    background: none;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    justify-content: flex-start;
-    color: var(--color-white);
-    -webkit-text-fill-color: var(--color-white);
-    filter: none;
+  .ctaKind {
+    display: inline;
+    margin-inline-start: 0.25em;
   }
 
-  .calloutBody {
-    margin-top: 6px;
-    font-size: 13px;
-    line-height: 1.4;
-    color: rgba(255, 255, 255, 0.88);
+  .stageCallouts {
+    display: none;
+  }
+
+  .product {
+    display: contents;
   }
 
   .vialStage {
@@ -650,61 +980,101 @@
     flex-direction: column;
     align-items: stretch;
     width: 100%;
+    height: auto;
     aspect-ratio: auto;
   }
 
-  .vial {
+  .vial,
+  .vialStage[data-form="pill"] .vial {
+    position: static;
+    top: auto;
+    left: auto;
     align-self: center;
-    width: min(220px, 58%);
+    width: min(140px, 46%);
     height: auto;
     aspect-ratio: 1;
-    margin-bottom: 8px;
-  }
-
-  .callout {
-    position: relative;
-    top: auto;
-    right: auto;
-    left: auto;
-    width: 100%;
-    max-width: none;
+    margin-bottom: 0;
     transform: none;
-    margin: 0;
-    padding: 14px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.34);
   }
 
-  .callout:last-child {
-    padding-bottom: 4px;
-  }
-
-  .calloutLabel .calloutRow,
-  .calloutLabel .calloutBody {
-    justify-content: flex-start;
-    margin-left: 0;
-    text-align: left;
-  }
-
-  .stem {
+  .previewCallouts {
     display: none;
   }
 
+  .previewCallouts li {
+    display: grid;
+    grid-template-columns: 7.5em minmax(0, 1fr);
+    gap: var(--space-3);
+    align-items: start;
+    padding-inline: 0;
+    text-align: left;
+    color: var(--text-inverse);
+  }
+
+  .previewLabel {
+    display: block;
+    width: 100%;
+    padding-bottom: 0;
+    border-bottom: none;
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    line-height: 14px;
+    text-transform: uppercase;
+    color: var(--text-inverse);
+  }
+
+  .previewBody {
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    text-wrap: pretty;
+    color: color-mix(in srgb, var(--color-white) 82%, transparent);
+  }
+
+  .previewTail {
+    white-space: normal;
+  }
+
+  .vial,
+  .vialStage[data-form="pill"] .vial {
+    width: 200px;
+    height: 225px;
+    aspect-ratio: auto;
+    filter:
+      drop-shadow(0 14px 20px rgb(0 0 0 / 0.45))
+      drop-shadow(0 32px 48px rgb(0 0 0 / 0.28));
+  }
+
+  .vialStage[data-id="methylene-blue"] .vial {
+    width: 219px;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .vialStage[data-kind="bundle"] .vial {
+    width: 281px;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .vialStage[data-id="at-home-lab"] .vial {
+    width: 281px;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .vialStage[data-id="pain-relief"] .vial {
+    width: 250px;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
   .frost::before {
-    filter: blur(14px) saturate(1.02);
+    filter: blur(10px) saturate(1.02);
     transform: scale(1.08);
-  }
-
-  .jump {
-    width: 44px;
-    height: 44px;
-  }
-
-  .jumpLeft {
-    left: var(--space-3);
-  }
-
-  .jumpRight {
-    right: var(--space-3);
   }
 
   .scrim {
@@ -716,10 +1086,21 @@
     );
   }
 
+  .panel[data-light] .scrim {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-night) 62%, transparent) 0%,
+      color-mix(in srgb, var(--color-night) 50%, transparent) 42%,
+      color-mix(in srgb, var(--color-night) 36%, transparent) 100%
+    );
+  }
+
+  .kicker,
   .headline,
   .lede,
   .calloutBody,
-  .kicker {
+  .previewLabel,
+  .previewBody {
     text-shadow: 0 1px 12px color-mix(in srgb, var(--color-night) 55%, transparent);
   }
 }
@@ -749,11 +1130,5 @@
       color-mix(in srgb, var(--color-night) 62%, transparent) 36%,
       color-mix(in srgb, var(--color-night) 42%, transparent) 100%
     );
-  }
-
-  .jump {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background: color-mix(in srgb, var(--color-night) 82%, transparent);
   }
 }

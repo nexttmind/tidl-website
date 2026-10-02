@@ -1,4 +1,4 @@
-/* Hims-style catalog: 2 large features, then 4 performers in one row. */
+/* Product notecards, then the two large entry cards. */
 
 .root {
   display: flex;
@@ -17,12 +17,9 @@
 .feature {
   --feature-lift: 0px;
   --feature-scale: 1;
-  --feature-chevron: 0px;
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(120px, 0.75fr);
-  align-items: stretch;
-  gap: 12px;
+  display: flex;
+  align-items: center;
   min-height: clamp(132px, 14vw, 168px);
   padding: clamp(14px, 1.6vw, 18px);
   border-radius: 24px;
@@ -112,42 +109,58 @@
     );
 }
 
-.featureNight:hover::before,
-.featureNight:focus-visible::before,
-.featureWarm:hover::before,
-.featureWarm:focus-visible::before {
-  opacity: 1;
+.feature::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(20, 24, 28, 0.46) 0%,
+    rgba(20, 24, 28, 0.20) 36%,
+    rgba(20, 24, 28, 0.05) 60%,
+    transparent 100%
+  );
+}
+
+.featureNight::after {
+  background: radial-gradient(
+    ellipse 140% 180% at 50% 50%,
+    rgba(20, 24, 28, 0.82) 0%,
+    rgba(20, 24, 28, 0.58) 36%,
+    rgba(20, 24, 28, 0.28) 68%,
+    rgba(20, 24, 28, 0.08) 88%,
+    transparent 100%
+  );
 }
 
 .featureWarm {
-  background:
-    linear-gradient(
-      135deg,
-      #8a6a4a 0%,
-      var(--decorative-warm) 48%,
-      #6e5338 100%
-    );
+  flex-direction: row-reverse;
+  background: #4a453f;
   box-shadow: 0 10px 28px rgba(110, 83, 56, 0.22);
 }
 
 .feature:hover,
 .feature:focus-visible {
   --feature-lift: -3px;
-  --feature-scale: 1.05;
-  --feature-chevron: 4px;
+  --feature-scale: 1.08;
   outline: none;
   box-shadow: 0 16px 36px rgba(26, 34, 42, 0.28);
 }
 
 .featureCopy {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 2;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 10px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   min-width: 0;
-  padding-block: 0;
+  padding: 0 16px;
+  font-size: calc(clamp(18px, 1.9vw, 26px) * var(--font-display-scale, 1));
 }
 
 .featureTitle {
@@ -157,7 +170,7 @@
   column-gap: 0.28em;
   row-gap: 0;
   font-family: var(--font-display);
-  font-size: calc(clamp(18px, 1.9vw, 26px) * var(--font-display-scale, 1));
+  font-size: 1em;
   font-weight: 500;
   font-style: normal;
   line-height: 1.08;
@@ -174,27 +187,14 @@
   color: var(--color-paper);
 }
 
-.featureCta {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-family: var(--font-ui);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  color: rgba(255, 255, 255, 0.92);
-}
-
 .featureMedia {
-  position: relative;
-  z-index: 1;
-  align-self: center;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   width: 100%;
-  height: min(92%, 140px);
-  border-radius: 14px;
+  height: 100%;
   overflow: hidden;
   pointer-events: none;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
 }
 
 .featureMedia img {
@@ -202,16 +202,41 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: 46% 38%;
   transform: scale(var(--feature-scale));
   transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.featureNight .featureMedia img {
-  width: 137%;
+.featureWarm .featureMedia {
+  position: absolute;
+  inset-block: -20px;
+  right: 12px;
+  left: auto;
+  z-index: 0;
+  width: 36%;
+  min-width: 0;
+  height: auto;
+}
+
+.featureWarm .featureMedia img {
+  object-fit: contain;
+  object-position: center;
+  width: auto;
+  height: 108%;
   max-width: none;
-  object-position: left center;
-  transform-origin: left center;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(var(--feature-scale));
+}
+
+.featureMedia[data-fit="contain"] img {
+  object-fit: contain;
+  object-position: center;
+}
+
+.featureMedia[data-fit="cover"] img {
+  object-fit: cover;
 }
 
 .items {
@@ -254,6 +279,440 @@
     border-color 220ms ease,
     box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
     color 220ms ease;
+}
+
+.itemNote {
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 104px;
+  padding: 14px 16px;
+}
+
+/* Plate wash. Same photographic isolate grounds and field/wash pair as the
+ * header dropdown. Baked by web/scripts/bake-catalog-plate-rows.py.
+ *
+ * Bloom artwork, cut from Figma by web/scripts/extract-catalog-blooms.py. Run
+ * that rather than editing these by hand: the numbers are measured, and a bloom
+ * a few pixels off its seat reads as a smear rather than as a burst.
+ *
+ * Each asset is one whole bloom frame, exported on its own rather than read off
+ * a render of the board, because Figma lays the product over the bloom there:
+ * anything cut from the composite has to have the product's silhouette punched
+ * out of it, and the card's product is a different size, so the hole shows as a
+ * void the burst dies into.
+ *
+ * --bloom-w/h/dx/dy are in pixels of the product's own source image, dx/dy
+ * measured from that image's centre, which is where a contain fit puts it. The
+ * card turns them into lengths with --art-unit below. PT 141 has no bloom drawn
+ * in Figma yet, so it renders without one. Values match the header dropdown. */
+.item[data-plate="tirzepatide"] {
+  --plate-field: #41375b;
+  --plate-wash: #332a4b;
+  --bloom-w: 413.3;
+  --bloom-h: 425.9;
+  --bloom-dx: -27.4;
+  --bloom-dy: 44.3;
+}
+
+.item[data-plate="semaglutide"] {
+  --plate-field: #822c17;
+  --plate-wash: #691501;
+  --bloom-w: 316.3;
+  --bloom-h: 410.1;
+  --bloom-dx: 17.7;
+  --bloom-dy: 53.3;
+}
+
+.item[data-plate="testosterone"] {
+  --plate-field: #232f17;
+  --plate-wash: #182207;
+  --bloom-w: 326.2;
+  --bloom-h: 408.7;
+  --bloom-dx: -21.9;
+  --bloom-dy: 51.1;
+}
+
+.item[data-plate="glp-1"] {
+  --plate-field: #0e516a;
+  --plate-wash: #003a52;
+  --bloom-w: 385.9;
+  --bloom-h: 290.1;
+  --bloom-dx: 18.9;
+  --bloom-dy: 73.5;
+}
+
+.item[data-plate="nad"] {
+  --plate-field: #61351a;
+  --plate-wash: #3c1f10;
+  --bloom-w: 336.5;
+  --bloom-h: 398.6;
+  --bloom-dx: 16.2;
+  --bloom-dy: 41.4;
+}
+
+.item[data-plate="sermorelin"] {
+  --plate-field: #2f443f;
+  --plate-wash: #233732;
+  --bloom-w: 310.4;
+  --bloom-h: 421.2;
+  --bloom-dx: 28.9;
+  --bloom-dy: 2;
+}
+
+.item[data-plate="tesamorelin"] {
+  --plate-field: #2d343e;
+  --plate-wash: #202730;
+  --bloom-w: 328.4;
+  --bloom-h: 374.6;
+  --bloom-dx: -28.8;
+  --bloom-dy: 22.7;
+}
+
+.item[data-plate="glutathione"] {
+  --plate-field: #122459;
+  --plate-wash: #001543;
+  --bloom-w: 395.8;
+  --bloom-h: 313.9;
+  --bloom-dx: 10.8;
+  --bloom-dy: 59.1;
+}
+
+.item[data-plate="methylene-blue"] {
+  --plate-field: #2f2623;
+  --plate-wash: #221917;
+  --art-w: 948;
+  --art-h: 592;
+  --bloom-w: 1717.9;
+  --bloom-h: 1468.9;
+  --bloom-dx: 132.8;
+  --bloom-dy: 11.3;
+}
+
+.item[data-plate="pt-141"] {
+  --plate-field: #0e3b37;
+  --plate-wash: #002d2b;
+}
+
+.item[data-plate="at-home-lab"] {
+  --plate-field: #202835;
+  --plate-wash: #141c27;
+  --art-w: 720;
+  --art-h: 285;
+  --bloom-w: 961.7;
+  --bloom-h: 596.2;
+  --bloom-dx: 95.4;
+  --bloom-dy: 24.3;
+}
+
+/* The board draws this one behind all three cans. The card shows the front can
+ * on its own, so the burst is scaled to that can, which is the one the bloom
+ * was drawn around. */
+.item[data-plate="pain-relief"] {
+  --plate-field: #242830;
+  --plate-wash: #14181f;
+  --art-w: 900;
+  --art-h: 1400;
+  --bloom-w: 2196;
+  --bloom-h: 2395.5;
+  --bloom-dx: 65.3;
+  --bloom-dy: 45.8;
+}
+
+.item[data-plate="b12"] {
+  --plate-field: #122459;
+  --plate-wash: #001543;
+}
+
+.item[data-plate="lipo-c"] {
+  --plate-field: #0e516a;
+  --plate-wash: #003a52;
+  --bloom-w: 385.9;
+  --bloom-h: 290.1;
+  --bloom-dx: 18.9;
+  --bloom-dy: 73.5;
+}
+
+.item[data-plate="body-composition"] {
+  --plate-field: #2e2f32;
+  --plate-wash: #212225;
+}
+
+.item[data-plate="complete-stack"] {
+  --plate-field: #3d2922;
+  --plate-wash: #2e1d18;
+}
+
+.item[data-plate="lean-cut"] {
+  --plate-field: #223140;
+  --plate-wash: #162432;
+}
+
+.item[data-plate="sexual-health"] {
+  --plate-field: #0e3b37;
+  --plate-wash: #002d2b;
+}
+
+.item[data-plate="weight-loss"] {
+  --plate-field: #2f2623;
+  --plate-wash: #211a18;
+}
+
+.item[data-plate="transformation"] {
+  --plate-field: #2e2f32;
+  --plate-wash: #212225;
+}
+
+.item[data-plate="mens-health"] {
+  --plate-field: #232f17;
+  --plate-wash: #182207;
+}
+
+.item[data-plate="recovery-performance"] {
+  --plate-field: #2f435e;
+  --plate-wash: #22354f;
+}
+
+.item[data-plate="athletes"] {
+  --plate-field: #373633;
+  --plate-wash: #2a2926;
+}
+
+.item[data-plate="travelers"] {
+  --plate-field: #53281c;
+  --plate-wash: #431b12;
+}
+
+.item[data-plate="healthspan"] {
+  --plate-field: #653822;
+  --plate-wash: #532915;
+}
+
+.item[data-plate="creators"] {
+  --plate-field: #292e36;
+  --plate-wash: #1d2229;
+}
+
+.item[data-plate="parents"] {
+  --plate-field: #4a302c;
+  --plate-wash: #3c2420;
+}
+
+.item[data-plate="womens-balance"] {
+  --plate-field: #192b25;
+  --plate-wash: #0d1f19;
+}
+
+.item[data-plate="skin-hair"] {
+  --plate-field: #202b3b;
+  --plate-wash: #131f2e;
+}
+
+.item[data-plate] {
+  /* The box the media contain-fits the art into, measured from the card's left
+   * edge past the 1px border and 16px of padding. The bloom is placed against
+   * these, so a breakpoint that resizes the media has to restate them or the
+   * burst scales and seats against a box that is no longer there. */
+  --thumb-w: 44px;
+  --thumb-h: 68px;
+  --card-inset: 17px;
+  --plate-fill:
+    radial-gradient(
+      ellipse 90% 140% at 10% 50%,
+      color-mix(in srgb, var(--plate-field) 52%, transparent) 0%,
+      transparent 62%
+    ),
+    linear-gradient(
+      100deg,
+      color-mix(in srgb, var(--plate-field) 32%, transparent) 0%,
+      color-mix(in srgb, var(--plate-wash) 48%, transparent) 46%,
+      color-mix(in srgb, var(--plate-wash) 70%, transparent) 100%
+    ),
+    var(--plate);
+  --plate-rest-size: auto, auto, cover;
+  --plate-motion-fill: linear-gradient(
+    125deg,
+    color-mix(in srgb, var(--plate-field) 58%, white) 0%,
+    var(--plate-field) 28%,
+    var(--plate-wash) 50%,
+    var(--plate-field) 74%,
+    color-mix(in srgb, var(--plate-wash) 82%, black) 100%
+  );
+  --plate-fill-size: 220% 200%;
+  background-color: var(--plate-wash);
+  background-image: var(--plate-fill);
+  background-repeat: no-repeat;
+  background-size: var(--plate-rest-size);
+  background-position: center;
+  color: var(--text-inverse);
+  /* The pattern ::before is already off for plates, and a background always
+   * clips to the border radius, so nothing here needs the card to clip. Letting
+   * it overflow is what keeps the hovered vial off the card edge. */
+  overflow: visible;
+  transition:
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 220ms ease,
+    box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 220ms ease;
+}
+
+/* Plate photograph sits in the fill. Overlay grain pushes the flare back
+ * without handing the card to the shared black ground. */
+.itemGrain {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--plate) center / cover no-repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.62;
+  filter: brightness(1.22) contrast(1.12);
+}
+
+/* Media kinds that are not a compound vial. Mirrored from the .itemMedia rules
+ * further down, because the bloom paints on the card and cannot read the size
+ * off the media box itself. */
+.item[data-plate]:has(.itemMedia[data-pill="true"]) {
+  --thumb-w: 48px;
+  --thumb-h: 48px;
+}
+
+.item[data-plate]:has(.itemMedia[data-device="true"]) {
+  --thumb-w: 96px;
+  --thumb-h: 48px;
+}
+
+/* Bloom behind the product. Takes over the pattern layer's ::before, which
+ * plates never use. It cannot live on .itemMedia like it once did: that box is
+ * always transformed, so it is a stacking context and nothing inside it can
+ * reach below the copy scrim. Painting it here as a background also clips the
+ * burst to the rounded card, which matters because the card overflows visibly
+ * for the hovered vial. At -1 ahead of ::after in tree order it lands under the
+ * scrim. It has to: at 1728 the card is wide enough that the burst never
+ * reaches the copy and the order is free, but the same rule lays out a 174px
+ * card at 390 where the burst runs straight through the text. Painting it over
+ * the ramp there takes glutathione to 2.25:1.
+ *
+ * Screened, not laid over. The board draws the burst as bright hairlines on
+ * white; alpha-compositing those onto the wash averages each filament with the
+ * field and the whole thing collapses into a haze. Screen lets the strokes add
+ * their own light, which is the only way a filament a fraction of a pixel wide
+ * survives the card's scale.
+ *
+ * Rest is silent. The full-frame bloom has no product hole, so the filaments
+ * read through the vial's transparent PNG and chew the silhouette. Hover and
+ * keyboard focus bring it in as a blurred halo. */
+.item[data-plate]::before {
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  filter: blur(8px);
+  border-radius: inherit;
+  /* the tone cards tilt and overlay their pattern; a bloom does neither */
+  transform: none;
+  mix-blend-mode: screen;
+  transition:
+    opacity 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  /* One pixel of the source art, as a length on this card. The media box
+   * contain-fits the image, so whichever axis runs out first sets the scale for
+   * both, and the image's centre lands on the box's centre. Every bloom number
+   * is in those same source pixels, so this one factor converts all of them.
+   *
+   * The fallbacks are the compound vials' 129 by 280, which is every product
+   * bar the three odd shapes. They sit here rather than on [data-plate] because
+   * that selector is no more specific than the per-product ones and comes after
+   * them, so a default declared there would win. */
+  --art-unit: min(
+    var(--thumb-w) / var(--art-w, 129),
+    var(--thumb-h) / var(--art-h, 280)
+  );
+  --bloom-width: calc(var(--art-unit) * var(--bloom-w));
+  --bloom-height: calc(var(--art-unit) * var(--bloom-h));
+  background-image: var(--bloom-src, none);
+  background-repeat: no-repeat;
+  background-size: var(--bloom-width) var(--bloom-height);
+  /* Both axes put the bloom's centre on the product's, then offset by dx/dy.
+   *
+   * The two axes read differently because a background-position percentage is
+   * not a fraction of the box: it aligns the image's own percentage point with
+   * the box's, so 50% centres the art on its own and the offset is all that is
+   * left to add. Subtracting half the bloom there would take it off twice and
+   * hang the burst half its height above the product. The x axis has no
+   * percentage to lean on, since the media sits against the card's left edge
+   * rather than its centre, so that one is a length and does step back by half
+   * the bloom. */
+  background-position-x: calc(
+    var(--card-inset) + var(--thumb-w) / 2 + var(--art-unit) * var(--bloom-dx) -
+      var(--bloom-width) / 2
+  );
+  background-position-y: calc(50% + var(--art-unit) * var(--bloom-dy));
+}
+
+/* A plate card can still carry a tone class, whose hover rules re-assert the
+ * overlay blend and start a pattern animation on this same ::before. Neither
+ * belongs on a bloom, so both are restated here where specificity wins. */
+.item[data-plate]:focus-visible::before {
+  opacity: 0.75;
+  filter: blur(8px);
+  mix-blend-mode: screen;
+  animation: none;
+}
+
+@media (hover: hover) {
+  .item[data-plate]:hover::before {
+    opacity: 0.75;
+    filter: blur(8px);
+    mix-blend-mode: screen;
+    animation: none;
+  }
+}
+
+/* Copy bed. The wash stop is already the text color's contrast pair. Stops
+ * sit earlier than the header dropdown's because these cards are wider and the
+ * copy starts nearer the left edge. */
+.item[data-plate]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* above the plate and the bloom, below every child */
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent 12%,
+    color-mix(in srgb, var(--plate-wash) 40%, transparent) 22%,
+    color-mix(in srgb, var(--plate-wash) 72%, transparent) 40%,
+    var(--plate-wash) 100%
+  );
+}
+
+/* The shared media box clips so cover-cropped tone art stays in its frame. A
+ * plate vial is a transparent cutout that deliberately grows past it. */
+.item[data-plate] .itemMedia {
+  overflow: visible;
+  transform-origin: bottom center;
+}
+
+.item[data-plate] .itemMedia img {
+  position: relative;
+  z-index: 1;
+  /* grows up from its base, so the bottom edge never travels down into a clip */
+  transform-origin: bottom center;
+}
+
+/* Gentler than the tone cards: the vial is taller, so the same scale would
+ * throw it well past the card. Hovered card also paints over its neighbours. */
+.item[data-plate]:hover,
+.item[data-plate]:focus-visible {
+  --item-media-scale: 1.1;
+  --item-media-y: -4px;
+  --item-media-rot: -3deg;
+  z-index: 2;
 }
 
 .item::before {
@@ -420,6 +879,64 @@
     color-mix(in srgb, var(--color-slate) 48%, var(--color-paper));
 }
 
+.item_cell {
+  --item-accent: #3d6b4f;
+  --item-hover-bg: #4a8a62;
+  --item-hover-bg-2: #2f5640;
+  background:
+    radial-gradient(
+      ellipse 140% 160% at 8% 12%,
+      color-mix(in srgb, #5a8f6c 70%, var(--color-paper)) 0%,
+      transparent 78%
+    ),
+    radial-gradient(
+      ellipse 120% 140% at 94% 88%,
+      color-mix(in srgb, var(--status-success) 62%, var(--color-paper)) 0%,
+      transparent 76%
+    ),
+    radial-gradient(
+      ellipse 90% 100% at 52% 40%,
+      color-mix(in srgb, var(--color-paper) 24%, #3d6b4f) 0%,
+      transparent 82%
+    ),
+    color-mix(in srgb, #3d6b4f 52%, var(--color-paper));
+}
+
+.item_lab {
+  --item-accent: #5a5e62;
+  --item-hover-bg: #6a7076;
+  --item-hover-bg-2: #3d4248;
+  background:
+    radial-gradient(
+      ellipse 140% 160% at 8% 12%,
+      color-mix(in srgb, #8a8e92 58%, var(--color-paper)) 0%,
+      transparent 78%
+    ),
+    radial-gradient(
+      ellipse 120% 140% at 94% 88%,
+      color-mix(in srgb, var(--color-night) 42%, var(--color-paper)) 0%,
+      transparent 76%
+    ),
+    radial-gradient(
+      ellipse 90% 100% at 52% 40%,
+      color-mix(in srgb, var(--color-paper) 28%, #5a5e62) 0%,
+      transparent 82%
+    ),
+    color-mix(in srgb, #6a7076 46%, var(--color-paper));
+}
+
+.item_cell::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Cg fill='none' stroke='%23fff' stroke-width='1.2' stroke-linecap='round'%3E%3Cpath d='M18 8 V28' opacity='0.9'/%3E%3Cpath d='M8 18 H28' opacity='0.9'/%3E%3Cpath d='M0 2 V10' opacity='0.28'/%3E%3Cpath d='M-4 6 H4' opacity='0.28'/%3E%3Cpath d='M36 2 V10' opacity='0.28'/%3E%3Cpath d='M32 6 H40' opacity='0.28'/%3E%3Cpath d='M0 26 V34' opacity='0.22'/%3E%3Cpath d='M-4 30 H4' opacity='0.22'/%3E%3Cpath d='M36 26 V34' opacity='0.22'/%3E%3Cpath d='M32 30 H40' opacity='0.22'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 36px 36px;
+  transform: rotate(-6deg);
+}
+
+.item_lab::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Cg fill='none' stroke='%23fff' stroke-width='1'%3E%3Ccircle cx='18' cy='18' r='9' opacity='0.9'/%3E%3Ccircle cx='0' cy='0' r='9' opacity='0.3'/%3E%3Ccircle cx='36' cy='0' r='9' opacity='0.3'/%3E%3Ccircle cx='0' cy='36' r='9' opacity='0.25'/%3E%3Ccircle cx='36' cy='36' r='9' opacity='0.25'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 36px 36px;
+  transform: rotate(-10deg);
+}
+
 .item:hover,
 .item:focus-visible {
   --item-lift: -3px;
@@ -444,6 +961,60 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     0 14px 32px rgba(26, 34, 42, 0.22);
+}
+
+.item[data-plate]:hover,
+.item[data-plate]:focus-visible {
+  background-color: var(--plate-wash);
+  background-image: var(--plate-fill);
+  background-repeat: no-repeat;
+  background-size: var(--plate-rest-size);
+  background-position: center;
+}
+
+@media (width >= 1025px) {
+  .item[data-plate]:hover,
+  .item[data-plate]:focus-visible {
+    background-color: var(--plate-wash);
+    background-image: var(--plate-motion-fill);
+    background-repeat: no-repeat;
+    background-size: var(--plate-fill-size);
+    background-position: 0% 40%;
+    animation: plateLightShift 28s ease-in-out infinite;
+  }
+
+  .item[data-plate]:hover .itemGrain,
+  .item[data-plate]:focus-visible .itemGrain {
+    background-image: var(--plate);
+    background-repeat: no-repeat;
+    background-size: var(--grain-size, 240% 180%);
+    background-position: var(--grain-x, 50%) var(--grain-y, 50%);
+    mix-blend-mode: screen;
+    opacity: 0.88;
+    filter: brightness(1.7) contrast(1.18) saturate(1.2);
+    animation: plateGrainShift 28s ease-in-out infinite;
+  }
+
+  .items > li:nth-child(2n) .item[data-plate]:hover,
+  .items > li:nth-child(2n) .item[data-plate]:focus-visible,
+  .items > li:nth-child(2n) .item[data-plate]:hover .itemGrain,
+  .items > li:nth-child(2n) .item[data-plate]:focus-visible .itemGrain {
+    animation-delay: -7s;
+  }
+
+  .items > li:nth-child(3n) .item[data-plate]:hover,
+  .items > li:nth-child(3n) .item[data-plate]:focus-visible,
+  .items > li:nth-child(3n) .item[data-plate]:hover .itemGrain,
+  .items > li:nth-child(3n) .item[data-plate]:focus-visible .itemGrain {
+    animation-delay: -13s;
+  }
+
+  .items > li:nth-child(5n) .item[data-plate]:hover,
+  .items > li:nth-child(5n) .item[data-plate]:focus-visible,
+  .items > li:nth-child(5n) .item[data-plate]:hover .itemGrain,
+  .items > li:nth-child(5n) .item[data-plate]:focus-visible .itemGrain {
+    animation-delay: -20s;
+  }
 }
 
 .item:hover::before,
@@ -477,9 +1048,17 @@
 }
 
 .item_guide:hover::before,
-.item_guide:focus-visible::before {
+.item_guide:focus-visible::before,
+.item_cell:hover::before,
+.item_cell:focus-visible::before {
   opacity: 0.3;
   animation: itemNodeDrift 6.2s ease-in-out infinite;
+}
+
+.item_lab:hover::before,
+.item_lab:focus-visible::before {
+  opacity: 0.28;
+  animation: itemRingPulse 3.6s ease-in-out infinite;
 }
 
 @keyframes itemDotWave {
@@ -528,10 +1107,28 @@
 }
 
 .itemLabel,
+.itemCopy,
 .itemMedia,
 .item .chevron {
   position: relative;
   z-index: 1;
+}
+
+.itemCopy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  min-width: 0;
+}
+
+.itemSubtitle {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.92);
 }
 
 .itemLabel {
@@ -555,7 +1152,9 @@
 .item:hover .itemLabel,
 .item:focus-visible .itemLabel,
 .item:hover .itemLabel em,
-.item:focus-visible .itemLabel em {
+.item:focus-visible .itemLabel em,
+.item:hover .itemSubtitle,
+.item:focus-visible .itemSubtitle {
   color: var(--text-inverse);
 }
 
@@ -583,8 +1182,29 @@
   object-fit: contain;
 }
 
-.itemMedia[data-pill="true"] img {
+.itemMedia[data-pill="true"] img,
+.itemMedia[data-device="true"] img,
+.itemMedia[data-vial="true"] img {
   object-fit: contain;
+}
+
+.itemNote .itemMedia {
+  width: 44px;
+  height: 68px;
+}
+
+.itemNote .itemMedia[data-pill="true"] {
+  width: 48px;
+  height: 48px;
+}
+
+.itemNote:has(.itemMedia[data-device="true"]) {
+  grid-template-columns: 96px minmax(0, 1fr);
+}
+
+.itemNote .itemMedia[data-device="true"] {
+  width: 96px;
+  height: 48px;
 }
 
 .item:hover .itemMedia[data-pill="true"],
@@ -606,9 +1226,12 @@
     color 220ms ease;
 }
 
-.feature .chevron {
+.feature .chevron,
+.featureChevron {
   color: var(--text-inverse);
-  transform: translateX(var(--feature-chevron));
+  opacity: 0.95;
+  width: 1.19em;
+  height: 1.19em;
 }
 
 .item .chevron {
@@ -624,9 +1247,27 @@
   opacity: 1;
 }
 
+.feature:hover .chevron,
+.feature:focus-visible .chevron {
+  transform: translateX(3px);
+}
+
 .item:hover .chevron,
 .item:focus-visible .chevron {
   color: var(--text-inverse);
+}
+
+@media (width >= 1025px) {
+  .feature {
+    min-height: 96px;
+    height: 96px;
+    padding: 14px 16px;
+    border-radius: 20px;
+  }
+
+  .featureCopy {
+    font-size: calc(18px * var(--font-display-scale, 1));
+  }
 }
 
 @media (721px <= width < 1025px) {
@@ -636,16 +1277,10 @@
 
   .feature {
     min-height: 148px;
-    grid-template-columns: minmax(0, 1.2fr) minmax(100px, 0.7fr);
   }
 
-  .featureTitle {
+  .featureCopy {
     font-size: calc(clamp(18px, 2.6vw, 24px) * var(--font-display-scale, 1));
-  }
-
-  .featureNight .featureMedia img {
-    width: 100%;
-    max-width: 100%;
   }
 }
 
@@ -655,8 +1290,7 @@
     min-width: 0;
   }
 
-  .root:not(.stacked) .features,
-  .root:not(.stacked) .items {
+  .root:not(.stacked) .features {
     display: flex;
     gap: 10px;
     overflow-x: auto;
@@ -666,35 +1300,175 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  .root:not(.stacked) .features > *,
-  .root:not(.stacked) .items > * {
+  .root:not(.stacked) .items {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .root:not(.stacked) .features > * {
     flex: 0 0 min(78%, 260px);
     scroll-snap-align: start;
   }
 
-  .feature {
-    grid-template-columns: minmax(0, 1.2fr) minmax(110px, 0.8fr);
-    min-height: 128px;
-    padding: 14px;
+  .root:not(.stacked) .itemNote {
+    min-height: 96px;
+    padding: 12px;
+    gap: 10px;
   }
 
-  .featureTitle {
+  .root:not(.stacked) .itemNote .itemMedia {
+    width: 38px;
+    height: 58px;
+  }
+
+  /* Smaller media, tighter padding: restate the box and the inset, and the
+   * bloom follows. The pill takes the same box as the vial here, because the
+   * rule above outranks the one that sizes it. */
+  .root:not(.stacked) .itemNote[data-plate] {
+    --thumb-w: 38px;
+    --thumb-h: 58px;
+    --card-inset: 13px;
+  }
+
+  .root:not(.stacked) .itemNote:has(.itemMedia[data-device="true"]) {
+    grid-template-columns: 80px minmax(0, 1fr);
+  }
+
+  .root:not(.stacked) .itemNote .itemMedia[data-device="true"] {
+    width: 80px;
+    height: 40px;
+  }
+
+  .root:not(.stacked) .itemNote[data-plate]:has(.itemMedia[data-device="true"]) {
+    --thumb-w: 80px;
+    --thumb-h: 40px;
+  }
+
+  .root:not(.stacked) .itemSubtitle {
+    font-size: 11px;
+  }
+
+  .root:not(.stacked) .feature {
+    min-height: 88px;
+    height: 88px;
+    padding: 12px;
+  }
+
+  .stacked .feature {
+    min-height: 83px;
+    height: 83px;
+    padding: 10px 12px;
+  }
+
+  .featureCopy {
     font-size: calc(clamp(18px, 5.5vw, 24px) * var(--font-display-scale, 1));
-  }
-
-  .featureNight .featureMedia img {
-    width: 100%;
-    max-width: 100%;
   }
 
   .item {
     min-height: 72px;
   }
+
+  .stacked .featureCopy {
+    font-size: calc(15px * var(--font-display-scale, 1));
+  }
+
+  .stacked .itemLabel {
+    font-size: 13px;
+  }
 }
 
-.stacked .features,
-.stacked .items {
+.stacked .features {
   grid-template-columns: 1fr;
+}
+
+.stacked .items {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.stacked .items li:has(.item_guide) {
+  grid-column: 1 / -1;
+}
+
+.stacked .item_guide {
+  width: 100%;
+}
+
+.stacked .item:not(.item_guide) {
+  grid-template-columns: minmax(0, 1fr) 28px;
+  min-height: 58px;
+  padding: 10px 10px 10px 12px;
+  gap: 6px;
+  border-radius: 16px;
+}
+
+.stacked .itemNote:not(.item_guide) {
+  grid-template-columns: 38px minmax(0, 1fr);
+  min-height: 86px;
+  padding: 10px 12px;
+  gap: 10px;
+}
+
+.stacked .item:not(.item_guide) .chevron {
+  display: none;
+}
+
+.stacked .item:not(.item_guide) .itemMedia {
+  width: 28px;
+  height: 44px;
+}
+
+.stacked .itemNote:not(.item_guide) .itemMedia {
+  width: 38px;
+  height: 58px;
+}
+
+/* Same media box as the phone rule above, reached by a different selector, so
+ * the bloom anchors have to be restated here too. Without this the stacked card
+ * keeps the desktop pair and draws a burst sized to a 68px vial, seated against
+ * a media box 8px to its right. */
+.stacked .itemNote:not(.item_guide)[data-plate] {
+  --thumb-w: 38px;
+  --thumb-h: 58px;
+  --card-inset: 13px;
+}
+
+.stacked .itemNote:not(.item_guide) .itemMedia[data-pill="true"] {
+  width: 40px;
+  height: 40px;
+}
+
+.stacked .itemNote:not(.item_guide)[data-plate]:has(
+    .itemMedia[data-pill="true"]
+  ) {
+  --thumb-w: 40px;
+  --thumb-h: 40px;
+}
+
+.stacked .itemNote:has(.itemMedia[data-device="true"]):not(.item_guide) {
+  grid-template-columns: 80px minmax(0, 1fr);
+}
+
+.stacked .itemNote:not(.item_guide) .itemMedia[data-device="true"] {
+  width: 80px;
+  height: 40px;
+}
+
+.stacked .itemNote:not(.item_guide)[data-plate]:has(
+    .itemMedia[data-device="true"]
+  ) {
+  --thumb-w: 80px;
+  --thumb-h: 40px;
+}
+
+.stacked .itemSubtitle {
+  font-size: 11px;
+}
+
+.stacked .itemLabel {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.28em;
+  line-height: 1.2;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -715,31 +1489,76 @@
   .item_sky:hover::before,
   .item_sand:hover::before,
   .item_ice:hover::before,
-  .item_guide:hover::before {
+  .item_guide:hover::before,
+  .item_cell:hover::before,
+  .item_lab:hover::before {
     animation: none;
+  }
+
+  .item[data-plate],
+  .itemGrain,
+  .item[data-plate]:hover,
+  .item[data-plate]:focus-visible,
+  .item[data-plate]:hover .itemGrain,
+  .item[data-plate]:focus-visible .itemGrain {
+    animation: none;
+  }
+
+  .item[data-plate]::before,
+  .item[data-plate]:hover::before,
+  .item[data-plate]:focus-visible::before {
+    opacity: 0;
+    filter: none;
+    transition: none;
+  }
+
+  .item[data-plate],
+  .item[data-plate]:hover,
+  .item[data-plate]:focus-visible {
+    background-color: var(--plate-wash);
+    background-image: var(--plate-fill);
+    background-repeat: no-repeat;
+    background-size: var(--plate-rest-size);
+    background-position: center;
+  }
+
+  .itemGrain,
+  .item[data-plate]:hover .itemGrain,
+  .item[data-plate]:focus-visible .itemGrain {
+    background: var(--plate) center / cover no-repeat;
+    mix-blend-mode: overlay;
+    opacity: 0.62;
+    filter: brightness(1.22) contrast(1.12);
   }
 
   .feature:hover,
   .feature:focus-visible,
   .item:hover,
-  .item:focus-visible {
+  .item:focus-visible,
+  .item[data-plate]:hover,
+  .item[data-plate]:focus-visible {
     --feature-lift: 0px;
     --item-lift: 0px;
     --feature-scale: 1;
     --item-media-scale: 1;
     --item-media-y: 0px;
     --item-media-rot: 0deg;
-    --feature-chevron: 0px;
     --item-chevron: 0px;
+  }
+
+
+  .feature:hover .chevron,
+  .feature:focus-visible .chevron {
+    transform: none;
   }
 }
 
 @media (hover: none) {
   .feature:hover,
-  .item:hover {
+  .item:hover,
+  .item[data-plate]:hover {
     --feature-lift: 0px;
     --feature-scale: 1;
-    --feature-chevron: 0px;
     --item-lift: 0px;
     --item-media-scale: 1;
     --item-media-y: 0px;
@@ -763,7 +1582,9 @@
   .item_sky:hover::before,
   .item_sand:hover::before,
   .item_ice:hover::before,
-  .item_guide:hover::before {
+  .item_guide:hover::before,
+  .item_cell:hover::before,
+  .item_lab:hover::before {
     opacity: 0;
     animation: none;
   }
@@ -771,6 +1592,14 @@
   .item:hover {
     background: var(--surface-sunken);
     border-color: transparent;
+  }
+
+  .item[data-plate]:hover {
+    background-color: var(--plate-wash);
+    background-image: var(--plate-fill);
+    background-repeat: no-repeat;
+    background-size: var(--plate-rest-size);
+    background-position: center;
   }
 
   .item_mist:hover {
@@ -852,6 +1681,46 @@
       ),
       color-mix(in srgb, #3d7d78 52%, var(--color-paper));
   }
+
+  .item_cell:hover {
+    background:
+      radial-gradient(
+        ellipse 140% 160% at 8% 12%,
+        color-mix(in srgb, #5a8f6c 70%, var(--color-paper)) 0%,
+        transparent 78%
+      ),
+      radial-gradient(
+        ellipse 120% 140% at 94% 88%,
+        color-mix(in srgb, var(--status-success) 62%, var(--color-paper)) 0%,
+        transparent 76%
+      ),
+      radial-gradient(
+        ellipse 90% 100% at 52% 40%,
+        color-mix(in srgb, var(--color-paper) 24%, #3d6b4f) 0%,
+        transparent 82%
+      ),
+      color-mix(in srgb, #3d6b4f 52%, var(--color-paper));
+  }
+
+  .item_lab:hover {
+    background:
+      radial-gradient(
+        ellipse 140% 160% at 8% 12%,
+        color-mix(in srgb, #8a8e92 58%, var(--color-paper)) 0%,
+        transparent 78%
+      ),
+      radial-gradient(
+        ellipse 120% 140% at 94% 88%,
+        color-mix(in srgb, var(--color-night) 42%, var(--color-paper)) 0%,
+        transparent 76%
+      ),
+      radial-gradient(
+        ellipse 90% 100% at 52% 40%,
+        color-mix(in srgb, var(--color-paper) 28%, #5a5e62) 0%,
+        transparent 82%
+      ),
+      color-mix(in srgb, #6a7076 46%, var(--color-paper));
+  }
 }
 
 @keyframes catalogPromoShift {
@@ -864,6 +1733,32 @@
   }
   70% {
     background-position: 35% 85%;
+  }
+}
+
+@keyframes plateLightShift {
+  0%,
+  100% {
+    background-position: 0% 40%;
+  }
+  40% {
+    background-position: 80% 15%;
+  }
+  70% {
+    background-position: 35% 85%;
+  }
+}
+
+@keyframes plateGrainShift {
+  0%,
+  100% {
+    background-position: var(--grain-x, 50%) var(--grain-y, 50%);
+  }
+  40% {
+    background-position: calc(var(--grain-x, 50%) + 6%) calc(var(--grain-y, 50%) - 8%);
+  }
+  70% {
+    background-position: calc(var(--grain-x, 50%) - 5%) calc(var(--grain-y, 50%) + 8%);
   }
 }
 
@@ -978,8 +1873,18 @@
 
   .stacked .item_guide::before,
   .stacked .item_guide:hover::before,
-  .stacked .item_guide:focus-visible::before {
+  .stacked .item_guide:focus-visible::before,
+  .stacked .item_cell::before,
+  .stacked .item_cell:hover::before,
+  .stacked .item_cell:focus-visible::before {
     opacity: 0.3;
+    animation: itemFieldLoopTile 8.4s linear infinite;
+  }
+
+  .stacked .item_lab::before,
+  .stacked .item_lab:hover::before,
+  .stacked .item_lab:focus-visible::before {
+    opacity: 0.28;
     animation: itemFieldLoopTile 8.4s linear infinite;
   }
 }

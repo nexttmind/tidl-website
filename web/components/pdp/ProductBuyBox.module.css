@@ -58,6 +58,13 @@
   min-width: 0;
 }
 
+.compliance {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-tertiary);
+}
+
 .details {
   display: flex;
   flex-direction: column;
@@ -206,32 +213,6 @@
   font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-}
-
-/* Dev marker: fields filled from PrescribeRx sandbox */
-.sandboxMark {
-  margin: 0 0 8px;
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  padding: 3px 8px;
-  border-radius: var(--radius-pill);
-  background: #f5e642;
-  color: #1a1a1a;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.sandboxValue {
-  color: #c9a000 !important;
-}
-
-.stock.sandboxValue {
-  background: #f5e642;
-  color: #1a1a1a !important;
 }
 
 .title {
@@ -479,8 +460,18 @@
 
 .splitMedia {
   --settle: 880ms cubic-bezier(0.4, 0, 0.2, 1);
-  --plate-w: min(78cqw, 560px, calc(82svh * 330 / 440));
-  --plate-h: min(calc(var(--plate-w) * 440 / 330), 82svh);
+  --plate-ar-w: 330;
+  --plate-ar-h: 440;
+  --plate-scale: 0.8;
+  --plate-w: min(
+    calc(78cqw * var(--plate-scale)),
+    calc(560px * var(--plate-scale)),
+    calc(82svh * var(--plate-scale) * var(--plate-ar-w) / var(--plate-ar-h))
+  );
+  --plate-h: min(
+    calc(var(--plate-w) * var(--plate-ar-h) / var(--plate-ar-w)),
+    calc(82svh * var(--plate-scale))
+  );
   --glass-delay: 380ms;
   --callout-delay: 620ms;
   container-type: size;
@@ -502,6 +493,9 @@
 
 .splitBloomHost {
   --settle: 880ms cubic-bezier(0.4, 0, 0.2, 1);
+  --settle-ms: 880ms;
+  --bloom-hover: calc(var(--seat, 1) * 1.15);
+  --bloom-settled: calc(var(--seat, 1) * 1.15 * 0.7);
   position: relative;
   z-index: 2;
   display: flex;
@@ -509,9 +503,13 @@
   justify-content: center;
   flex: none;
   width: var(--plate-w);
-  aspect-ratio: 330 / 440;
-  max-height: 82svh;
+  aspect-ratio: var(--plate-ar-w) / var(--plate-ar-h);
+  max-height: calc(82svh * var(--plate-scale));
   overflow: visible;
+}
+
+.splitFieldExpand:not([data-catalog-field]) {
+  background-image: var(--theme-night);
 }
 
 .splitFieldExpand {
@@ -523,7 +521,6 @@
   height: 100%;
   overflow: hidden;
   pointer-events: none;
-  background-image: var(--theme-night);
   background-size: cover;
   background-position: center;
   opacity: 0;
@@ -545,6 +542,11 @@
   background-size: 120px 120px;
   mix-blend-mode: overlay;
   opacity: 0.2;
+}
+
+.splitMedia:focus-within .splitFieldGrain,
+.splitMedia[data-expanded="true"] .splitFieldGrain {
+  opacity: 0;
 }
 
 .splitMedia:focus-within .splitFieldExpand,
@@ -585,9 +587,11 @@
 .splitMedia:focus-within .splitGlassCard,
 .splitMedia[data-expanded="true"] .splitGlassCard {
   opacity: 1;
-  transform: scale(1);
+  transform: scale(1.15);
+  animation: pdpVialSettle 700ms cubic-bezier(0.4, 0, 0.2, 1) var(--settle-ms)
+    forwards;
   transition:
-    transform var(--settle) var(--glass-delay),
+    transform var(--settle),
     opacity 280ms ease var(--glass-delay);
 }
 
@@ -598,9 +602,43 @@
   height: 100%;
 }
 
+/*
+ * Product art sits at three quarters of the seated size.
+ * `scale` composes with the settle transform, so the load
+ * still peaks at 1.15 of this size and returns to it.
+ * The glass card uses the same return.
+ */
+.splitMedia .splitBloomHost [data-bloom-vial] {
+  scale: 0.75;
+}
+
+/*
+ * Scale the pen lockup so the drawn vial matches the isolate.
+ * The pen is allowed to leave the glass card.
+ */
+.splitMedia .splitBloomHost[data-stage-lockup] [data-bloom-vial] {
+  position: absolute;
+  width: calc(
+    var(--lockup-img-h) * var(--lockup-aspect) * var(--plate-ar-h) / var(--plate-ar-w) *
+      100%
+  );
+  height: calc(var(--lockup-img-h) * 100%);
+  max-width: none;
+  max-height: none;
+  left: calc(
+    50% - var(--lockup-img-h) * var(--lockup-aspect) * var(--plate-ar-h) / var(--plate-ar-w) *
+      50%
+  );
+  top: calc(50% - var(--lockup-vial-mid) * var(--lockup-img-h) * 100%);
+  margin: 0;
+  object-fit: contain;
+  object-position: center;
+  transform-origin: center calc(var(--lockup-vial-mid) * 100%);
+}
+
 .splitCallouts {
-  --vial-keepout: calc(var(--plate-w) * 0.215);
-  --callout-span: min(13rem, calc(50% - var(--vial-keepout) - 24px));
+  --vial-keepout: calc(var(--plate-w) * 0.36 + 16px);
+  --callout-span: min(16rem, max(0px, calc(50cqi - var(--vial-keepout) - 20px)));
   position: absolute;
   z-index: 3;
   left: 0;
@@ -621,7 +659,7 @@
   align-items: center;
   width: var(--callout-span);
   max-width: var(--callout-span);
-  overflow: hidden;
+  overflow: visible;
   opacity: 0;
   transform: translateX(var(--from)) scale(0.94);
   transform-origin: center center;
@@ -634,7 +672,8 @@
 .splitCallout[data-side="left"] {
   left: auto;
   right: calc(50% + var(--vial-keepout));
-  grid-template-columns: auto minmax(20px, 1fr);
+  justify-items: start;
+  grid-template-columns: max-content minmax(16px, 1fr);
   grid-template-rows: auto auto;
 }
 
@@ -649,15 +688,17 @@
 }
 
 .splitCallout[data-side="left"] .splitCalloutBody {
-  grid-column: 1;
+  grid-column: 1 / -1;
   grid-row: 2;
+  justify-self: stretch;
 }
 
 .splitCallout[data-side="right"] {
   --from: -16px;
   left: calc(50% + var(--vial-keepout));
   right: auto;
-  grid-template-columns: minmax(20px, 1fr) auto;
+  justify-items: end;
+  grid-template-columns: minmax(16px, 1fr) max-content;
   grid-template-rows: auto auto;
 }
 
@@ -672,8 +713,10 @@
 }
 
 .splitCallout[data-side="right"] .splitCalloutBody {
-  grid-column: 2;
+  grid-column: 1 / -1;
   grid-row: 2;
+  justify-self: stretch;
+  text-align: right;
 }
 
 .splitCallout[data-anchor="cap"] {
@@ -691,39 +734,6 @@
   transform: translateY(-50%) translateX(var(--from)) scale(0.94);
 }
 
-/* Oral tablet: square plate, callouts around the squircle, not a tall pen. */
-.splitRoot[data-theme="sexual-health"] .splitMedia {
-  --plate-w: min(64cqw, 440px, 70svh);
-  --plate-h: var(--plate-w);
-}
-
-.splitRoot[data-theme="sexual-health"] .splitBloomHost {
-  aspect-ratio: 1;
-}
-
-.splitRoot[data-theme="sexual-health"] .splitCallouts {
-  --vial-keepout: calc(var(--plate-w) * 0.25);
-  height: var(--plate-w);
-}
-
-.splitRoot[data-theme="sexual-health"] .splitCallout[data-anchor="cap"] {
-  top: 34%;
-}
-
-.splitRoot[data-theme="sexual-health"] .splitCallout[data-anchor="label"] {
-  top: 50%;
-}
-
-.splitRoot[data-theme="sexual-health"] .splitCallout[data-anchor="base"] {
-  top: 66%;
-}
-
-.splitRoot[data-theme="sexual-health"] [data-bloom-vial] {
-  width: 88%;
-  height: 88%;
-  filter: url(#tidl-pill-defringe);
-}
-
 .splitMedia:focus-within .splitCallout,
 .splitMedia[data-expanded="true"] .splitCallout {
   opacity: 1;
@@ -738,6 +748,8 @@
   align-items: center;
   justify-content: center;
   flex: none;
+  width: max-content;
+  max-width: 100%;
   min-height: 34px;
   padding: 6px 14px;
   overflow: hidden;
@@ -750,7 +762,7 @@
   letter-spacing: 0.02em;
   line-height: 1.2;
   white-space: nowrap;
-  color: var(--theme-primary, var(--color-ink));
+  color: var(--tile-1, var(--theme-primary, var(--color-ink)));
   pointer-events: none;
 }
 
@@ -759,6 +771,11 @@
 }
 
 .splitCalloutChipInk[data-sampled] {
+  color: var(--tile-1, var(--theme-primary, var(--color-ink)));
+  -webkit-text-fill-color: var(--tile-1, var(--theme-primary, var(--color-ink)));
+}
+
+.splitCalloutChipInk[data-sampled="image"] {
   background-image: var(--theme-night);
   background-repeat: no-repeat;
   background-size: var(--field-w, 100cqw) var(--field-h, 100cqh);
@@ -772,19 +789,23 @@
 .splitCalloutStem {
   width: 100%;
   height: 0;
-  border-top: 1px dashed color-mix(in srgb, var(--color-white) 70%, transparent);
+  border: none;
 }
 
 .splitCalloutBody {
   margin: 8px 0 0;
-  max-width: 11.5rem;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
   font-family: var(--font-ui);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.4;
+  font-size: clamp(13px, calc(var(--plate-w) * 0.032), 14px);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
   text-align: left;
-  overflow-wrap: anywhere;
-  color: color-mix(in srgb, var(--color-white) 86%, transparent);
+  white-space: normal;
+  overflow-wrap: break-word;
+  color: var(--color-white);
 }
 
 .splitBloomHost [data-bloom-stage],
@@ -796,18 +817,46 @@
   opacity: 1;
 }
 
-.splitMedia:focus-within [data-bloom-stage],
-.splitMedia[data-expanded="true"] [data-bloom-stage] {
+@keyframes pdpBloomTighten {
+  from {
+    transform:
+      translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+      translate(0, 0)
+      scale(var(--bloom-hover));
+  }
+  to {
+    transform:
+      translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+      translate(0, 0)
+      scale(var(--bloom-settled));
+  }
+}
+
+@keyframes pdpVialSettle {
+  from {
+    transform: scale(1.15);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.splitMedia:focus-within .splitBloomHost [data-bloom-stage],
+.splitMedia[data-expanded="true"] .splitBloomHost [data-bloom-stage] {
   opacity: 1;
   transform:
     translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
     translate(0, 0)
-    scale(1.15);
+    scale(var(--bloom-hover));
+  animation: pdpBloomTighten 700ms cubic-bezier(0.4, 0, 0.2, 1) var(--settle-ms)
+    forwards;
 }
 
-.splitMedia:focus-within [data-bloom-vial],
-.splitMedia[data-expanded="true"] [data-bloom-vial] {
+.splitMedia:focus-within .splitBloomHost [data-bloom-vial],
+.splitMedia[data-expanded="true"] .splitBloomHost [data-bloom-vial] {
   transform: scale(1.15);
+  animation: pdpVialSettle 700ms cubic-bezier(0.4, 0, 0.2, 1) var(--settle-ms)
+    forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -843,7 +892,8 @@
   .splitMedia:hover .splitGlassCard,
   .splitMedia:focus-within .splitGlassCard,
   .splitMedia[data-expanded="true"] .splitGlassCard {
-    transform: none;
+    transform: scale(1.15);
+    animation: none;
     transition: opacity 160ms ease;
   }
 
@@ -858,15 +908,19 @@
     transition: opacity 160ms ease;
   }
 
-  .splitMedia:hover [data-bloom-stage],
-  .splitMedia:focus-within [data-bloom-stage],
-  .splitMedia[data-expanded="true"] [data-bloom-stage] {
-    transform: translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)));
+  .splitMedia:hover .splitBloomHost [data-bloom-stage],
+  .splitMedia:focus-within .splitBloomHost [data-bloom-stage],
+  .splitMedia[data-expanded="true"] .splitBloomHost [data-bloom-stage] {
+    animation: none;
+    transform:
+      translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+      scale(var(--bloom-settled));
   }
 
-  .splitMedia:hover [data-bloom-vial],
-  .splitMedia:focus-within [data-bloom-vial],
-  .splitMedia[data-expanded="true"] [data-bloom-vial] {
+  .splitMedia:hover .splitBloomHost [data-bloom-vial],
+  .splitMedia:focus-within .splitBloomHost [data-bloom-vial],
+  .splitMedia[data-expanded="true"] .splitBloomHost [data-bloom-vial] {
+    animation: none;
     transform: none;
   }
 }
@@ -918,9 +972,12 @@
 .splitField {
   z-index: 0;
   background-color: var(--color-night);
-  background-image: var(--theme-night);
   background-size: cover;
   background-position: center;
+}
+
+.splitField:not([data-catalog-field]) {
+  background-image: var(--theme-night);
 }
 
 .splitGrain {
@@ -1047,6 +1104,21 @@
   color: var(--text-primary);
   letter-spacing: 0.12em;
   max-width: none;
+}
+
+.splitDek {
+  margin: 0;
+  max-width: 28rem;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+.splitCopy:has(.splitDek) .splitTagline,
+.splitCopy:has(.splitDek) .splitBody {
+  display: none;
 }
 
 .splitBody {
@@ -1212,9 +1284,11 @@ a.splitCta.splitCtaFrost:active,
 
   .splitMedia:hover .splitGlassCard {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1.15);
+    animation: pdpVialSettle 700ms cubic-bezier(0.4, 0, 0.2, 1) var(--settle-ms)
+      forwards;
     transition:
-      transform var(--settle) var(--glass-delay),
+      transform var(--settle),
       opacity 280ms ease var(--glass-delay);
   }
 
@@ -1231,11 +1305,15 @@ a.splitCta.splitCtaFrost:active,
     transform:
       translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
       translate(0, 0)
-      scale(1.15);
+      scale(var(--bloom-hover));
+    animation: pdpBloomTighten 700ms cubic-bezier(0.4, 0, 0.2, 1) var(--settle-ms)
+      forwards;
   }
 
   .splitMedia:hover [data-bloom-vial] {
     transform: scale(1.15);
+    animation: pdpVialSettle 700ms cubic-bezier(0.4, 0, 0.2, 1) var(--settle-ms)
+      forwards;
   }
 }
 
@@ -1244,6 +1322,13 @@ a.splitCta.splitCtaFrost:active,
   font-size: 13px;
   color: var(--text-secondary);
   white-space: pre-line;
+}
+
+.splitCompliance {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-tertiary);
 }
 
 .splitDisclaimer {
@@ -1288,6 +1373,9 @@ a.splitCta.splitCtaFrost:active,
 @media (width < 1025px) {
   .splitRoot {
     min-height: 0;
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
   }
 
   .splitInfo {
@@ -1316,8 +1404,11 @@ a.splitCta.splitCtaFrost:active,
   .splitInfo[data-field="true"] .splitGlass {
     position: fixed;
     inset: 0;
-    width: 100vw;
-    height: 100svh;
+    width: 100%;
+    /* lvh covers the strip iOS Chrome reveals when the bottom bar hides.
+       Safari leaves lvh short after that scroll. --field-cover tracks
+       the live viewport so the night fill does not show through. */
+    height: max(100lvh, var(--field-cover, 100lvh));
     opacity: 1;
     transition: opacity 200ms ease;
   }
@@ -1359,6 +1450,64 @@ a.splitCta.splitCtaFrost:active,
     color: var(--text-inverse);
   }
 
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(button),
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(legend),
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(li),
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(span),
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(label) {
+    color: var(--text-inverse);
+  }
+
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(button) {
+    border-color: color-mix(in srgb, var(--color-white) 10%, transparent);
+  }
+
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(button:hover) {
+    border-color: color-mix(in srgb, var(--color-white) 25%, transparent);
+  }
+
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(button[aria-pressed="true"]),
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(button[aria-pressed="true"]:hover) {
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global([data-form-title]) {
+    color: var(--text-inverse);
+  }
+
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(button[aria-pressed="true"] [data-form-title]) {
+    color: var(--text-inverse);
+  }
+
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(button [data-form-hint]),
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(button[aria-pressed="true"] [data-form-hint]) {
+    color: var(--text-inverse);
+  }
+
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global([data-save]) {
+    color: var(--text-inverse);
+  }
+
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(button[aria-pressed="true"] span),
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(button[aria-pressed="true"] [data-save]) {
+    color: var(--text-inverse);
+  }
+
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(a),
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(button[href]),
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(button:disabled) {
+    color: var(--text-inverse);
+  }
+
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(a:has([data-assessment])),
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(button:has([data-assessment])),
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(a:has([data-assessment]) span),
+  .splitInfo[data-field="true"] .splitRest [data-purchase] :global(button:has([data-assessment]) span) {
+    color: var(--tile-3);
+    -webkit-text-fill-color: var(--tile-3);
+  }
+
   .splitInfo::before {
     content: none;
   }
@@ -1375,13 +1524,15 @@ a.splitCta.splitCtaFrost:active,
   /*
    * Desktop paints --theme-night on a 100svh media pane, so the corner
    * clouds sit on screen. A document-tall cover only showed the washed top.
+   * 100lvh, not 100svh: svh stops where the browser bar sits, and iOS Chrome
+   * then shows the night fill in the strip the bar leaves behind.
    */
   .splitInfo[data-field="true"] .splitField,
   .splitInfo[data-field="true"] .splitGrain {
     position: fixed;
     inset: 0;
-    width: 100vw;
-    height: 100svh;
+    width: 100%;
+    height: max(100lvh, var(--field-cover, 100lvh));
     background-size: cover;
     background-position: center;
   }
@@ -1416,13 +1567,15 @@ a.splitCta.splitCtaFrost:active,
   }
 
   .splitTitle {
-    order: 1;
-    width: 100%;
-    text-align: center;
-    font-size: calc(32px * var(--font-display-scale) / 1.4);
-    font-weight: 400;
-    transform-origin: center top;
-    animation: pdpGlassIn 880ms cubic-bezier(0.4, 0, 0.2, 1) 380ms both;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 
   .splitMedia {
@@ -1431,8 +1584,16 @@ a.splitCta.splitCtaFrost:active,
     grid-column: auto;
     grid-row: auto;
     align-self: center;
-    order: 2;
-    --plate-w: min(94vw, 467px);
+    order: 1;
+    margin-top: var(--art-drop, 0px);
+    margin-bottom: calc(-1 * var(--media-tuck, 0px));
+    /* 0.8 desktop frame, 25% taller on phone and tablet. */
+    --plate-scale: 1;
+    --plate-w: min(
+      calc(94vw * var(--plate-scale)),
+      calc(467px * var(--plate-scale)),
+      calc(82svh * var(--plate-scale) * var(--plate-ar-w) / var(--plate-ar-h))
+    );
     width: 100%;
     height: calc(var(--plate-h) + 38px);
     background: transparent;
@@ -1451,10 +1612,15 @@ a.splitCta.splitCtaFrost:active,
     content: " per month";
   }
 
-  .splitPlan {
+  .splitInfo:has([data-pain-header="true"]) .splitPrice::after {
+    content: none;
+  }
+
+  .splitPlan,
+  .splitRest [data-purchase] {
     order: 4;
     margin-top: 0;
-    gap: 0;
+    gap: 36px;
   }
 
   .splitChips {
@@ -1467,15 +1633,16 @@ a.splitCta.splitCtaFrost:active,
 
   .splitBody {
     order: 6;
+    display: none;
   }
 
   .splitPay {
     order: 7;
   }
 
-  .splitRest > :not(.splitTagline):not(.splitBody):not(.splitPlan):not(
+  .splitRest > :not(.splitTagline):not(.splitBody):not(.splitDek):not(.splitPlan):not(
       .splitCta
-    ):not(.splitPay):not(.splitDisclaimer):not(.splitSafety) {
+    ):not(.splitPay):not(.splitDisclaimer):not(.splitSafety):not([data-purchase]) {
     order: 9;
   }
 
@@ -1496,7 +1663,7 @@ a.splitCta.splitCtaFrost:active,
   .splitInfo[data-field="true"] .splitChipOn {
     background: color-mix(in srgb, var(--color-white) 50%, transparent);
     border-color: transparent;
-    color: var(--color-ink);
+    color: var(--text-inverse);
   }
 
   .splitFieldExpand {
@@ -1509,13 +1676,9 @@ a.splitCta.splitCtaFrost:active,
     clip-path: none;
   }
 
-  .splitGlassCard {
-    inset: 12.8%;
-  }
-
   .splitCallouts {
-    --vial-keepout: calc(var(--plate-w) * 0.22);
-    --callout-span: min(10.5rem, calc(50% - var(--vial-keepout) - 12px));
+    --vial-keepout: calc(var(--plate-w) * 0.36 + 16px);
+    --callout-span: min(14rem, max(0px, calc(50cqi - var(--vial-keepout) - 16px)));
   }
 
   .splitCallout {
@@ -1551,23 +1714,15 @@ a.splitCta.splitCtaFrost:active,
   }
 
   .splitCallout[data-side="left"] .splitCalloutBody {
-    grid-column: 1;
-    justify-self: start;
+    grid-column: 1 / -1;
+    justify-self: stretch;
     text-align: left;
-    max-width: 100%;
-    min-width: 0;
-    white-space: normal;
-    overflow-wrap: break-word;
   }
 
   .splitCallout[data-side="right"] .splitCalloutBody {
-    grid-column: 2;
-    justify-self: end;
+    grid-column: 1 / -1;
+    justify-self: stretch;
     text-align: right;
-    max-width: 100%;
-    min-width: 0;
-    white-space: normal;
-    overflow-wrap: break-word;
   }
 
   .splitCalloutBody {
@@ -1582,12 +1737,16 @@ a.splitCta.splitCtaFrost:active,
     transform:
       translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
       translate(0, 0)
-      scale(1.15);
+      scale(var(--bloom-hover));
+    animation: pdpBloomTighten 700ms cubic-bezier(0.4, 0, 0.2, 1) var(--settle-ms)
+      forwards;
   }
 
   .splitMedia[data-expanded="true"] [data-bloom-vial],
   .splitMedia:focus-within [data-bloom-vial] {
     transform: scale(1.15);
+    animation: pdpVialSettle 700ms cubic-bezier(0.4, 0, 0.2, 1) var(--settle-ms)
+      forwards;
   }
 
   .splitHero {
@@ -1622,22 +1781,78 @@ a.splitCta.splitCtaFrost:active,
   }
 }
 
+@media (721px <= width < 1025px) {
+  .splitDek {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    order: 2;
+    width: 100%;
+    max-width: 440px;
+    margin: 20px 0;
+    text-align: center;
+    font-family: var(--font-ui);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.45;
+    color: var(--text-primary);
+  }
+
+  .splitDek span {
+    display: block;
+  }
+
+  .splitInfo[data-field="true"] .splitDek {
+    color: var(--text-inverse);
+  }
+
+  .splitCopy {
+    align-items: center;
+  }
+
+  .splitBody,
+  .splitTerms,
+  .splitRest [data-purchase] {
+    width: 100%;
+    max-width: 440px;
+  }
+}
+
 @media (width < 721px) {
+  .splitDek {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    order: 2;
+    width: 100%;
+    margin: 20px 0;
+    text-align: center;
+    font-family: var(--font-ui);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.45;
+    color: var(--text-primary);
+  }
+
+  .splitDek span {
+    display: block;
+  }
+
+  .splitInfo[data-field="true"] .splitDek {
+    color: var(--text-inverse);
+  }
+
   .splitMedia {
-    --plate-w: min(94vw, 359px);
+    --plate-w: min(
+      calc(94vw * var(--plate-scale)),
+      calc(359px * var(--plate-scale)),
+      calc(82svh * var(--plate-scale) * var(--plate-ar-w) / var(--plate-ar-h))
+    );
     height: calc(var(--plate-h) + 32px);
   }
 
-  .splitCalloutChip {
-    min-height: 28px;
-    padding: 5px 10px;
-    font-size: 13px;
-  }
-
-  .splitCalloutBody {
-    margin-top: 6px;
-    font-size: 12px;
-    max-width: 100%;
+  .splitCallouts {
+    display: none;
   }
 
   .splitInfo {
@@ -1646,15 +1861,52 @@ a.splitCta.splitCtaFrost:active,
 }
 
 @media (width < 721px), (721px <= width < 1025px) {
+  .splitGlassCard {
+    inset: auto;
+    width: var(--glass-w, 100%);
+    height: var(--glass-h, 100%);
+    left: var(--glass-x, 0px);
+    top: var(--glass-y, 0px);
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-paper) 20%, transparent) 0%,
+      color-mix(in srgb, var(--color-paper) 50%, transparent) 100%
+    );
+    -webkit-mask-image: linear-gradient(to bottom, rgb(0 0 0 / 20%) 0%, rgb(0 0 0 / 50%) 100%);
+    mask-image: linear-gradient(to bottom, rgb(0 0 0 / 20%) 0%, rgb(0 0 0 / 50%) 100%);
+  }
+
+  .splitMedia:hover .splitGlassCard,
+  .splitMedia:focus-within .splitGlassCard,
+  .splitMedia[data-expanded="true"] .splitGlassCard {
+    transform: scale(1.15);
+    transition: transform var(--settle), opacity 280ms ease;
+    animation: pdpVialSettle 700ms cubic-bezier(0.4, 0, 0.2, 1) var(--settle-ms) forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .splitMedia:hover .splitGlassCard,
+    .splitMedia:focus-within .splitGlassCard,
+    .splitMedia[data-expanded="true"] .splitGlassCard {
+      animation: none;
+      transform: scale(1);
+    }
+  }
+
   .splitTerms {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: var(--space-4);
+    gap: 0;
     width: 100%;
     max-width: none;
-    padding-top: var(--space-3);
-    border-top: 1px solid color-mix(in srgb, var(--color-white) 28%, transparent);
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  .splitTerms[open] {
+    gap: var(--space-4);
+    padding-bottom: var(--space-4);
   }
 
   .splitTerms > * {
@@ -1671,7 +1923,8 @@ a.splitCta.splitCtaFrost:active,
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: 2px 0 4px;
+    min-height: 52px;
+    padding: 0;
     cursor: pointer;
     list-style: none;
     font-family: var(--font-ui);
@@ -1703,6 +1956,11 @@ a.splitCta.splitCtaFrost:active,
     transition: transform 160ms ease;
   }
 
+  .splitTerms[open] .splitTermsSummary {
+    min-height: 0;
+    padding-block: var(--space-4);
+  }
+
   .splitTerms[open] .splitTermsSummary::after {
     margin-top: 3px;
     transform: rotate(-135deg);
@@ -1713,4 +1971,44 @@ a.splitCta.splitCtaFrost:active,
   .splitTermsSummary::after {
     transition: none;
   }
+}
+
+/* Snap the stage back to its entrance pose, then let the same expand play. */
+.splitMedia[data-stage-replay][data-split-media] .splitFieldExpand {
+  transition: none;
+  opacity: 0;
+  border-radius: calc(40px * 100cqw / var(--plate-w)) /
+    calc(40px * 100cqh / var(--plate-h));
+  transform: translate(-50%, -50%)
+    scale(calc(var(--plate-w) / 100cqw), calc(var(--plate-h) / 100cqh));
+}
+
+.splitMedia[data-stage-replay][data-split-media] .splitBloomHost .splitGlassCard {
+  transition: none;
+  opacity: 0;
+  transform: scale(0.12);
+}
+
+.splitMedia[data-stage-replay][data-split-media] .splitCallout,
+.splitMedia[data-stage-replay][data-split-media] .splitCallout[data-anchor="cap"],
+.splitMedia[data-stage-replay][data-split-media] .splitCallout[data-anchor="label"],
+.splitMedia[data-stage-replay][data-split-media] .splitCallout[data-anchor="base"] {
+  transition: none;
+  opacity: 0;
+  transform: translateY(-50%) translateX(var(--from)) scale(0.94);
+}
+
+.splitMedia[data-stage-replay][data-split-media] .splitBloomHost [data-bloom-stage] {
+  transition: none;
+  animation: none;
+  transform:
+    translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+    translate(0, 0)
+    scale(var(--seat, 1));
+}
+
+.splitMedia[data-stage-replay][data-split-media] .splitBloomHost [data-bloom-vial] {
+  transition: none;
+  animation: none;
+  transform: none;
 }

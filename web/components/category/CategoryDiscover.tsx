@@ -4,12 +4,14 @@ import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from
 import { ShopBloomPair } from "@/components/home/ShopBloomPair";
 import { MarketingImage } from "@/components/media/MarketingImage";
 import { useInView } from "@/lib/media/use-in-view";
-import { bloomStyle, shopPlate } from "@/components/home/shop-plates";
+import { shopCatalogItem } from "@/components/home/shop-catalog";
+import { bloomStyle } from "@/components/home/shop-plates";
 import shop from "@/components/home/LandingShop.module.css";
 import {
   discoverCopy,
   discoverFamilies,
   type DiscoverCard,
+  type DiscoverFamily,
   type DiscoverFamilyId,
 } from "@/content/fixtures/discover";
 import styles from "./CategoryDiscover.module.css";
@@ -42,7 +44,10 @@ function TreatmentCard({
   item: DiscoverCard;
   eager?: boolean;
 }) {
-  const plate = item.themeId ? shopPlate(item.themeId) : null;
+  const catalog = shopCatalogItem(item.catalogId);
+  const plate = catalog
+    ? { id: catalog.id, vialSrc: catalog.vialSrc, bloomSrc: catalog.bloomSrc, bloom: catalog.bloom }
+    : null;
   const [cardRef, hot] = useInView<HTMLAnchorElement>(eager);
   const fieldStyle = {
     "--theme-night": item.nightCss,
@@ -52,15 +57,9 @@ function TreatmentCard({
   return (
     <a
       ref={cardRef}
-      className={[
-        styles.card,
-        plate ? shop.bloomHost : "",
-        plate ? styles.bloomOn : "",
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      className={styles.card}
       href={item.href}
-      data-bloom={item.themeId}
+      data-bloom={item.catalogId}
       style={fieldStyle}
       aria-label={`${item.label}${item.price ? `. ${item.price}` : ""}. ${discoverCopy.cta}`}
     >
@@ -71,11 +70,19 @@ function TreatmentCard({
       </div>
       <div className={styles.media}>
         {plate ? (
-          <ShopBloomPair
-            vialSrc={plate.vialSrc}
-            bloomSrc={plate.bloomSrc}
-            active={hot}
-          />
+          <span
+            className={`${shop.bloomFrame} ${shop.bloomSeated}`}
+            data-bloom={item.catalogId}
+            data-kind={catalog?.kind}
+          >
+            <ShopBloomPair
+              vialSrc={plate.vialSrc}
+              bloomSrc={plate.bloomSrc}
+              active={hot}
+              sizes="(width < 721px) 88vw, 680px"
+              vialSizes="(width < 721px) 78vw, 460px"
+            />
+          </span>
         ) : hot ? (
           <MarketingImage
             className={styles.product}
@@ -89,22 +96,31 @@ function TreatmentCard({
   );
 }
 
-function stackFamilies(lead: DiscoverFamilyId) {
-  const selected = discoverFamilies.find((family) => family.id === lead);
-  const rest = discoverFamilies.filter((family) => family.id !== lead);
-  return selected ? [selected, ...rest] : [...discoverFamilies];
+function stackFamilies(
+  source: readonly DiscoverFamily[],
+  lead: DiscoverFamilyId,
+) {
+  const selected = source.find((family) => family.id === lead);
+  const rest = source.filter((family) => family.id !== lead);
+  return selected ? [selected, ...rest] : [...source];
 }
 
-export function CategoryDiscover() {
+export function CategoryDiscover({
+  families: source = discoverFamilies,
+  title = discoverCopy.title,
+}: {
+  families?: readonly DiscoverFamily[];
+  title?: string;
+}) {
   const [view, setView] = useState<ViewMode>("card");
-  const [active, setActive] = useState<DiscoverFamilyId>(discoverFamilies[0].id);
-  const families = stackFamilies(active);
+  const [active, setActive] = useState<DiscoverFamilyId>(source[0].id);
+  const families = stackFamilies(source, active);
   const pinReady = useRef(false);
 
   useEffect(() => {
     const id = window.location.hash.replace(/^#/, "") as DiscoverFamilyId;
-    if (discoverFamilies.some((family) => family.id === id)) setActive(id);
-  }, []);
+    if (source.some((family) => family.id === id)) setActive(id);
+  }, [source]);
 
   useLayoutEffect(() => {
     if (!pinReady.current) {
@@ -123,12 +139,12 @@ export function CategoryDiscover() {
 
   return (
     <div className={styles.root} data-view={view}>
-      <h1 className="sr-only">{discoverCopy.title}</h1>
+      <h1 className="sr-only">{title}</h1>
       <div id="treatments" className={styles.alias} />
 
       <nav className={styles.pills} aria-label={discoverCopy.filterLabel}>
         <div className={styles.switch}>
-          {discoverFamilies.map((family) => {
+          {source.map((family) => {
             const isActive = family.id === active;
             return (
               <button
@@ -152,7 +168,7 @@ export function CategoryDiscover() {
           className={styles.family}
           aria-labelledby={`${family.id}-title`}
         >
-          {family.id === "metabolic" ? (
+          {family.id === "weight-body" ? (
             <div id="health-goals" className={styles.alias} />
           ) : null}
           <header className={styles.familyHead}>

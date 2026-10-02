@@ -130,20 +130,35 @@ export function AccountWizard({
           method: "GET",
           headers: { Accept: "application/json" },
           cache: "no-store",
+          credentials: "include",
         });
         const json = await readAuthJson(res);
         if (cancelled || !res.ok || json.success === false) return;
         if (json.email) setEmail(json.email);
         setAlreadySignedIn(true);
-        const params = new URLSearchParams();
-        params.set("entry", entry.slug);
-        if (encounterId || handoff?.encounterId) {
-          params.set("encounter", encounterId || handoff?.encounterId || "");
-          setContinueHref(`/care/waiting?${params.toString()}`);
+        const handoffNow = readIntakeHandoff();
+        const safeNext = safeCareNext(nextPath);
+        const resolvedEnc =
+          encounterId || handoffNow?.encounterId || handoff?.encounterId || "";
+        let href: string;
+        if (safeNext) {
+          href = safeNext;
         } else {
-          setContinueHref(`/care/home?${params.toString()}`);
+          const params = new URLSearchParams();
+          params.set("entry", entry.slug);
+          if (resolvedEnc) {
+            params.set("encounter", resolvedEnc);
+            href = `/care/waiting?${params.toString()}`;
+          } else {
+            href = `/care/home?${params.toString()}`;
+          }
         }
-        setNotice("You are already signed in. Continue to physician review.");
+        setContinueHref(href);
+        setNotice(
+          href.includes("/care/waiting")
+            ? "You are already signed in. Continue to physician review."
+            : "You are already signed in. Continue to your account.",
+        );
       } catch {
         /* stay on create / login */
       }
@@ -151,7 +166,7 @@ export function AccountWizard({
     return () => {
       cancelled = true;
     };
-  }, [entry.slug, encounterId, handoff?.encounterId]);
+  }, [entry.slug, encounterId, handoff?.encounterId, nextPath]);
 
   const resolvedEncounter = encounterId || handoff?.encounterId || "";
   const chartId = handoff?.patientChartId?.trim() ?? "";
@@ -372,7 +387,9 @@ export function AccountWizard({
         </h2>
         <p className={styles.lede}>
           {signedInContinue
-            ? "Your intake is already with the care team. Continue to physician review — you do not need to create another account."
+            ? continueHref?.includes("/care/waiting")
+              ? "Your intake is already with the care team. Continue to physician review — you do not need to create another account."
+              : "You are signed in. Continue to your account — you do not need to log in again."
             : passwordUnset
               ? "Physician review can continue. The password you entered was not saved."
               : mode === "create"
@@ -470,7 +487,9 @@ export function AccountWizard({
                 className={`${styles.submitBtn} ${styles.submitBtnReady}`}
                 onClick={() => router.push(continueHref)}
               >
-                Continue to physician review
+                {continueHref?.includes("/care/waiting")
+                  ? "Continue to physician review"
+                  : "Continue to your account"}
               </Button>
             ) : (
               <Button

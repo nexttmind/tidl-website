@@ -1,0 +1,22 @@
+.phone,
+.phoneTight {
+  display: none;
+  white-space: nowrap;
+}
+
+@media (width < 721px) {
+  .full {
+    display: none;
+  }
+
+  .phone,
+  .phoneTight {
+    display: inline;
+  }
+}
+
+@container (width < 400px) {
+  .phoneTight {
+    font-size: 8px;
+  }
+}

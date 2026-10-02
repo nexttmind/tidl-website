@@ -65,7 +65,7 @@
   line-height: 1.65;
 }
 
-@media (max-width: 720px) {
+@media (width < 721px) {
   .main {
     padding-top: var(--space-7);
     padding-bottom: var(--space-10);

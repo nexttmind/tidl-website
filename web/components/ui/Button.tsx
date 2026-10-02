@@ -9,7 +9,7 @@ type ButtonProps = {
   href?: string;
   className?: string;
   disabled?: boolean;
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler<HTMLAnchorElement | HTMLButtonElement>;
   tabIndex?: number;
 };
 

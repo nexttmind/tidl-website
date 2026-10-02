@@ -65,7 +65,7 @@
 
 .tasks {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-3);
   margin-top: var(--space-8);
 }
@@ -129,33 +129,6 @@
   background: var(--surface-page-raised);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
-}
-
-.emptyCard {
-  margin-top: var(--space-6);
-  padding: var(--space-6);
-  border-radius: var(--radius-card);
-  background: var(--surface-page-raised);
-  box-shadow: var(--shadow-card);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-4);
-}
-
-.emptyTitle {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 600;
-}
-
-.emptyBody {
-  margin: var(--space-3) 0 0;
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  line-height: 1.5;
-  max-width: 42ch;
 }
 
 .orderCard {
@@ -578,46 +551,7 @@
   margin: var(--space-6) 0 0;
 }
 
-.actionNote {
-  margin: var(--space-4) 0 0;
-  color: var(--text-secondary);
-}
-
-.actionField {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  margin: var(--space-3) 0;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-}
-
-.actionField input,
-.actionField textarea,
-.actionField select {
-  width: 100%;
-  padding: 0.7rem 0.85rem;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-control);
-  background: var(--surface-page);
-  color: var(--text-primary);
-  font: inherit;
-}
-
-.actionField textarea {
-  min-height: 6rem;
-  resize: vertical;
-}
-
-.actionCheck {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0.4rem 0;
-  font-size: 0.9rem;
-}
-
-@media (max-width: 1023px) {
+@media (width < 1025px) {
   .tasks {
     grid-template-columns: 1fr 1fr;
   }
@@ -643,7 +577,7 @@
   }
 }
 
-@media (max-width: 720px) {
+@media (width < 721px) {
   .intro {
     padding-top: 112px;
   }

@@ -15,7 +15,7 @@ type LeadMedia = {
 type PdpLeadSplitProps = {
   title: string;
   body: string;
-  cta: { label: string; href: string };
+  cta: { label: string; href: string; disabled?: boolean };
   media: LeadMedia;
   lift?: boolean;
 };
@@ -36,7 +36,11 @@ export function PdpLeadSplit({ title, body, cta, media, lift = false }: PdpLeadS
             ))}
           </h2>
           <p className={styles.body}>{body}</p>
-          <Button href={cta.href} className={styles.cta}>
+          <Button
+            href={cta.disabled ? undefined : cta.href}
+            disabled={cta.disabled}
+            className={styles.cta}
+          >
             {cta.label}
           </Button>
         </div>

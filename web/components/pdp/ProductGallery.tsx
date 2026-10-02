@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { MediaSlot } from "@/components/media/MediaSlot";
+import { optCssImageSet } from "@/lib/media/opt-manifest";
 import styles from "./ProductGallery.module.css";
 
 export type GalleryPlate = {
@@ -111,7 +112,7 @@ export function ProductGallery({
                   ? undefined
                   : thumbSrc
                     ? {
-                        backgroundImage: `url(${thumbSrc})`,
+                        backgroundImage: optCssImageSet(thumbSrc, 400),
                         borderColor: "transparent",
                         ...(slot.swatch && productThumb
                           ? { backgroundColor: slot.swatch }

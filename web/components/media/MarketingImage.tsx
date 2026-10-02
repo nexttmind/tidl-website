@@ -18,6 +18,7 @@ type MarketingImageProps = {
   fetchPriority?: "high" | "low" | "auto";
   style?: CSSProperties;
   dataBloomVial?: boolean;
+  onLoad?: () => void;
 };
 
 const DEFAULT_SIZES =
@@ -39,6 +40,7 @@ export function MarketingImage({
   fetchPriority,
   style,
   dataBloomVial,
+  onLoad,
 }: MarketingImageProps) {
   const { query } = splitMediaSrc(src);
   const entry = optEntry(src);
@@ -59,6 +61,7 @@ export function MarketingImage({
         decoding={decoding}
         fetchPriority={fetchPriority}
         style={style}
+        onLoad={onLoad}
         data-bloom-vial={dataBloomVial ? "" : undefined}
       />
     );
@@ -92,6 +95,7 @@ export function MarketingImage({
         decoding={decoding}
         fetchPriority={fetchPriority}
         style={style}
+        onLoad={onLoad}
         data-bloom-vial={dataBloomVial ? "" : undefined}
       />
     </picture>

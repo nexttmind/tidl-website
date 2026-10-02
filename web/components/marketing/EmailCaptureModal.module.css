@@ -48,6 +48,10 @@
 }
 
 .mediaImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   object-position: 70% center;
 }
@@ -311,7 +315,7 @@
   }
 }
 
-@media (min-width: 720px) {
+@media (width >= 721px) {
   .root {
     align-items: center;
     padding: 24px;

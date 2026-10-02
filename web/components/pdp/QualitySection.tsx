@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
 import { MarketingImage } from "@/components/media/MarketingImage";
+import { optCssImageSet } from "@/lib/media/opt-manifest";
 import { heroTheme, type ThemeId } from "@/content/brand/peptide-identity";
 import styles from "./QualitySection.module.css";
 
@@ -34,6 +35,7 @@ type QualitySectionProps = {
   /** Composed 2:3 category plate (field, vial, callouts). */
   plate?: QualityPlate;
   themeId?: ThemeId;
+  catalogId?: string;
 };
 
 const stroke = {
@@ -118,6 +120,7 @@ export function QualitySection({
   wash,
   plate,
   themeId,
+  catalogId,
 }: QualitySectionProps) {
   const field = themeId ? heroTheme(themeId) : null;
   const pinStyle = field
@@ -134,7 +137,7 @@ export function QualitySection({
         style={pinStyle}
       >
         {plate ? (
-          <QualityPlateView plate={plate} />
+          <QualityPlateView plate={plate} catalogId={catalogId} />
         ) : (
           <>
             {wash ? (
@@ -152,7 +155,7 @@ export function QualitySection({
               ]
                 .filter(Boolean)
                 .join(" ")}
-              style={{ backgroundImage: `url(${backgroundSrc})` }}
+              style={{ backgroundImage: optCssImageSet(backgroundSrc, 1600) }}
               aria-hidden
             />
             <div className={styles.copy}>
@@ -209,15 +212,25 @@ export function QualitySection({
   );
 }
 
-function QualityPlateView({ plate }: { plate: QualityPlate }) {
+function QualityPlateView({
+  plate,
+  catalogId,
+}: {
+  plate: QualityPlate;
+  catalogId?: string;
+}) {
   return (
     <>
-      <MarketingImage
-        className={styles.plateField}
-        src={plate.fieldSrc}
-        alt=""
-        sizes="(width < 721px) 100vw, (width < 1025px) 80vw, 720px"
-      />
+      {catalogId ? (
+        <div className={styles.plateField} data-catalog-field={catalogId} />
+      ) : (
+        <MarketingImage
+          className={styles.plateField}
+          src={plate.fieldSrc}
+          alt=""
+          sizes="(width < 721px) 100vw, (width < 1025px) 80vw, 720px"
+        />
+      )}
       <div className={styles.plateStage}>
         <MarketingImage
           className={styles.plateVial}
@@ -225,7 +238,7 @@ function QualityPlateView({ plate }: { plate: QualityPlate }) {
           alt=""
           width={1024}
           height={1024}
-          sizes="(width < 721px) 55vw, 240px"
+          sizes="(width < 1025px) 70vw, 560px"
           dataBloomVial
         />
       </div>

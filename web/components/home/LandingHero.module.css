@@ -173,30 +173,34 @@
 }
 
 .copy {
-  pointer-events: auto;
+  pointer-events: none;
   position: absolute;
-  left: 50%;
-  top: 50%;
+  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 0;
-  width: max-content;
-  max-width: min(92%, calc(100% - (var(--hero-inline) * 2)));
+  width: auto;
+  max-width: none;
   min-width: 0;
+  padding-inline: var(--hero-inline);
+  box-sizing: border-box;
   text-align: center;
-  transform: translate3d(-50%, -50%, 0) scale(calc(1 - 0.08 * var(--hero-p)));
+  transform: scale(calc(1 - 0.08 * var(--hero-p)));
   transform-origin: center center;
 }
 
 .copyInner {
+  pointer-events: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 22px;
   min-width: 0;
-  width: 100%;
+  width: max-content;
+  max-width: 100%;
 }
 
 .copyText {
@@ -231,6 +235,15 @@
     opacity: 1;
     transform: translate3d(0, 0, 0);
   }
+}
+
+.ctaBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: max-content;
+  max-width: 100%;
 }
 
 .ctaWrap {
@@ -607,7 +620,7 @@
   outline-offset: 2px;
 }
 
-/* Desktop keeps arrows only. Phone and tablet reveal pause + progress. */
+/* Desktop keeps arrows only. Phone and tablet keep a centered progress bar. */
 .playPause,
 .progressPill {
   display: none;
@@ -728,18 +741,9 @@
     display: none;
   }
 
-  .copy {
-    top: 34%;
-    width: 100%;
-    max-width: min(36rem, calc(100% - (var(--hero-inline) * 2)));
-  }
-
-  .headline {
-    white-space: normal;
-    text-wrap: balance;
-  }
-
   .copyInner {
+    width: 100%;
+    max-width: min(36rem, 100%);
     gap: 32px;
   }
 
@@ -752,50 +756,232 @@
   }
 
   .scrollRoot {
-    --hero-card-h: 100svh;
-    --hero-end-h: 100svh;
+    --hero-card-h: 100%;
+    --hero-end-h: 100%;
     --hero-travel: 0px;
-    height: 100svh;
-    height: 100dvh;
+    width: 100%;
+    margin-top: 0;
+    margin-left: 0;
+    height: 100%;
+    min-height: 100%;
   }
 
   .sticky {
-    height: 100svh;
-    height: 100dvh;
+    height: 100%;
   }
 
   .card {
-    height: 100svh;
-    height: 100dvh;
+    height: 100%;
     max-height: none;
     border-radius: 0;
   }
 
-  .viewport {
+  .scrollRoot[data-menu-open="true"] .media {
+    transform: scale(1.12);
+    transform-origin: center top;
+  }
+
+  :global(#landing-hero).scrollRoot .sticky,
+  :global(#landing-hero).scrollRoot .card {
+    height: 100svh;
+    max-height: 100svh;
+  }
+
+  :global(#landing-hero).scrollRoot .card {
+    width: 100%;
+    margin: 0;
+  }
+
+  :global(#landing-hero).scrollRoot .media {
+    transform: scale(calc(1 + 0.12 * var(--menu-open, 0)));
+    transform-origin: center top;
+  }
+
+  .viewport,
+  .mediaHit {
     touch-action: pan-y;
   }
 
-  .playPause,
-  .progressPill {
+  .copy,
+  .copyInner,
+  .copyGroup {
+    pointer-events: none;
+  }
+
+  .copy {
+    justify-content: flex-start;
+    align-items: stretch;
+    top: 0;
+    bottom: auto;
+    height: 100svh;
+    padding-bottom: 14px;
+  }
+
+  .copyGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    align-self: start;
+    position: relative;
+    top: 40%;
+    left: 0;
+    right: 0;
+    grid-row: 2;
+    gap: 24px;
+    width: 100%;
+    text-align: center;
+    transform: translateY(-50%);
+  }
+
+  .copyShade {
+    position: absolute;
+    z-index: 0;
+    top: 50%;
+    left: calc(var(--hero-inline) * -1);
+    right: calc(var(--hero-inline) * -1);
+    height: calc(100% + 220px);
+    transform: translateY(-50%);
+    background: linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0%) 0%,
+      rgb(0 0 0 / 20%) 50%,
+      rgb(0 0 0 / 0%) 100%
+    );
+    mask-image: linear-gradient(to right, transparent 0%, #000 28%, #000 72%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 28%, #000 72%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .copyText,
+  .goodFor {
+    position: relative;
+    z-index: 1;
+  }
+
+  .copyInner {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    margin-inline: auto;
+    display: grid;
+    grid-template-rows: var(--menu-band, 280px) minmax(0, 1fr) auto;
+    align-items: center;
+    justify-items: center;
+    gap: 0;
+    padding-top: 0;
+  }
+
+  .ctaBlock {
+    position: static;
+    grid-row: 3;
+    align-self: end;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    width: max-content;
+    min-width: max-content;
+    max-width: none;
+    display: flex;
+    justify-content: center;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  :global([class*="stage"]:has([class*="mobileChrome"] header[data-mobile-open="false"])) .copyInner {
+    grid-template-rows: var(--menu-band, 104px) minmax(0, 1fr) auto;
+  }
+
+  .ctaWrap {
+    display: none;
+  }
+
+  .viewPill {
     display: inline-flex;
+    width: max-content;
+    min-width: max-content;
+    max-width: none;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 38px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 80%);
+    color: rgb(26 34 42);
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .scrim {
+    background: none;
+  }
+
+  .goodFor {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    max-width: 100%;
+  }
+
+  .goodFor li {
+    font-family: var(--font-ui);
+    font-size: calc(11px + 1pt);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-inverse);
+  }
+
+  .controls .control {
+    display: none;
   }
 
   .progressPill {
-    align-items: center;
-    gap: 3px;
-    min-width: 0;
-    flex: 1 1 auto;
-    max-width: 220px;
-    height: 18px;
-    padding: 0 10px;
-    border-radius: 9999px;
-    background: rgba(26, 26, 26, 0.45);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    position: relative;
+    display: block;
+    flex: 0 0 auto;
+    width: 220px;
+    max-width: calc(100% - 32px);
+    box-sizing: content-box;
+    height: 3px;
+    padding: 12px 0;
+    border-radius: 0;
+    background: none;
+    overflow: visible;
     touch-action: none;
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
+  }
+
+  .progressPill::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 12px;
+    height: 3px;
+    border-radius: 1.5px;
+    background: rgba(255, 255, 255, 0.28);
+    pointer-events: none;
+  }
+
+  .progressFill {
+    position: relative;
+    z-index: 1;
+    height: 3px;
+    border-radius: 1.5px;
+    transform: none;
   }
 
   .stage {
@@ -803,10 +989,7 @@
   }
 
   .controls {
-    left: var(--hero-inline);
-    right: var(--hero-inline);
-    justify-content: flex-start;
-    gap: 8px;
+    display: none;
   }
 
 }
@@ -817,26 +1000,46 @@
   }
 
   .scrollRoot {
-    --hero-card-h: 100svh;
-    --hero-end-h: 100svh;
+    --hero-card-h: 100%;
+    --hero-end-h: 100%;
     --hero-travel: 0px;
     width: 100%;
     margin-top: 0;
     margin-left: 0;
-    height: 100svh;
-    height: 100dvh;
+    height: 100%;
+    min-height: 100%;
   }
 
   .sticky {
-    height: 100svh;
-    height: 100dvh;
+    height: 100%;
   }
 
   .card {
-    height: 100svh;
-    height: 100dvh;
+    height: 100%;
     max-height: none;
     border-radius: 0;
+    clip-path: none;
+  }
+
+  .scrollRoot[data-menu-open="true"] .media {
+    transform: scale(1.12);
+    transform-origin: center top;
+  }
+
+  :global(#landing-hero).scrollRoot .sticky,
+  :global(#landing-hero).scrollRoot .card {
+    height: 100svh;
+    max-height: 100svh;
+  }
+
+  :global(#landing-hero).scrollRoot .card {
+    width: 100%;
+    margin: 0;
+  }
+
+  :global(#landing-hero).scrollRoot .media {
+    transform: scale(calc(1 + 0.12 * var(--menu-open, 0)));
+    transform-origin: center top;
   }
 
   .stage {
@@ -844,96 +1047,187 @@
     --hero-bottom: 16px;
   }
 
+  .copy,
+  .copyInner,
+  .copyGroup {
+    pointer-events: none;
+  }
+
   .copy {
-    max-width: calc(100% - (var(--hero-inline) * 2));
+    justify-content: flex-start;
+    align-items: stretch;
+    top: 0;
+    bottom: auto;
+    height: 100svh;
+    padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .copyGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    align-self: start;
+    position: relative;
+    top: 40%;
+    left: 0;
+    right: 0;
+    grid-row: 2;
+    gap: 24px;
+    width: 100%;
+    text-align: center;
+    transform: translateY(-50%);
+  }
+
+  .copyShade {
+    position: absolute;
+    z-index: 0;
+    top: 50%;
+    left: calc(var(--hero-inline) * -1);
+    right: calc(var(--hero-inline) * -1);
+    height: calc(100% + 220px);
+    transform: translateY(-50%);
+    background: linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0%) 0%,
+      rgb(0 0 0 / 20%) 50%,
+      rgb(0 0 0 / 0%) 100%
+    );
+    mask-image: linear-gradient(to right, transparent 0%, #000 28%, #000 72%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 28%, #000 72%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .copyText,
+  .goodFor {
+    position: relative;
+    z-index: 1;
   }
 
   .copyInner {
-    gap: 32px;
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: var(--menu-band, 280px) minmax(0, 1fr) auto;
+    align-items: center;
+    justify-items: center;
+    gap: 0;
+    padding-top: 0;
+  }
+
+  .scrim {
+    background: none;
+  }
+
+  .goodFor {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 18px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    max-width: 100%;
+  }
+
+  .goodFor li {
+    font-family: var(--font-ui);
+    font-size: calc(11px + 1pt);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-inverse);
+  }
+
+  .ctaBlock {
+    position: static;
+    grid-row: 3;
+    align-self: end;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    width: max-content;
+    min-width: max-content;
+    max-width: none;
+    display: flex;
+    justify-content: center;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  :global([class*="stage"]:has([class*="mobileChrome"] header[data-mobile-open="false"])) .copyInner {
+    grid-template-rows: var(--menu-band, 104px) minmax(0, 1fr) auto;
   }
 
   .ctaWrap {
-    flex-direction: column;
-    width: 100%;
-    gap: 10px;
-  }
-
-  .cta {
-    width: 100%;
-    max-width: 20rem;
-  }
-
-  .ctaWrap .ctaSecondarySlot {
     display: none;
   }
 
-  .viewport {
+  .viewPill {
+    display: inline-flex;
+    width: max-content;
+    min-width: max-content;
+    max-width: none;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 38px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 80%);
+    color: rgb(26 34 42);
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .viewport,
+  .mediaHit {
     touch-action: pan-y;
   }
 
-  .playPause,
-  .progressPill {
-    display: inline-flex;
-  }
-
-  .progressPill {
-    align-items: center;
-    gap: 2px;
-    min-width: 0;
-    flex: 1 1 auto;
-    height: 18px;
-    padding: 0 8px;
-    border-radius: 9999px;
-    background: rgba(26, 26, 26, 0.45);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    touch-action: none;
-    cursor: pointer;
-    user-select: none;
-    -webkit-user-select: none;
-  }
-
   .controls {
-    left: var(--hero-inline);
-    right: var(--hero-inline);
-    bottom: calc(var(--hero-bottom) + env(safe-area-inset-bottom, 0px));
-    justify-content: flex-start;
-    gap: 8px;
-  }
-
-  .catalogSlot {
-    top: clamp(96px, 14vh, 128px);
-    width: min(420px, calc(100% - (var(--hero-inline) * 2)));
+    display: none;
   }
 
   .headline {
-    white-space: normal;
-    text-wrap: balance;
-    font-size: calc(clamp(22px, 6vw, 32px) * var(--font-display-scale, 1));
+    font-size: calc((clamp(22px, 6vw, 32px) - 1pt) * var(--font-display-scale, 1));
+    white-space: nowrap;
+  }
+
+  .catalogSlot {
+    top: calc(
+      clamp(96px, 14vh, 128px) + 40px + env(safe-area-inset-top, 0px)
+    );
+    width: min(420px, calc(100% - (var(--hero-inline) * 2)));
+    background: rgb(0 0 0 / 15%);
   }
 }
 
 /* iOS Reduce Motion was forcing the short rounded notecard. */
 @media (prefers-reduced-motion: reduce) and (width < 1025px) {
   .scrollRoot {
-    height: 100svh;
-    height: 100dvh;
+    height: 100%;
+    min-height: 100svh;
     width: 100%;
     margin-left: 0;
   }
 
   .sticky {
     position: relative;
-    height: 100svh;
-    height: 100dvh;
+    height: 100%;
   }
 
   .card {
     width: 100%;
     max-width: none;
     margin: 0;
-    height: 100svh;
-    height: 100dvh;
+    height: 100%;
     border-radius: 0;
   }
 }

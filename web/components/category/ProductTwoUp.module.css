@@ -19,13 +19,13 @@
   gap: var(--space-6);
 }
 
-@media (max-width: 767px) {
+@media (width < 721px) {
   .root {
     padding: var(--space-8) 0;
   }
 }
 
-@media (min-width: 768px) {
+@media (width >= 721px) {
   .grid {
     grid-template-columns: 1fr 1fr;
     gap: var(--space-8);

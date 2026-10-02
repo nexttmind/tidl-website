@@ -1,7 +1,8 @@
 .root {
   /* Top matches hero→shop. Side gutter comes from --shop-notecard-inset. */
-  padding: var(--space-5) 0 var(--space-10);
+  padding: var(--landing-section-gap, var(--space-6)) 0 var(--space-10);
   color: var(--text-inverse);
+  scroll-margin-top: 88px;
 }
 
 .stage {
@@ -240,8 +241,7 @@
 }
 
 .inner[data-mode="intro"] .copy {
-  /* Three display lines — keep the block anchored while centered */
-  min-height: calc(clamp(32px, 4vw, 60px) * 3.3);
+  min-height: calc(clamp(32px, 4vw, 60px) * 2.2);
   padding-bottom: 0.12em;
 }
 
@@ -273,8 +273,14 @@
 
 .copy {
   min-height: clamp(160px, 24vw, 246px);
-  max-width: min(420px, 100%);
+  /* 420px clipped "Step Three" and wrapped the intro at display scale 1.4 */
+  max-width: min(680px, 52%);
+  overflow: visible;
   animation: copyIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.inner[data-mode="step"] .copy {
+  max-width: min(540px, 42%);
 }
 
 .title {
@@ -292,8 +298,8 @@
   white-space: nowrap;
 }
 
-.inner[data-mode="intro"] .title span {
-  white-space: normal;
+.inner[data-mode="intro"] .title span:last-child {
+  font-size: calc(clamp(18px, 2.1vw, 30px) * var(--font-display-scale));
 }
 
 .stepTitle {
@@ -516,6 +522,14 @@
 
   .tags li {
     color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .media {
+    position: relative;
+    inset: auto;
+    object-fit: contain;
   }
 
   .inner {
@@ -579,8 +593,9 @@
     top: auto;
     left: auto;
     right: auto;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
     gap: 8px;
     width: 100%;
     max-width: none;
@@ -592,9 +607,10 @@
 
   .detailCard {
     display: block;
+    flex: 1 1 0;
     width: 100%;
     min-width: 0;
-    max-width: none;
+    max-width: 100%;
     height: auto;
     max-height: none;
     aspect-ratio: 291 / 185;
@@ -629,6 +645,10 @@
 }
 
 @media (721px <= width < 1025px) {
+  .tags li {
+    font-size: 13px;
+  }
+
   .title,
   .stepLabel,
   .stepName {

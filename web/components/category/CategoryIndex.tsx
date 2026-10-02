@@ -1,32 +1,35 @@
 import { CatalogNotecard } from "@/components/category/CatalogNotecard";
 import { CategoryPairing } from "@/components/category/CategoryPairing";
-import {
-  catalogCopy,
-  catalogItemsByKind,
-} from "@/content/fixtures/catalog";
-import type { ValueFieldCard } from "@/content/fixtures/value-fields";
+import { SHOP_CATALOG } from "@/components/home/shop-catalog";
+import type { ShopKind } from "@/components/home/shop-catalog";
+import { catalogCopy } from "@/content/fixtures/catalog";
 import styles from "./CategoryIndex.module.css";
 
+const KIND_COPY: Record<ShopKind, { id: string; title: string }> = {
+  product: { id: "products", title: "Products" },
+  bundle: { id: "bundles", title: "Product Bundles" },
+  treatment: { id: "treatments", title: catalogCopy.treatments.title },
+};
+
 function CatalogSection({
-  id,
+  kind,
   title,
-  items,
 }: {
-  id: string;
+  kind: ShopKind;
   title: string;
-  items: readonly ValueFieldCard[];
 }) {
-  const headingId = `${id}-title`;
+  const headingId = `${kind}-title`;
+  const items = SHOP_CATALOG.filter((item) => item.kind === kind);
 
   return (
-    <section className={styles.section} id={id} aria-labelledby={headingId}>
+    <section className={styles.section} id={KIND_COPY[kind].id} aria-labelledby={headingId}>
       <h2 id={headingId} className="sr-only">
         {title}
       </h2>
       <ul className={styles.grid}>
         {items.map((item) => (
           <li key={item.id}>
-            <CatalogNotecard item={item} />
+            <CatalogNotecard id={item.id} label={item.label} />
           </li>
         ))}
       </ul>
@@ -34,27 +37,25 @@ function CatalogSection({
   );
 }
 
-export function CategoryIndex() {
-  const healthGoals = catalogItemsByKind("treatment");
-  const treatments = catalogItemsByKind("program");
-
+export function CategoryIndex({
+  kinds = ["product", "bundle", "treatment"],
+  pairing = true,
+}: {
+  kinds?: readonly ShopKind[];
+  pairing?: boolean;
+}) {
   return (
     <div className={styles.root}>
       <div className={styles.catalog}>
-        <CatalogSection
-          id={catalogCopy.healthGoals.id}
-          title={catalogCopy.healthGoals.title}
-          items={healthGoals}
-        />
-        <CatalogSection
-          id={catalogCopy.treatments.id}
-          title={catalogCopy.treatments.title}
-          items={treatments}
-        />
+        {kinds.map((kind) => (
+          <CatalogSection key={kind} kind={kind} title={KIND_COPY[kind].title} />
+        ))}
       </div>
-      <div className={styles.section}>
-        <CategoryPairing />
-      </div>
+      {pairing ? (
+        <div className={styles.section}>
+          <CategoryPairing />
+        </div>
+      ) : null}
     </div>
   );
 }

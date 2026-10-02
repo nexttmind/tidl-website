@@ -2,17 +2,18 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { MarketingImage } from "@/components/media/MarketingImage";
 import { Button } from "@/components/ui/Button";
+import { shopCatalogItem } from "@/components/home/shop-catalog";
+import { catalogRoute } from "@/content/catalog/routes";
 import { symptomsCta } from "@/content/clinical/entry-map";
 import {
   catalogCopy,
   catalogItemById,
-  catalogNotecardCopy,
 } from "@/content/fixtures/catalog";
-import type { ThemeId } from "@/content/brand/peptide-identity";
+import { CATALOG_NOTECARD_BODY } from "@/content/pdp/catalog";
 import styles from "./CategoryPairing.module.css";
 
 export type PairingPose = {
-  id: ThemeId;
+  id: string;
   vialSrc: string;
   baseX: number;
   width: number;
@@ -31,11 +32,13 @@ export type CategoryPairingData = {
 
 function catalogPairing(): CategoryPairingData | null {
   const { title, left, right, cta } = catalogCopy.pairing;
-  const leftItem = catalogItemById(left.id);
+  const leftItem = shopCatalogItem(left.id);
   if (!leftItem) return null;
+  const theme = catalogRoute(left.id)?.themeId;
+  const fieldSrc = (theme && catalogItemById(theme)?.fieldSrc) || leftItem.plateSrc;
   return {
     title,
-    fieldSrc: leftItem.fieldSrc,
+    fieldSrc,
     cta,
     left,
     right,
@@ -50,7 +53,7 @@ function PairingVial({
   height,
   role,
 }: PairingPose & { role: "lead" | "pair" }) {
-  const item = catalogItemById(id);
+  const item = shopCatalogItem(id);
   if (!item) return null;
 
   return (
@@ -58,7 +61,7 @@ function PairingVial({
       href={item.href}
       className={styles.product}
       data-role={role}
-      aria-label={`Shop ${item.pill}`}
+      aria-label={`Shop ${item.label}`}
       style={
         {
           "--base-x": baseX,
@@ -86,13 +89,13 @@ export function CategoryPairing({ pairing }: { pairing?: CategoryPairingData }) 
   const data = pairing ?? catalogPairing();
   if (!data) return null;
 
-  const leftItem = catalogItemById(data.left.id);
-  const rightItem = catalogItemById(data.right.id);
+  const leftItem = shopCatalogItem(data.left.id);
+  const rightItem = shopCatalogItem(data.right.id);
   if (!leftItem || !rightItem) return null;
 
   const ctaHref = data.cta.href ?? symptomsCta().href;
-  const leftBody = data.leftBody ?? catalogNotecardCopy(leftItem.id).body;
-  const rightBody = data.rightBody ?? catalogNotecardCopy(rightItem.id).body;
+  const leftBody = data.leftBody ?? CATALOG_NOTECARD_BODY[leftItem.id] ?? leftItem.label;
+  const rightBody = data.rightBody ?? CATALOG_NOTECARD_BODY[rightItem.id] ?? rightItem.label;
 
   return (
     <section
@@ -123,11 +126,11 @@ export function CategoryPairing({ pairing }: { pairing?: CategoryPairingData }) 
             </h2>
             <ul className={styles.blurbs}>
               <li>
-                <span className={styles.blurbLabel}>{leftItem.pill}</span>
+                <span className={styles.blurbLabel}>{leftItem.label}</span>
                 <p>{leftBody}</p>
               </li>
               <li>
-                <span className={styles.blurbLabel}>{rightItem.pill}</span>
+                <span className={styles.blurbLabel}>{rightItem.label}</span>
                 <p>{rightBody}</p>
               </li>
             </ul>

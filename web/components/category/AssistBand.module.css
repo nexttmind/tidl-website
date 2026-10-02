@@ -50,7 +50,7 @@
   min-height: 44px;
 }
 
-@media (max-width: 720px) {
+@media (width < 721px) {
   .root {
     padding: var(--space-8) var(--layout-gutter);
   }

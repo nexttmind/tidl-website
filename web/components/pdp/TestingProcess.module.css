@@ -82,7 +82,7 @@
   color: var(--text-primary);
 }
 
-@media (max-width: 900px) {
+@media (width < 1025px) {
   .inner {
     grid-template-columns: 1fr;
     align-items: start;
@@ -90,7 +90,7 @@
   }
 }
 
-@media (max-width: 560px) {
+@media (width < 721px) {
   .grid {
     gap: var(--space-3);
   }

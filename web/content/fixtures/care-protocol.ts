@@ -201,7 +201,7 @@ export const careProtocolByEntry: Record<string, CareProtocolOrder> = {
       ],
     },
     paymentDisclaimer:
-      "Charged now. If your physician determines the therapy is not appropriate for you, you are refunded in full.",
+      "Payment is collected after a clinician reviews your intake and, if prescribed, the pharmacy is ready to fill. You then pay for the prescription and care. If a clinician does not prescribe, you are not charged.",
     fulfillmentHeadline: "From order to pen",
     fulfillmentSubtitle: "What happens next",
     fulfillmentThemeId: "executive",
@@ -209,7 +209,7 @@ export const careProtocolByEntry: Record<string, CareProtocolOrder> = {
       {
         marker: "Now",
         title: "Place your order",
-        body: "Confirm payment on this page. Your prescription stays with your care team.",
+        body: "Pay on this page after a clinician reviews your intake and, if prescribed, the pharmacy is ready to fill.",
       },
       {
         marker: "Pharmacy",
@@ -333,7 +333,7 @@ export const careProtocolByEntry: Record<string, CareProtocolOrder> = {
       ],
     },
     paymentDisclaimer:
-      "Charged now. If your physician determines the therapy is not appropriate for you, you are refunded in full.",
+      "Payment is collected after a clinician reviews your intake and, if prescribed, the pharmacy is ready to fill. You then pay for the prescription and care. If a clinician does not prescribe, you are not charged.",
     fulfillmentHeadline: "From order to pen",
     fulfillmentSubtitle: "What happens next",
     fulfillmentThemeId: "transformation",
@@ -341,7 +341,7 @@ export const careProtocolByEntry: Record<string, CareProtocolOrder> = {
       {
         marker: "Now",
         title: "Place your order",
-        body: "Confirm payment on this page. Your prescription stays with your care team.",
+        body: "Pay on this page after a clinician reviews your intake and, if prescribed, the pharmacy is ready to fill.",
       },
       {
         marker: "Pharmacy",
@@ -538,7 +538,7 @@ const PROTOCOL_MEDIA: Record<string, ProtocolMedia> = {
       { src: "/landing/imagery/recovery-performance/02-tape-crop.png", alt: "Tape crop" },
       { src: "/landing/imagery/recovery-performance/03-bench.png", alt: "Bench" },
     ],
-    "/landing/hero/recovery-and-performance.mp4?v=2",
+    "/landing/hero/transformation.mp4?v=5",
   ),
   testosterone: labeledMedia(
     "testosterone",

@@ -13,19 +13,82 @@
   justify-content: center;
   height: 40px;
   overflow: hidden;
-  color: var(--text-primary);
-  background-color: #c5daf0;
+  color: var(--text-inverse);
+  background-color: #375eaa;
+  background-image:
+    radial-gradient(
+      ellipse 40% 220% at 22% 50%,
+      color-mix(in srgb, var(--color-night) 48%, transparent) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 42% 220% at 6% 50%,
+      rgba(55, 49, 16, 0.34) 0%,
+      transparent 62%
+    ),
+    radial-gradient(
+      ellipse 38% 240% at 34% 0%,
+      rgba(70, 47, 255, 0.18) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 46% 240% at 94% 50%,
+      rgba(58, 37, 228, 0.26) 0%,
+      transparent 62%
+    ),
+    linear-gradient(
+      90deg,
+      #3c6988 0%,
+      #2f7387 7%,
+      #1a2838 16%,
+      #3e739e 25%,
+      #375eaa 33%,
+      #4657d3 41%,
+      #392ab5 46%,
+      #3c6988 50%,
+      #2f7387 57%,
+      #1a2838 66%,
+      #3e739e 75%,
+      #375eaa 83%,
+      #4657d3 91%,
+      #392ab5 96%,
+      #3c6988 100%
+    );
+  background-repeat: repeat-x;
+  background-size:
+    cover,
+    cover,
+    cover,
+    cover,
+    200% 100%;
+  background-position:
+    center,
+    center,
+    center,
+    center,
+    0% 50%;
+  animation: promo-wash 15s linear infinite;
+}
+
+.promo:not(.promoSand):not(.promoParents):not(.promoExecutive)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.42;
+  mix-blend-mode: soft-light;
   background-image: linear-gradient(
-    125deg,
-    #b7d4ef 0%,
-    #e8f3fb 36%,
-    #8eb5d4 68%,
-    #c5daf0 100%
+    90deg,
+    #2f7387 0%,
+    #375eaa 25%,
+    #392ab5 50%,
+    #1a2838 75%,
+    #2f7387 100%
   );
-  background-repeat: no-repeat;
-  background-size: 220% 200%;
-  background-position: 0% 40%;
-  animation: promo-shift 28s ease-in-out infinite;
+  background-repeat: repeat-x;
+  background-size: 240% 100%;
+  animation: promo-current 26s linear infinite;
 }
 
 .promo::after {
@@ -34,11 +97,15 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.22;
-  mix-blend-mode: multiply;
+  opacity: 0.34;
+  mix-blend-mode: overlay;
   background-image: var(--section-bg-grain);
   background-size: 160px 160px;
   background-repeat: repeat;
+}
+
+.promo .promoText {
+  color: var(--text-inverse);
 }
 
 .promoSand {
@@ -72,7 +139,7 @@
   inset: -12px 0;
   z-index: 0;
   pointer-events: none;
-  background-image: url("/landing/shop/blooms/parents.png");
+  background-image: var(--promo-bloom);
   background-repeat: no-repeat;
   background-size: auto 640%;
   background-position: 68% 46%;
@@ -126,7 +193,16 @@
   display: flex;
   flex-direction: column;
   height: 200%;
-  animation: promo-copy-swap 11.4s linear infinite;
+  animation: promo-copy-swap 10s linear infinite;
+}
+
+.promoTrackStatic {
+  display: flex;
+  height: 100%;
+}
+
+.promoTrackStatic .promoText {
+  flex: 1;
 }
 
 .promoText {
@@ -207,6 +283,34 @@
   }
 }
 
+@keyframes promo-wash {
+  from {
+    background-position:
+      center,
+      center,
+      center,
+      center,
+      0% 50%;
+  }
+  to {
+    background-position:
+      center,
+      center,
+      center,
+      center,
+      100% 50%;
+  }
+}
+
+@keyframes promo-current {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
+}
+
 @keyframes promo-copy-swap {
   0% {
     transform: translateY(-50%);
@@ -227,12 +331,39 @@
   }
 }
 
+@media (width < 721px) {
+  .promo {
+    height: calc(40px + env(safe-area-inset-top, 0px));
+    padding-top: env(safe-area-inset-top, 0px);
+    box-sizing: border-box;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .promo,
   .promoExecutive {
     animation: none;
     background-size: cover;
     background-position: 0% 40%;
+  }
+
+  .promo {
+    background-size:
+      cover,
+      cover,
+      cover,
+      cover,
+      200% 100%;
+    background-position:
+      center,
+      center,
+      center,
+      center,
+      0% 50%;
+  }
+
+  .promo:not(.promoSand):not(.promoParents):not(.promoExecutive)::before {
+    animation: none;
   }
 
   .promoTrack {

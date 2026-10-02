@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { themeField } from "@/content/brand/peptide-identity";
 import { footerCopy } from "@/content/fixtures/footer";
+import { optCssImageSet } from "@/lib/media/opt-manifest";
 import styles from "./TickerBar.module.css";
 
 const TICKER_ITEMS = [
@@ -49,7 +50,7 @@ type TickerBarProps = {
 /** Pattern/Ticker Bar — promo strip or continuous trust marquee */
 export function TickerBar({
   variant = "marquee",
-  promo = "$100 off your first order",
+  promo: _promo = "Physician guided. Available if prescribed.",
   tone = "sky",
   bleed = true,
 }: TickerBarProps) {
@@ -69,6 +70,10 @@ export function TickerBar({
     ? ({
         backgroundColor: field.atmosphere.wash,
         backgroundImage: field.atmosphere.css,
+        "--promo-bloom": optCssImageSet(
+          "/landing/shop/blooms/parents.png",
+          768,
+        ),
       } as CSSProperties)
     : undefined;
 
@@ -79,11 +84,10 @@ export function TickerBar({
         className={rootClass}
         style={promoStyle}
         role="region"
-        aria-label={`${brand}. ${promo}`}
+        aria-label={brand}
       >
-        <div className={styles.promoViewport} aria-hidden="true">
-          <div className={styles.promoTrack}>
-            <p className={styles.promoText}>{promo}</p>
+        <div className={styles.promoViewport}>
+          <div className={styles.promoTrackStatic}>
             <p className={styles.promoText}>{brand}</p>
           </div>
         </div>

@@ -8,12 +8,29 @@ import {
   type CSSProperties,
   type ReactNode,
   type Ref,
+  type TransitionEvent,
 } from "react";
 import { useRouter } from "next/navigation";
-import type { ThemeId } from "@/content/brand/peptide-identity";
 import { MarketingImage } from "@/components/media/MarketingImage";
-import { bloomStyle, shopPlate, SHOP_PLATES } from "./shop-plates";
+import { shopCatalogItem } from "./shop-catalog";
+import { bloomStyle } from "./shop-plates";
 import styles from "./LandingCare.module.css";
+
+const CARE_TITLE_LOOP = [
+  ["Physician", "🤝", "Patient"],
+  ["Patient", "🤝", "Treatment"],
+] as const;
+
+function careTitleLines(lines: readonly string[]): ReactNode {
+  return lines.map((line, index) => (
+    <span
+      key={`${line}-${index}`}
+      className={line === "🤝" ? styles.titleMark : styles.titleLine}
+    >
+      {line}
+    </span>
+  ));
+}
 
 export type CareArea = {
   id: string;
@@ -29,7 +46,7 @@ export type CareArea = {
     | "leaf"
     | "target"
     | "move";
-  /** Isolated vial or product still. Used on the compact ring. */
+  /** Isolated vial. Used on the compact ring. */
   mediaSrc?: string;
 };
 
@@ -65,10 +82,13 @@ const ITEM_H = 46;
 /** Time between auto advances. */
 const CYCLE_MS = 2200;
 /** Compact Scout orbit period. */
-const ORBIT_MS = 26000;
-/** Sharp attack into 12 o'clock. Treatment fade runs to 6; physician fade to 3. */
+const ORBIT_MS = 22000;
+/** Dwell between compact title slides. */
+const TITLE_HOLD_MS = 2500;
+/** Sharp attack into 12 o'clock. Physicians fade by 3. Vial blooms fade by 6. */
 const BLOOM_ATTACK_DEG = 16;
 const PHYSICIAN_FADE_DEG = 90;
+const VIAL_BLOOM_FADE_DEG = 180;
 
 function bloomPop(worldDeg: number, fadeDeg = 180) {
   const n = ((worldDeg % 360) + 360) % 360;
@@ -139,34 +159,6 @@ const ICONS: Record<CareArea["icon"], ReactNode> = {
   ),
 };
 
-function ringBloomPlate(id: string) {
-  return SHOP_PLATES.some((plate) => plate.id === id)
-    ? shopPlate(id as ThemeId)
-    : null;
-}
-
-/** Category bloom seated behind the compact-ring vial or pill. Hidden on desktop. */
-function AreaBloom({ id }: { id: string }) {
-  const plate = ringBloomPlate(id);
-  if (!plate) return null;
-  return (
-    <span className={styles.areaBloom} style={bloomStyle(plate.bloom)} aria-hidden>
-      <span className={styles.bloomStage}>
-        <span className={styles.bloomSlot}>
-          <span className={styles.bloomPair}>
-            <MarketingImage
-              className={styles.bloom}
-              src={plate.bloomSrc}
-              alt=""
-              sizes="(width < 721px) 40vw, 160px"
-            />
-          </span>
-        </span>
-      </span>
-    </span>
-  );
-}
-
 /** Thin keyboard-style chevrons for the match lock. */
 function KeyboardArrow({ dir }: { dir: "left" | "right" }) {
   return (
@@ -228,8 +220,8 @@ function arcItemStyle(
     const count = Math.max(opts.count ?? 1, 1);
     const step = 360 / count;
     const deg = (side === "left" ? 270 : 90) + (opts.slot ?? 0) * step;
-    const r = Math.max(opts.orbitR ?? 140, 72);
-    const grow = side === "right" ? " scale(var(--card-scale, 1))" : "";
+    const r = opts.orbitR ?? 140;
+    const grow = " scale(var(--card-scale, 1))";
     const compactTransition = reduceMotion
       ? "none"
       : "opacity 200ms ease, background-color 200ms ease, border-color 200ms ease, box-shadow 220ms ease, color 200ms ease";
@@ -429,8 +421,13 @@ export function LandingCare({
   const [matching, setMatching] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [paused, setPaused] = useState(false);
+  const [titleFrame, setTitleFrame] = useState(0);
+  const [titleSlide, setTitleSlide] = useState(false);
+  const [titleMotion, setTitleMotion] = useState(true);
 
   const matchTimer = useRef<number | null>(null);
+  const titleHoldRef = useRef<() => void>(() => {});
+  const titleSlidingRef = useRef(false);
   const compactRef = useRef(compact);
   const stageRef = useRef<HTMLDivElement>(null);
   const areaPortRef = useRef<HTMLDivElement>(null);
@@ -464,6 +461,62 @@ export function LandingCare({
       compactMq.removeEventListener("change", syncCompact);
     };
   }, []);
+
+  useEffect(() => {
+    if (!compact) {
+      titleSlidingRef.current = false;
+      setTitleFrame(0);
+      setTitleSlide(false);
+      setTitleMotion(true);
+      return;
+    }
+    const stage = stageRef.current;
+    if (!stage) return;
+    let timer = 0;
+    let started = false;
+
+    const hold = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        if (reduceMotion) {
+          setTitleFrame((frame) => (frame + 1) % CARE_TITLE_LOOP.length);
+          hold();
+          return;
+        }
+        titleSlidingRef.current = true;
+        setTitleMotion(true);
+        setTitleSlide(true);
+      }, TITLE_HOLD_MS);
+    };
+    titleHoldRef.current = hold;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry?.isIntersecting || started) return;
+      started = true;
+      hold();
+    }, { threshold: 0.4 });
+    observer.observe(stage);
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(timer);
+      titleHoldRef.current = () => {};
+    };
+  }, [compact, reduceMotion]);
+
+  const finishTitleSlide = (event: TransitionEvent<HTMLSpanElement>) => {
+    if (event.propertyName !== "transform" || event.target !== event.currentTarget) return;
+    if (!titleSlidingRef.current) return;
+    titleSlidingRef.current = false;
+    setTitleMotion(false);
+    setTitleSlide(false);
+    setTitleFrame((frame) => (frame + 1) % CARE_TITLE_LOOP.length);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setTitleMotion(true);
+        titleHoldRef.current();
+      });
+    });
+  };
 
   useEffect(() => {
     if (compactRef.current === compact) return;
@@ -504,9 +557,9 @@ export function LandingCare({
       const inset =
         Number.parseFloat(box.paddingLeft) + Number.parseFloat(box.paddingRight);
       const stageW = stage.getBoundingClientRect().width - (Number.isFinite(inset) ? inset : 0);
-      const sample = stage.querySelector<HTMLElement>(`.${styles.area}`);
-      const cardH = sample?.offsetHeight ?? 80;
-      if (stageW > 0) setOrbitR(Math.max(64, stageW / 2 - cardH * 1.1));
+      /* Card bottoms sit on a fixed share of the stage, so the hole,
+       * the cards, and the title stay in the same ratio at every width. */
+      if (compact && stageW > 0) setOrbitR(stageW * 0.34);
     };
     read();
     const observer = new ResizeObserver(read);
@@ -537,20 +590,39 @@ export function LandingCare({
         `.${styles.columnRight} .${styles.provider}`,
       );
 
+    const left = [...treatCards()];
+    const right = [...providerCards()];
+    const popCache = new WeakMap<HTMLElement, string>();
+    const lifeCache = new WeakMap<HTMLElement, string>();
+    const apexCache = new WeakMap<HTMLElement, boolean>();
+
     const applyApex = (card: HTMLElement, pop: number) => {
-      card.style.setProperty("--bloom-pop", pop.toFixed(3));
-      if (pop > 0) card.setAttribute("data-apex", "true");
+      const next = pop.toFixed(3);
+      if (popCache.get(card) !== next) {
+        popCache.set(card, next);
+        card.style.setProperty("--bloom-pop", next);
+      }
+      const apex = pop > 0;
+      if (apexCache.get(card) === apex) return;
+      apexCache.set(card, apex);
+      if (apex) card.setAttribute("data-apex", "true");
       else card.removeAttribute("data-apex");
     };
 
+    const applyLife = (card: HTMLElement, value: number) => {
+      const next = value.toFixed(3);
+      if (lifeCache.get(card) === next) return;
+      lifeCache.set(card, next);
+      card.style.setProperty("--bloom-life", next);
+    };
+
     const paint = (spin: number) => {
-      const left = treatCards();
-      const right = providerCards();
       const leftStep = 360 / Math.max(left.length, 1);
       const rightStep = 360 / Math.max(right.length, 1);
       left.forEach((card, index) => {
         const world = (((270 + index * leftStep + spin) % 360) + 360) % 360;
-        applyApex(card, bloomPop(world));
+        applyApex(card, bloomPop(world, PHYSICIAN_FADE_DEG));
+        applyLife(card, bloomPop(world, VIAL_BLOOM_FADE_DEG));
       });
       right.forEach((card, index) => {
         const world = (((90 + index * rightStep + spin) % 360) + 360) % 360;
@@ -580,6 +652,7 @@ export function LandingCare({
       dial.style.removeProperty("--care-spin");
       treatCards().forEach((card) => {
         card.style.removeProperty("--bloom-pop");
+        card.style.removeProperty("--bloom-life");
         card.removeAttribute("data-apex");
       });
       providerCards().forEach((card) => {
@@ -645,7 +718,25 @@ export function LandingCare({
       >
         <div className={styles.center}>
           <h2 className={styles.title} id={`${baseId}-title`}>
-            {title}
+            <span className={styles.titleDesktop}>{title}</span>
+            <span className={styles.titleWindow}>
+              <span className={styles.titleSizer} aria-hidden>
+                {careTitleLines(CARE_TITLE_LOOP[0])}
+              </span>
+              <span
+                className={styles.titleReel}
+                data-slide={titleSlide ? "true" : undefined}
+                data-motion={titleMotion ? undefined : "off"}
+                onTransitionEnd={finishTitleSlide}
+              >
+                <span className={styles.titleCard} aria-hidden>
+                  {careTitleLines(CARE_TITLE_LOOP[(titleFrame + 1) % CARE_TITLE_LOOP.length])}
+                </span>
+                <span className={styles.titleCard}>
+                  {careTitleLines(CARE_TITLE_LOOP[titleFrame])}
+                </span>
+              </span>
+            </span>
           </h2>
           <p className={styles.body}>{body}</p>
         </div>
@@ -681,6 +772,7 @@ export function LandingCare({
             const near = compact || distance <= 2;
             const slots = compactSlots(areaCount);
             const deg = ringDeg("left", signed, slots);
+            const art = compact ? shopCatalogItem(area.id) : undefined;
             return (
               <button
                 key={area.id}
@@ -692,38 +784,59 @@ export function LandingCare({
                 }
                 tabIndex={near ? 0 : -1}
                 className={styles.area}
-                data-bloom={area.id}
                 data-active={selected ? "true" : undefined}
                 data-distance={distance}
-                style={arcItemStyle("left", signed, {
-                  reduceMotion,
-                  arcR,
-                  itemH,
-                  compact,
-                  count: areaCount,
-                  orbitR,
-                  slot: index,
-                })}
+                style={{
+                  ...arcItemStyle("left", signed, {
+                    reduceMotion,
+                    arcR,
+                    itemH,
+                    compact,
+                    count: areaCount,
+                    orbitR,
+                    slot: index,
+                  }),
+                  ...(art ? bloomStyle(art.bloom) : {}),
+                }}
                 onClick={() => selectArea(area.id)}
               >
                 <span className={styles.cardIndex} aria-hidden>
                   {compact ? ringIndexLabel(deg, slots) : String(index + 1).padStart(2, "0")}
                 </span>
-                <span className={styles.areaIcon}>
-                  {compact && distance <= 2 ? <AreaBloom id={area.id} /> : null}
-                  {compact && area.mediaSrc && distance <= 2 ? (
-                    <MarketingImage
-                      className={styles.areaMedia}
-                      src={area.mediaSrc}
-                      alt=""
-                      width={64}
-                      height={64}
-                      sizes="64px"
-                    />
-                  ) : compact && area.mediaSrc ? null : (
-                    ICONS[area.icon]
-                  )}
-                </span>
+                {art ? (
+                  <span className={styles.areaFace}>
+                    <span className={styles.areaBloom} aria-hidden>
+                      <span className={styles.bloomStage}>
+                        <span className={styles.bloomSlot}>
+                          <span className={styles.bloomPair}>
+                            <MarketingImage
+                              className={styles.bloom}
+                              src={art.bloomSrc}
+                              alt=""
+                              sizes="(max-width: 1024px) 28vw, 64px"
+                            />
+                          </span>
+                        </span>
+                      </span>
+                    </span>
+                    <span className={styles.areaIcon}>
+                      {area.mediaSrc ? (
+                        <MarketingImage
+                          className={styles.areaMedia}
+                          src={area.mediaSrc}
+                          alt=""
+                          width={160}
+                          height={360}
+                          sizes="(max-width: 1024px) 18vw, 64px"
+                        />
+                      ) : (
+                        ICONS[area.icon]
+                      )}
+                    </span>
+                  </span>
+                ) : (
+                  <span className={styles.areaIcon}>{ICONS[area.icon]}</span>
+                )}
                 <span className={styles.areaLabel}>{area.label}</span>
               </button>
             );

@@ -1,24 +1,20 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { CategoryPdpLive } from "@/components/pdp/CategoryPdpLive";
-import {
-  HEALTH_GOAL_PDPS,
-  HEALTH_GOAL_SLUGS,
-} from "@/content/pdp/health-goals";
+import { notFound, redirect } from "next/navigation";
+import { CategoryPdp } from "@/components/pdp/CategoryPdp";
+import { catalogHref, catalogIdFor, catalogIdsUnder, catalogRoute } from "@/content/catalog/routes";
+import { catalogPdp } from "@/content/pdp/catalog";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
 export function generateStaticParams() {
-  return HEALTH_GOAL_SLUGS.map((slug) => ({ slug }));
+  return catalogIdsUnder("/treatments").map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const data = HEALTH_GOAL_PDPS[slug];
+  const data = catalogPdp(catalogIdFor(slug));
   if (!data) return {};
   return {
     title: data.metadataTitle,
@@ -26,9 +22,13 @@ export async function generateMetadata({
   };
 }
 
-export default async function HealthGoalPage({ params }: PageProps) {
+export default async function TreatmentPage({ params }: PageProps) {
   const { slug } = await params;
-  const data = HEALTH_GOAL_PDPS[slug];
-  if (!data) notFound();
-  return <CategoryPdpLive data={data} />;
+  const id = catalogIdFor(slug);
+  const route = catalogRoute(id);
+  const href = route ? catalogHref(id) : undefined;
+  if (href && href !== `/treatments/${slug}`) redirect(href);
+  const data = catalogPdp(id);
+  if (!route || href !== `/treatments/${slug}` || !data) notFound();
+  return <CategoryPdp data={data} />;
 }

@@ -1,8 +1,9 @@
-/** Consumer topical catalog scraped from tidl.com/collections/frontpage. No molecule names. */
+/** Consumer topical catalog. Prices, groups, and stock come from the launch file. */
 
 import type { HeroSlide } from "@/components/home/LandingHero";
 import type { SocialColumn } from "@/components/home/LandingSocial";
 import type { ProductFixture } from "@/content/fixtures/hand-and-body";
+import pricing from "@/content/pdp/tidl-launch-pricing.json";
 
 export type PainReliefGroupId = "cold" | "heat" | "daily" | "systems";
 
@@ -14,6 +15,24 @@ export type PainReliefProduct = ProductFixture & {
 };
 
 const SHOP = "https://tidl.com/products";
+
+/** TIDL Amazon store. Kits that do not have their own listing use this page. */
+const AMAZON_STORE =
+  "https://www.amazon.com/stores/TIDL/page/76EEDF72-C1CB-46CC-9D22-7CF4E5FB36EB";
+
+const AMAZON_PAGE: Readonly<Record<string, string>> = {
+  "cryotherapy-spray": "https://www.amazon.com/dp/B08V171TL6",
+  "max-strength-spray": "https://www.amazon.com/dp/B0DCGDSMHV",
+  "cryotherapy-cream": "https://www.amazon.com/dp/B09BFFNHP6",
+  "heat-therapy-spray": "https://www.amazon.com/dp/B0DCGGP22M",
+  "evening-spray": "https://www.amazon.com/dp/B0F2P5W72L",
+  "hot-cold-system": AMAZON_STORE,
+  "rapid-relief-duo": AMAZON_STORE,
+};
+
+export function painReliefAmazonHref(id: string) {
+  return AMAZON_PAGE[id] ?? AMAZON_STORE;
+}
 
 export function painReliefShopHref(handle: string) {
   return `${SHOP}/${handle}`;
@@ -33,6 +52,7 @@ function product({
   body,
   uses,
   file,
+  soldOut,
 }: {
   id: string;
   handle: string;
@@ -43,6 +63,7 @@ function product({
   body: string;
   uses: readonly string[];
   file: string;
+  soldOut?: boolean;
 }): PainReliefProduct {
   return {
     id,
@@ -53,6 +74,7 @@ function product({
     group,
     body,
     uses,
+    soldOut,
     mediaSlot: `pain-relief.${id}`,
     mediaSrc: `/pain-relief/${file}`,
     mediaFit: "contain",
@@ -68,7 +90,7 @@ export const painReliefMenuSrc = "/pain-relief/menu-cryotherapy-spray.png";
 
 export const painReliefCopy = {
   title: "Pain Relief",
-  lede: "Sprays, roll ons, and creams for sore days, training days, and the hours in between.",
+  lede: "Sprays and creams for sore days, training days, and the hours in between.",
   announcement: "Free shipping on orders over $100",
   shopCta: "Shop the line",
   disclaimer:
@@ -122,7 +144,7 @@ export const painReliefSocial = {
           id: "pr-quote-formats",
           kind: "quote" as const,
           tone: "paper" as const,
-          text: "Sprays, roll ons, and creams. Pick the format that fits the day.",
+          text: "Sprays and creams. Pick the format that fits the day.",
         },
       ],
     },
@@ -179,7 +201,7 @@ export const painReliefSocial = {
           id: "pr-quote-move",
           kind: "quote" as const,
           tone: "sand" as const,
-          text: "A spray or a roll on. The format that fits how you move.",
+          text: "A spray or a cream. The format that fits how you move.",
         },
       ],
     },
@@ -199,7 +221,7 @@ export const painReliefSocial = {
   ] as const satisfies readonly SocialColumn[],
 };
 
-export const painReliefProducts = [
+const PAIN_CATALOG = [
   product({
     id: "cryotherapy-spray",
     handle: "sport-cryotherapy-spray",
@@ -221,6 +243,7 @@ export const painReliefProducts = [
     name: "Max Strength Spray",
     meta: "The strongest cooling spray in the line",
     price: "From $49.99",
+    soldOut: true,
     group: "cold",
     body: "Built for stubborn soreness, stiff joints, and aching backs. Shake, spray, and wait.",
     uses: [
@@ -261,36 +284,6 @@ export const painReliefProducts = [
     file: "heat-therapy-spray.png",
   }),
   product({
-    id: "heat-roll-on",
-    handle: "tidl-heat-therapy-roll-on",
-    name: "Heat Therapy Roll On",
-    meta: "Warming roll on for targeted areas",
-    price: "From $39.99",
-    group: "heat",
-    body: "A warming roll on for joints, necks, and the middle of a workday. Roll, press, wait.",
-    uses: [
-      "Pre and post activity",
-      "Midday neck and back tension",
-      "On the go at work or in the gym",
-    ],
-    file: "heat-roll-on.png",
-  }),
-  product({
-    id: "morning-spray",
-    handle: "tidl-morning-therapy-spray",
-    name: "Morning Therapy Spray",
-    meta: "A warming start for stiff mornings",
-    price: "From $39.99",
-    group: "daily",
-    body: "A morning spray for stiff joints and the first hour of the day. Point, spray, let it absorb.",
-    uses: [
-      "Morning joint and muscle stiffness",
-      "Pre activity warmup",
-      "Back, shoulders, and post sleep tightness",
-    ],
-    file: "morning-spray.png",
-  }),
-  product({
     id: "evening-spray",
     handle: "tidl-evening-therapy-spray",
     name: "Evening Therapy Spray",
@@ -308,7 +301,7 @@ export const painReliefProducts = [
   product({
     id: "hot-cold-system",
     handle: "tidl-hot-cold-therapy-system",
-    name: "Hot and Cold Therapy System",
+    name: "Hot & Cold Therapy",
     meta: "Heat and cold as a two spray pair",
     price: "$25.99",
     group: "systems",
@@ -321,24 +314,9 @@ export const painReliefProducts = [
     file: "hot-cold-system.png",
   }),
   product({
-    id: "morning-evening-duo",
-    handle: "morning-evening-therapy-duo",
-    name: "Morning and Evening Duo",
-    meta: "A daily pair for both ends of the day",
-    price: "$25.99",
-    group: "systems",
-    body: "Morning spray and evening spray in one pair. One for the start of the day. One for the close.",
-    uses: [
-      "Morning stiffness",
-      "Evening tension from work or training",
-      "A simple daily rhythm",
-    ],
-    file: "morning-evening-duo.png",
-  }),
-  product({
     id: "rapid-relief-duo",
     handle: "rapid-relief-duo",
-    name: "Cream and Spray Duo",
+    name: "Cream & Spray Duo",
     meta: "Cryotherapy spray and cream together",
     price: "$25.99",
     group: "systems",
@@ -350,30 +328,56 @@ export const painReliefProducts = [
     ],
     file: "rapid-relief-duo.png",
   }),
-  product({
-    id: "performance-recovery",
-    handle: "tidl-performance-recovery-stack",
-    name: "Performance Recovery Stack",
-    meta: "Max strength, heat roll on, and evening spray",
-    price: "$39.99",
-    group: "systems",
-    body: "Three products in one kit. Max strength for cooling. Heat roll on for tight tissue. Evening spray to close the day.",
-    uses: [
-      "Hard sessions and long workdays",
-      "Stiff joints and tight muscles",
-      "An evening wind down",
-    ],
-    file: "performance-recovery.png",
-  }),
 ] as const satisfies readonly PainReliefProduct[];
+
+const PAIN_GROUP_ID = {
+  Evening: "daily",
+  Heat: "heat",
+  Cold: "cold",
+  Kits: "systems",
+} as const satisfies Record<string, PainReliefGroupId>;
+
+type PainFileItem = {
+  name: string;
+  group: string;
+  price: string | null;
+  in_stock: boolean;
+};
+
+export const painReliefProducts: PainReliefProduct[] = (
+  pricing.pain_relief.items as PainFileItem[]
+)
+  .filter((item) => item.price != null)
+  .flatMap((item) => {
+    const base = PAIN_CATALOG.find((product) => product.name === item.name);
+    const group =
+      item.group in PAIN_GROUP_ID
+        ? PAIN_GROUP_ID[item.group as keyof typeof PAIN_GROUP_ID]
+        : undefined;
+    if (!base || !group || item.price == null) return [];
+    return [
+      {
+        ...base,
+        price: item.price,
+        group,
+        soldOut: item.in_stock === false,
+      },
+    ];
+  });
+
+/** In stock first. Sold out stays in catalog order, grouped at the end of the row. */
+export const painReliefMenuProducts: readonly PainReliefProduct[] = [
+  ...painReliefProducts.filter((item) => item.soldOut !== true),
+  ...painReliefProducts.filter((item) => item.soldOut === true),
+];
 
 export const painReliefGroups = [
   {
     id: "daily",
-    title: "Morning and evening",
-    nav: "Daily",
-    beat: "AM / PM",
-    when: "Both ends of the day",
+    title: "Evening",
+    nav: "Evening",
+    beat: "PM",
+    when: "The end of the day",
   },
   {
     id: "heat",
@@ -391,8 +395,8 @@ export const painReliefGroups = [
   },
   {
     id: "systems",
-    title: "Pairs and kits",
-    nav: "Systems",
+    title: "Kits",
+    nav: "Kits",
     beat: "Kit",
     when: "Pairs and kits",
   },
@@ -403,6 +407,15 @@ export const painReliefGroups = [
   beat: string;
   when: string;
 }[];
+
+/** Lowest shelf price in the topical line. */
+export function painReliefStartsAt(): string {
+  const amounts = painReliefProducts.map((item) =>
+    Number(item.price.replace(/[^0-9.]/g, "")),
+  );
+  const min = Math.min(...amounts);
+  return `$${min.toFixed(2)}`;
+}
 
 export function painReliefByGroup(
   group: PainReliefGroupId,

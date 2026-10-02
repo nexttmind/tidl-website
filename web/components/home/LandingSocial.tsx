@@ -306,7 +306,7 @@ export function LandingSocial({ title, columns }: LandingSocialProps) {
     };
 
     const apply = () => {
-      rail.style.setProperty("--rail-x", `${-offsetRef.current}px`);
+      rail.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
     };
 
     const setOffset = (updater: number | ((n: number) => number)) => {

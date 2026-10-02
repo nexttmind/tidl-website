@@ -1,19 +1,21 @@
-/** All-treatments discover. Four families. Goal framed. No molecule names. */
+/** Compact catalog. Families match the locked launch set. */
 
-import type { ThemeId } from "@/content/brand/peptide-identity";
-import { themeField } from "@/content/brand/peptide-identity";
-import { CATALOG_PRICE, catalogItemById, catalogVialSrc } from "@/content/fixtures/catalog";
-import {
-  PAIN_RELIEF_HREF,
-  painReliefCopy,
-  painReliefMenuSrc,
-} from "@/content/fixtures/pain-relief";
+import { SHOP_CATALOG, type ShopCatalogItem } from "@/components/home/shop-catalog";
+import { heroTheme } from "@/content/brand/peptide-identity";
+import { catalogHref, catalogRoute } from "@/content/catalog/routes";
+import { catalogPriceLine } from "@/content/pdp/launch-pricing";
 
-export type DiscoverFamilyId = "metabolic" | "vitality" | "drive" | "restore";
+export type DiscoverFamilyId =
+  | "products"
+  | "bundles"
+  | "weight-body"
+  | "energy-performance"
+  | "recovery-longevity"
+  | "mind-balance";
 
 export type DiscoverCard = {
   id: string;
-  themeId?: ThemeId;
+  catalogId: string;
   label: string;
   href: string;
   price?: string;
@@ -33,68 +35,88 @@ export const discoverCopy = {
   cta: "Discover",
   viewCard: "Card",
   viewGrid: "Grid",
-  filterLabel: "Treatment families",
+  filterLabel: "Catalog families",
 } as const;
 
-const PAIN_RELIEF_CARD: DiscoverCard = {
-  id: "pain-relief",
-  label: painReliefCopy.title,
-  href: PAIN_RELIEF_HREF,
-  mediaSrc: painReliefMenuSrc,
-  nightCss:
-    "radial-gradient(ellipse 122% 110% at 8% 88%, color-mix(in srgb, var(--color-slate) 80%, transparent) 0%, transparent 80%), radial-gradient(ellipse 118% 106% at 88% 12%, color-mix(in srgb, var(--color-night) 74%, transparent) 0%, transparent 80%), linear-gradient(155deg, var(--color-night) 0%, var(--color-slate) 100%)",
-};
+function nightFor(id: string): string {
+  const route = catalogRoute(id);
+  const field = route ? heroTheme(route.themeId) : null;
+  return field?.night.css ?? "var(--color-night)";
+}
 
-function cardFromTheme(id: ThemeId): DiscoverCard {
-  const field = themeField(id);
-  const item = catalogItemById(id);
-  if (!item) throw new Error(`Missing catalog item for ${id}`);
+function cardFromShop(item: ShopCatalogItem): DiscoverCard {
   return {
-    id,
-    themeId: id,
-    label: field.label,
-    href: item.href,
-    price: CATALOG_PRICE,
-    mediaSrc: catalogVialSrc(id),
-    nightCss: field.night.css,
+    id: item.id,
+    catalogId: item.id,
+    label: item.label,
+    href: catalogHref(item.id),
+    price: catalogPriceLine(item.id),
+    mediaSrc: item.vialSrc,
+    nightCss: nightFor(item.id),
   };
+}
+
+function cardsOf(kind: ShopCatalogItem["kind"]): DiscoverCard[] {
+  return SHOP_CATALOG.filter((item) => item.kind === kind).map(cardFromShop);
+}
+
+const byId = Object.fromEntries(SHOP_CATALOG.map((item) => [item.id, item]));
+
+function cards(...ids: string[]): DiscoverCard[] {
+  return ids.flatMap((id) => {
+    const item = byId[id];
+    return item ? [cardFromShop(item)] : [];
+  });
 }
 
 export const discoverFamilies: readonly DiscoverFamily[] = [
   {
-    id: "vitality",
-    title: "Vitality",
-    lede: "Energy, strength, and performance.",
-    items: [
-      cardFromTheme("mens-health"),
-      cardFromTheme("executive"),
-      cardFromTheme("athlete"),
-      cardFromTheme("creative"),
-    ],
+    id: "products",
+    title: "Products",
+    lede: "Labeled isolates and the at home kit.",
+    items: cardsOf("product"),
   },
   {
-    id: "metabolic",
-    title: "Metabolic",
-    lede: "Weight, appetite, and metabolic health.",
-    items: [cardFromTheme("weight-loss"), cardFromTheme("transformation")],
+    id: "bundles",
+    title: "Product Bundles",
+    lede: "Stacked protocols reviewed as one visit.",
+    items: cardsOf("bundle"),
   },
   {
-    id: "drive",
-    title: "Drive",
-    lede: "Sexual and hormonal health.",
-    items: [cardFromTheme("sexual-health"), cardFromTheme("womens-balance")],
+    id: "weight-body",
+    title: "Weight and Body Composition",
+    lede: "Appetite, composition, and the months it takes.",
+    items: cards("weight-loss", "lean-cut"),
   },
   {
-    id: "restore",
-    title: "Restore",
-    lede: "Recovery, mobility, sleep, and resilience.",
-    items: [
-      cardFromTheme("recovery-performance"),
-      cardFromTheme("parents"),
-      cardFromTheme("legacy"),
-      cardFromTheme("traveler"),
-      cardFromTheme("skin-hair"),
-      PAIN_RELIEF_CARD,
-    ],
+    id: "energy-performance",
+    title: "Energy and Performance",
+    lede: "Energy, drive, intimacy, and a full stack.",
+    items: cards(
+      "mens-peak-performance",
+      "sexual-health",
+      "complete-stack",
+    ),
+  },
+  {
+    id: "recovery-longevity",
+    title: "Recovery and Longevity",
+    lede: "Tissue, rest, cellular support, and healthspan.",
+    items: cards("repair-mobility", "rest-rebuild", "longevity"),
+  },
+  {
+    id: "mind-balance",
+    title: "Mind, Balance and Beauty",
+    lede: "Focus, mood, hormonal chapters, and hair.",
+    items: cards("stress-mood", "womens-total-balance", "hair-skin-nails"),
   },
 ];
+
+export const treatmentDiscoverFamilies: readonly DiscoverFamily[] =
+  discoverFamilies.filter((family) => family.id !== "products" && family.id !== "bundles");
+
+export const productDiscoverFamilies: readonly DiscoverFamily[] =
+  discoverFamilies.filter((family) => family.id === "products");
+
+export const bundleDiscoverFamilies: readonly DiscoverFamily[] =
+  discoverFamilies.filter((family) => family.id === "bundles");

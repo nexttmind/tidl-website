@@ -1,0 +1,490 @@
+/* Figma Backgrounds only 1:119401. Linear + three wells. No grain, noise, tooth. */
+
+[data-catalog-field],
+[data-catalog-tokens] {
+  --tile-1: #122b3b;
+  --tile-2: #192c4d;
+  --tile-3: #214b63;
+  --tile-4: #2a6f7c;
+  --tile-5: #2f8885;
+  --tile-6: #36d0aa;
+  --well: #41132a;
+  --glow-a: transparent;
+  --glow-b: transparent;
+  --field-image:
+    radial-gradient(
+      ellipse 49.02% 54.35% at 14.02% 93.15%,
+      color-mix(in srgb, var(--well) 28.4%, transparent) 0%,
+      color-mix(in srgb, var(--well) 14.5%, transparent) 30%,
+      color-mix(in srgb, var(--well) 4.1%, transparent) 62%,
+      transparent 100%
+    ),
+    radial-gradient(
+      ellipse 49.02% 54.35% at 30.49% 33.8%,
+      color-mix(in srgb, var(--glow-a) 18.5%, transparent) 0%,
+      color-mix(in srgb, var(--glow-a) 9.4%, transparent) 30%,
+      color-mix(in srgb, var(--glow-a) 2.7%, transparent) 62%,
+      transparent 100%
+    ),
+    radial-gradient(
+      ellipse 49.02% 54.35% at 63.43% 63.48%,
+      color-mix(in srgb, var(--glow-b) 25.9%, transparent) 0%,
+      color-mix(in srgb, var(--glow-b) 13.2%, transparent) 30%,
+      color-mix(in srgb, var(--glow-b) 3.8%, transparent) 62%,
+      transparent 100%
+    ),
+    linear-gradient(
+      180deg,
+      var(--tile-1) 0%,
+      var(--tile-2) 24.038%,
+      var(--tile-3) 47.596%,
+      var(--tile-4) 64.426%,
+      var(--tile-5) 81.734%,
+      var(--tile-6) 100%
+    );
+}
+
+[data-catalog-field] {
+  background-color: var(--tile-2);
+  background-image: var(--field-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+[data-catalog-field="tirzepatide"],
+[data-catalog-tokens="tirzepatide"] {
+  --tile-1: #173625;
+  --tile-2: #1f473f;
+  --tile-3: #295c3e;
+  --tile-4: #34733c;
+  --tile-5: #437e39;
+  --tile-6: #7dbe48;
+  --well: #23183b;
+  --glow-a: #aced76;
+  --glow-b: #96d761;
+}
+
+[data-catalog-field="semaglutide"],
+[data-catalog-tokens="semaglutide"] {
+  --tile-1: #041e45;
+  --tile-2: #07156f;
+  --tile-3: #0a4798;
+  --tile-4: #1476ad;
+  --tile-5: #21adc4;
+  --tile-6: #2ee6d6;
+  --well: #270b15;
+  --glow-a: #b8fff9;
+  --glow-b: #5ff5e8;
+}
+
+[data-catalog-field="b12"],
+[data-catalog-tokens="b12"] {
+  --tile-1: #1c044a;
+  --tile-2: #610c92;
+  --tile-3: #5214d9;
+  --tile-4: #3121e9;
+  --tile-5: #2e4df4;
+  --tile-6: #3d8bff;
+  --well: #29160c;
+  --glow-a: #b4d2ff;
+  --glow-b: #5e9fff;
+}
+
+[data-catalog-field="lipo-c"],
+[data-catalog-tokens="lipo-c"] {
+  --tile-1: #4a000b;
+  --tile-2: #920035;
+  --tile-3: #d9001b;
+  --tile-4: #e91307;
+  --tile-5: #f44510;
+  --tile-6: #ff7a1a;
+  --well: #091d21;
+  --glow-a: #ffbb8a;
+  --glow-b: #ff9040;
+}
+
+[data-catalog-field="methylene-blue"],
+[data-catalog-tokens="methylene-blue"] {
+  --tile-1: #1f2e61;
+  --tile-2: #385294;
+  --tile-3: #6180c7;
+  --tile-4: #85a3e0;
+  --tile-5: #9ebded;
+  --tile-6: #b8d1f5;
+  --well: #1a1f38;
+  --glow-a: #bfd9ff;
+  --glow-b: #8cb2f2;
+}
+
+[data-catalog-field="sermorelin"],
+[data-catalog-tokens="sermorelin"] {
+  --tile-1: #4a2108;
+  --tile-2: #9a6a17;
+  --tile-3: #e86c26;
+  --tile-4: #f45233;
+  --tile-5: #fa3f47;
+  --tile-6: #ff4d7a;
+  --well: #0a2417;
+  --glow-a: #ffd0dc;
+  --glow-b: #ff8aa8;
+}
+
+[data-catalog-field="tesamorelin"],
+[data-catalog-tokens="tesamorelin"] {
+  --tile-1: #250248;
+  --tile-2: #1b0184;
+  --tile-3: #6d00cd;
+  --tile-4: #af0de0;
+  --tile-5: #ef1dee;
+  --tile-6: #ff2ec8;
+  --well: #09200a;
+  --glow-a: #ffc0ee;
+  --glow-b: #ff70d9;
+}
+
+[data-catalog-field="at-home-lab"],
+[data-catalog-tokens="at-home-lab"] {
+  --tile-1: #470f0f;
+  --tile-2: #731a14;
+  --tile-3: #9e291a;
+  --tile-4: #c73d24;
+  --tile-5: #e05233;
+  --tile-6: #f26b47;
+  --well: #2e0d0a;
+  --glow-a: #ff9e73;
+  --glow-b: #ff7347;
+}
+
+[data-catalog-field="steady-start"],
+[data-catalog-tokens="steady-start"] {
+  --tile-1: #0f1447;
+  --tile-2: #143380;
+  --tile-3: #1a52b8;
+  --tile-4: #247bb9;
+  --tile-5: #2fa4bb;
+  --tile-6: #38c7bd;
+  --well: #0a0d2e;
+  --glow-a: #4774c6;
+  --glow-b: #4ccdc3;
+}
+
+[data-catalog-field="rest-rise"],
+[data-catalog-tokens="rest-rise"] {
+  --tile-1: #2e0a14;
+  --tile-2: #540f38;
+  --tile-3: #7a145c;
+  --tile-4: #952d67;
+  --tile-5: #b04671;
+  --tile-6: #c75c7a;
+  --well: #1e070d;
+  --glow-a: #95437c;
+  --glow-b: #cd6c88;
+}
+
+[data-catalog-field="fast-start"],
+[data-catalog-tokens="fast-start"] {
+  --tile-1: #0d241a;
+  --tile-2: #2f5421;
+  --tile-3: #528529;
+  --tile-4: #7b9330;
+  --tile-5: #a4a137;
+  --tile-6: #c7ad3d;
+  --well: #081711;
+  --glow-a: #749d54;
+  --glow-b: #cdb651;
+}
+
+[data-catalog-field="energy-lift"],
+[data-catalog-tokens="energy-lift"] {
+  --tile-1: #080a24;
+  --tile-2: #281463;
+  --tile-3: #471fa3;
+  --tile-4: #525dc0;
+  --tile-5: #5d9cdc;
+  --tile-6: #66d1f5;
+  --well: #050717;
+  --glow-a: #6c4bb6;
+  --glow-b: #75d6f6;
+}
+
+[data-catalog-field="body-composition"],
+[data-catalog-tokens="body-composition"] {
+  --tile-1: #2c204d;
+  --tile-2: #462864;
+  --tile-3: #3c306c;
+  --tile-4: #363b79;
+  --tile-5: #37507a;
+  --tile-6: #3d89af;
+  --well: #351816;
+  --glow-a: #57b8e9;
+  --glow-b: #48a3d1;
+}
+
+[data-catalog-field="complete-stack"],
+[data-catalog-tokens="complete-stack"] {
+  --tile-1: #3c6988;
+  --tile-2: #2f7387;
+  --tile-3: #3e739e;
+  --tile-4: #375eaa;
+  --tile-5: #4657d3;
+  --tile-6: #392ab5;
+  --well: #373110;
+  --glow-a: #462fff;
+  --glow-b: #3a25e4;
+}
+
+[data-catalog-field="lean-cut"],
+[data-catalog-tokens="lean-cut"] {
+  --tile-1: #45511c;
+  --tile-2: #4b6825;
+  --tile-3: #66722a;
+  --tile-4: #7f7830;
+  --tile-5: #816431;
+  --tile-6: #ba6432;
+  --well: #123439;
+  --glow-a: #f88848;
+  --glow-b: #df763a;
+}
+
+[data-catalog-field="sexual-health"],
+[data-catalog-tokens="sexual-health"] {
+  --tile-1: #3e164a;
+  --tile-2: #3f1f5f;
+  --tile-3: #642571;
+  --tile-4: #852e79;
+  --tile-5: #8d3162;
+  --tile-6: #d03655;
+  --well: #13412c;
+  --glow-a: #ff5274;
+  --glow-b: #e94f6e;
+}
+
+[data-catalog-field="weight-loss"],
+[data-catalog-tokens="weight-loss"] {
+  --tile-1: #122b3b;
+  --tile-2: #192c4d;
+  --tile-3: #214b63;
+  --tile-4: #2a6f7c;
+  --tile-5: #2f8885;
+  --tile-6: #36d0aa;
+  --well: #41132a;
+  --glow-a: #52ffd4;
+  --glow-b: #4fe9c2;
+}
+
+[data-catalog-field="appetite-balance"],
+[data-catalog-tokens="appetite-balance"] {
+  --tile-1: #040550;
+  --tile-2: #113a99;
+  --tile-3: #221fe1;
+  --tile-4: #5e2fef;
+  --tile-5: #9842f7;
+  --tile-6: #d055ff;
+  --well: #1e2d0d;
+  --glow-a: #efc4ff;
+  --glow-b: #da78ff;
+}
+
+[data-catalog-field="mens-peak-performance"],
+[data-catalog-tokens="mens-peak-performance"] {
+  --tile-1: #123e43;
+  --tile-2: #19564e;
+  --tile-3: #216670;
+  --tile-4: #2b6e8c;
+  --tile-5: #306599;
+  --tile-6: #4673db;
+  --well: #472b15;
+  --glow-a: #5286ff;
+  --glow-b: #608bf1;
+}
+
+[data-catalog-field="repair-mobility"],
+[data-catalog-tokens="repair-mobility"] {
+  --tile-1: #4d4b18;
+  --tile-2: #634e20;
+  --tile-3: #727427;
+  --tile-4: #66872e;
+  --tile-5: #4b8e31;
+  --tile-6: #36d043;
+  --well: #391341;
+  --glow-a: #52ff61;
+  --glow-b: #4fe95c;
+}
+
+[data-catalog-field="rest-rebuild"],
+[data-catalog-tokens="rest-rebuild"] {
+  --tile-1: #151c44;
+  --tile-2: #241c58;
+  --tile-3: #263372;
+  --tile-4: #31568f;
+  --tile-5: #36759c;
+  --tile-6: #56c6d8;
+  --well: #47151a;
+  --glow-a: #52e7ff;
+  --glow-b: #65d9ec;
+}
+
+[data-catalog-field="cellular-health"],
+[data-catalog-tokens="cellular-health"] {
+  --tile-1: #3b1231;
+  --tile-2: #4d1934;
+  --tile-3: #632154;
+  --tile-4: #7c2a77;
+  --tile-5: #7e2f88;
+  --tile-6: #a236d0;
+  --well: #2c4113;
+  --glow-a: #cb52ff;
+  --glow-b: #bb4fe9;
+}
+
+[data-catalog-field="longevity"],
+[data-catalog-tokens="longevity"] {
+  --tile-1: #323e13;
+  --tile-2: #37501a;
+  --tile-3: #566823;
+  --tile-4: #79822c;
+  --tile-5: #8f8b31;
+  --tile-6: #d3b641;
+  --well: #142944;
+  --glow-a: #ffdc52;
+  --glow-b: #ebce5d;
+}
+
+[data-catalog-field="focus"],
+[data-catalog-tokens="focus"] {
+  --tile-1: #123b3a;
+  --tile-2: #193f4d;
+  --tile-3: #216352;
+  --tile-4: #2a7c52;
+  --tile-5: #2f8839;
+  --tile-6: #29aa5d;
+  --well: #41133d;
+}
+
+[data-catalog-field="stress-mood"],
+[data-catalog-tokens="stress-mood"] {
+  --tile-1: #3f2148;
+  --tile-2: #5d2660;
+  --tile-3: #592f64;
+  --tile-4: #4c3368;
+  --tile-5: #3e3366;
+  --tile-6: #383b8d;
+  --well: #2b2413;
+  --glow-a: #3136da;
+  --glow-b: #363ab4;
+}
+
+[data-catalog-field="womens-total-balance"],
+[data-catalog-tokens="womens-total-balance"] {
+  --tile-1: #6f407f;
+  --tile-2: #5d3b84;
+  --tile-3: #8a36a0;
+  --tile-4: #9d329b;
+  --tile-5: #b52f94;
+  --tile-6: #d3418a;
+  --well: #144420;
+  --glow-a: #ff52a8;
+  --glow-b: #eb5da4;
+}
+
+[data-catalog-field="hair-skin-nails"],
+[data-catalog-tokens="hair-skin-nails"] {
+  --tile-1: #79561d;
+  --tile-2: #6e5c21;
+  --tile-3: #7f6222;
+  --tile-4: #a96925;
+  --tile-5: #bb5118;
+  --tile-6: #d06651;
+  --well: #164541;
+  --glow-a: #f97358;
+  --glow-b: #e77f6a;
+}
+
+[data-catalog-field="pain-relief"],
+[data-catalog-tokens="pain-relief"],
+[data-catalog-field="cryotherapy-spray"],
+[data-catalog-tokens="cryotherapy-spray"] {
+  --tile-1: #1d1d0d;
+  --tile-2: #393918;
+  --tile-3: #5f5b21;
+  --tile-4: #7b7127;
+  --tile-5: #95852f;
+  --tile-6: #a99538;
+  --well: #1d1d0d;
+  --glow-a: #a99538;
+  --glow-b: #95852f;
+  --pain-header: linear-gradient(180deg, #1d1d0d 0%, #3a3a18 25%, #635e22 50%, #8d7f2b 75%, #a99538 100%);
+}
+
+[data-catalog-field="max-strength-spray"],
+[data-catalog-tokens="max-strength-spray"] {
+  --tile-1: #385518;
+  --tile-2: #4a6e21;
+  --tile-3: #678529;
+  --tile-4: #7a902f;
+  --tile-5: #8d9934;
+  --tile-6: #a4a239;
+  --well: #385518;
+  --glow-a: #a4a239;
+  --glow-b: #8d9934;
+  --pain-header: linear-gradient(180deg, #385518 0%, #4b6f21 25%, #6a872a 50%, #859632 75%, #a4a239 100%);
+}
+
+[data-catalog-field="cryotherapy-cream"],
+[data-catalog-tokens="cryotherapy-cream"],
+[data-catalog-field="rapid-relief-duo"],
+[data-catalog-tokens="rapid-relief-duo"] {
+  --tile-1: #1c2753;
+  --tile-2: #27386d;
+  --tile-3: #2c5285;
+  --tile-4: #316792;
+  --tile-5: #3980a0;
+  --tile-6: #429daf;
+  --well: #1c2753;
+  --glow-a: #429daf;
+  --glow-b: #3980a0;
+  --pain-header: linear-gradient(180deg, #1c2753 0%, #27396e 25%, #2c5588 50%, #35759a 75%, #429daf 100%);
+}
+
+[data-catalog-field="heat-therapy-spray"],
+[data-catalog-tokens="heat-therapy-spray"] {
+  --tile-1: #385518;
+  --tile-2: #4a6f21;
+  --tile-3: #678529;
+  --tile-4: #7a902f;
+  --tile-5: #8d9934;
+  --tile-6: #a4a239;
+  --well: #385518;
+  --glow-a: #a4a239;
+  --glow-b: #8d9934;
+  --pain-header: linear-gradient(180deg, #385518 0%, #4b7021 25%, #6a872a 50%, #859632 75%, #a4a239 100%);
+}
+
+[data-catalog-field="evening-spray"],
+[data-catalog-tokens="evening-spray"] {
+  --tile-1: #441a39;
+  --tile-2: #58244c;
+  --tile-3: #6e2c69;
+  --tile-4: #79327b;
+  --tile-5: #81368e;
+  --tile-6: #8839a2;
+  --well: #441a39;
+  --glow-a: #8839a2;
+  --glow-b: #81368e;
+  --pain-header: linear-gradient(180deg, #441a39 0%, #59244d 25%, #702d6c 50%, #7f3586 75%, #8839a2 100%);
+}
+
+[data-catalog-field="hot-cold-system"],
+[data-catalog-tokens="hot-cold-system"] {
+  --tile-1: #4a6a21;
+  --tile-2: #5b7c29;
+  --tile-3: #74832e;
+  --tile-4: #7f8030;
+  --tile-5: #887831;
+  --tile-6: #926a31;
+  --well: #4a6a21;
+  --glow-a: #926a31;
+  --glow-b: #887831;
+  --pain-header: linear-gradient(180deg, #4a6a21 0%, #5c7d29 25%, #77842e 50%, #847d31 75%, #926a31 100%);
+}

@@ -1,5 +1,6 @@
 /** Weight Loss health goal PDP. Goal framed. No molecule names. No outcome claims. */
 
+import { catalogVialSrc } from "@/content/fixtures/catalog";
 import {
   PDP_PAY_LINE,
   PDP_PLAN_LABEL,
@@ -22,23 +23,23 @@ export const weightLossPdp = {
   body:
     "Appetite and metabolic goals, if prescribed after clinical review. Delivered through the TIDL Flow pen from a US based compounding pharmacy.",
   payLine: PDP_PAY_LINE,
-  heroSrc: "/pdp/weight-loss-vial.png?v=3",
+  heroSrc: catalogVialSrc("weight-loss"),
   heroCallouts: [
     {
-      chip: "Appetite",
-      body: "Built for hunger that has been the whole job",
+      chip: "Balance",
+      body: "Hunger that won't quit",
       side: "left" as const,
       anchor: "cap" as const,
     },
     {
-      chip: "Pace",
-      body: "Built for loss your physician is willing to stand behind",
+      chip: "Momentum",
+      body: "Not a crash diet",
       side: "right" as const,
       anchor: "label" as const,
     },
     {
-      chip: "Muscle",
-      body: "Built for protecting lean mass while the scale moves",
+      chip: "Strength",
+      body: "Liking what you see",
       side: "left" as const,
       anchor: "base" as const,
     },
@@ -133,36 +134,36 @@ export const weightLossPdp = {
     cta: { label: "Get started", href: "#buy" },
     items: [
       {
-        title: "Appetite",
+        title: "Balance",
         description:
           "Hunger has been the whole job. This is a physician guided GLP 1 stack built to take that off the day.",
         media: {
           id: "pdp.weight-loss.benefit-1",
-          label: "Appetite",
+          label: "Balance",
           swatch: "#7a8f6e",
           note: "Walk",
           src: "/landing/imagery/weight-loss/01-walk.png",
         },
       },
       {
-        title: "Pace",
+        title: "Momentum",
         description:
           "The brief is a pace a physician will stand behind. Not a crash, and not a number you cannot keep.",
         media: {
           id: "pdp.weight-loss.benefit-2",
-          label: "Pace",
+          label: "Momentum",
           swatch: "#9a8a6a",
           note: "Prep",
           src: "/landing/imagery/weight-loss/02-chop-crop.png",
         },
       },
       {
-        title: "Muscle",
+        title: "Strength",
         description:
           "Protect lean mass while the scale moves. The protocol treats composition as the job, not a casualty.",
         media: {
           id: "pdp.weight-loss.benefit-3",
-          label: "Muscle",
+          label: "Strength",
           swatch: "#6a4a48",
           note: "Kitchen",
           src: "/landing/imagery/weight-loss/03-kitchen.png",
@@ -369,20 +370,20 @@ export const weightLossPdp = {
       vialSrc: "/pdp/weight-loss-vial.png?v=3",
       callouts: [
         {
-          chip: "Appetite",
-          body: "Built for hunger that has been the whole job",
+          chip: "Balance",
+          body: "Hunger that won't quit",
           side: "left" as const,
           anchor: "cap" as const,
         },
         {
-          chip: "Pace",
-          body: "Built for loss your physician is willing to stand behind",
+          chip: "Momentum",
+          body: "Not a crash diet",
           side: "right" as const,
           anchor: "label" as const,
         },
         {
-          chip: "Muscle",
-          body: "Built for protecting lean mass while the scale moves",
+          chip: "Strength",
+          body: "Liking what you see",
           side: "left" as const,
           anchor: "base" as const,
         },

@@ -1,8 +1,10 @@
+import { CATALOG_VIAL_REV } from "@/content/fixtures/catalog";
+import { PDP_DEK } from "@/content/pdp/dek";
 import type { CategoryPdpData, PdpBenefitItem } from "@/content/pdp/types";
 import {
+  painReliefAmazonHref,
   painReliefCopy,
   painReliefProducts,
-  painReliefShopHref,
   painReliefSocial,
   type PainReliefProduct,
 } from "@/content/fixtures/pain-relief";
@@ -20,6 +22,8 @@ type PainReliefPdpSpec = {
   leadTitle: string;
   whatIsAnswer: string;
   chips: readonly [string, string, string];
+  callouts: readonly [string, string, string];
+  sells: readonly [string, string, string];
   packSrc: string;
   fieldSrc: string;
   stills: readonly [Still, Still, Still];
@@ -63,7 +67,7 @@ const QUALITY_METRICS = [
   {
     metric: "Topical",
     description:
-      "Sprays, roll ons, and creams. External use only. Read the label before use.",
+      "Sprays and creams. External use only. Read the label before use.",
   },
   {
     metric: "Ships free",
@@ -75,12 +79,12 @@ const HOW_TO_STAGES = [
   {
     marker: "Pick",
     title: "Choose the format",
-    body: "Spray, roll on, or cream. Cold, heat, or the pair that matches the day.",
+    body: "Spray or cream. Cold, heat, or the pair that matches the day.",
   },
   {
     marker: "Apply",
     title: "Use it where you need it",
-    body: "Shake if it is a spray. Point, spray, or roll. Creams you work in by hand.",
+    body: "Shake if it is a spray. Point and spray. Creams you work in by hand.",
   },
   {
     marker: "Wait",
@@ -106,10 +110,13 @@ function productById(id: string): PainReliefProduct {
   return item;
 }
 
-function callouts(chips: readonly [string, string, string], uses: readonly string[]) {
+function callouts(
+  chips: readonly [string, string, string],
+  bodies: readonly string[],
+) {
   return chips.map((chip, index) => ({
     chip,
-    body: uses[index] ?? chip,
+    body: bodies[index] ?? chip,
     ...CALLOUT_LAYOUT[index],
   }));
 }
@@ -117,14 +124,14 @@ function callouts(chips: readonly [string, string, string], uses: readonly strin
 function benefits(
   id: string,
   chips: readonly [string, string, string],
-  uses: readonly string[],
+  sells: readonly string[],
   stills: readonly Still[],
 ): PdpBenefitItem[] {
   return chips.map((chip, index) => {
     const still = stills[index] ?? stills[0];
     return {
       title: chip,
-      description: uses[index] ?? chip,
+      description: sells[index] ?? chip,
       media: {
         id: `pdp.pain.${id}.benefit-${index + 1}`,
         label: chip,
@@ -138,27 +145,32 @@ function benefits(
 
 function buildPdp(spec: PainReliefPdpSpec): CategoryPdpData {
   const product = productById(spec.id);
-  const notes = callouts(spec.chips, product.uses);
-  const shopHref = painReliefShopHref(product.handle);
+  const notes = callouts(spec.chips, spec.callouts);
+  const soldOut = product.soldOut === true;
+  const ctaLabel = "Buy Now";
+  const ctaHref = painReliefAmazonHref(spec.id);
   const [one, two, three] = spec.stills;
 
   return {
     metadataTitle: `TIDL · ${product.name}`,
     metadataDescription: product.meta,
-    stockLabel: "Available",
+    soldOut,
+    stockLabel: soldOut ? "Sold out" : "Available",
     category: "Pain Relief",
     title: product.name,
     themeId: "recovery-performance",
+    artId: spec.id,
     barrageGraphic: "pain-relief",
     barragePack: spec.id,
     price: product.price.replace(/^From\s+/, ""),
     compareAtPrice: "",
     tagline: product.meta,
-    primaryCta: "Add to cart",
-    primaryCtaHref: shopHref,
+    dek: PDP_DEK[spec.id],
+    primaryCta: ctaLabel,
+    primaryCtaHref: ctaHref,
     body: product.body,
     payLine: painReliefCopy.announcement,
-    heroSrc: product.mediaSrc ?? spec.packSrc,
+    heroSrc: `/landing/shop/catalog/vials/${spec.id}.png?v=${CATALOG_VIAL_REV}`,
     heroCallouts: notes,
     trust: TRUST,
     planLabel: "",
@@ -234,7 +246,7 @@ function buildPdp(spec: PainReliefPdpSpec): CategoryPdpData {
     lead: {
       title: spec.leadTitle,
       body: "Made in the USA. Read the label before use. These products are topical. They are not a substitute for clinical care.",
-      cta: { label: "Add to cart", href: shopHref },
+      cta: { label: ctaLabel, href: ctaHref },
       media: {
         id: `pdp.pain.${spec.id}.lead`,
         label: one.label,
@@ -247,8 +259,8 @@ function buildPdp(spec: PainReliefPdpSpec): CategoryPdpData {
     benefits: {
       headline: "Use it for",
       subtitle: product.body,
-      cta: { label: "Add to cart", href: shopHref },
-      items: benefits(spec.id, spec.chips, product.uses, spec.stills),
+      cta: { label: ctaLabel, href: ctaHref },
+      items: benefits(spec.id, spec.chips, spec.sells, spec.stills),
     },
     social: painReliefSocial,
     quality: {
@@ -319,11 +331,6 @@ const L = {
     label: "Roller",
     swatch: "#1a5a4a",
   },
-  morning: {
-    src: "/pain-relief/lifestyle/header-morning.png",
-    label: "Steps",
-    swatch: "#8a8a82",
-  },
   evening: {
     src: "/pain-relief/lifestyle/header-evening.png",
     label: "Grass",
@@ -343,16 +350,6 @@ const L = {
     src: "/pain-relief/lifestyle/still-05.jpg",
     label: "Gym",
     swatch: "#3a3a3a",
-  },
-  field: {
-    src: "/pain-relief/lifestyle/still-06.jpg",
-    label: "Field",
-    swatch: "#4a6a3a",
-  },
-  portrait: {
-    src: "/pain-relief/lifestyle/still-07.jpg",
-    label: "Rest",
-    swatch: "#5a4a3a",
   },
   yellowApply: {
     src: "/pain-relief/lifestyle/still-08.jpg",
@@ -397,7 +394,17 @@ const SPECS: readonly PainReliefPdpSpec[] = [
     leadTitle: "After activity,\ntight joints,\na cooling spray",
     whatIsAnswer:
       "A cooling spray for pre and post activity, desk days, and tight joints. Point, spray, and let it sit. Topical. Read the label before use.",
-    chips: ["After activity", "Tight joints", "Ice pack stand in"],
+    chips: ["Relief", "Recovery", "Mobility"],
+    callouts: [
+      "Cools the second it lands",
+      "Made for after training",
+      "Move easier",
+    ],
+    sells: [
+      "Cold on sore muscles, without the ice pack and the mess. Spray it and let it work.",
+      "The sooner you hit it, the better tomorrow goes.",
+      "Great after a session, and just as good after a long day at a desk.",
+    ],
     packSrc: "/pain-relief/pdp/cryotherapy-spray/pack.png",
     fieldSrc: L.howTo.src,
     stills: [L.howTo, L.cryo, L.blackApply],
@@ -407,7 +414,17 @@ const SPECS: readonly PainReliefPdpSpec[] = [
     leadTitle: "Stubborn soreness,\nstiff joints,\na stronger cooling spray",
     whatIsAnswer:
       "The strongest cooling spray in the line. Built for stubborn soreness, stiff joints, and aching backs. Shake, spray, and wait. Topical. Read the label before use.",
-    chips: ["Hard days", "Stiff joints", "Pre and post"],
+    chips: ["Power", "Endurance", "Performance"],
+    callouts: [
+      "Two actives at full strength",
+      "Relief that holds",
+      "Back at it tomorrow",
+    ],
+    sells: [
+      "Our strongest cooling formula. For the days a regular spray isn't cutting it.",
+      "When you've really put your body through it, go straight to this one.",
+      "Deep, serious cold so you're not sitting out tomorrow.",
+    ],
     packSrc: "/pain-relief/pdp/max-strength-spray/pack.png",
     fieldSrc: L.gym.src,
     stills: [L.max, L.gym, L.hold],
@@ -417,7 +434,17 @@ const SPECS: readonly PainReliefPdpSpec[] = [
     leadTitle: "Joints you can work in,\nsore areas,\na cooling cream",
     whatIsAnswer:
       "A cream for joints and sore areas you want to massage. Apply, work it in, let it absorb. Topical. Read the label before use.",
-    chips: ["Joints", "Long days", "By hand"],
+    chips: ["Comfort", "Flexibility", "Control"],
+    callouts: [
+      "Cools as you rub it in",
+      "Right into the joint",
+      "Exactly where you want it",
+    ],
+    sells: [
+      "Same cooling, but you rub it in. Better when you want to work a specific spot.",
+      "Get right into the joint that's bothering you.",
+      "No overspray, no mist. Just where you want it.",
+    ],
     packSrc: "/pain-relief/pdp/cryotherapy-cream/pack.png",
     fieldSrc: L.jar.src,
     stills: [L.jar, L.howTo, L.bag],
@@ -427,37 +454,37 @@ const SPECS: readonly PainReliefPdpSpec[] = [
     leadTitle: "Before activity,\nstiff tissue,\na warming spray",
     whatIsAnswer:
       "A warming spray for pre activity, stiff necks, and the end of a long day. Shake, spray, wait. Topical. Read the label before use.",
-    chips: ["Warmup", "Stiff tissue", "Daily tension"],
+    chips: ["Readiness", "Flexibility", "Confidence"],
+    callouts: [
+      "Loosen up first",
+      "Good for tight backs",
+      "A better first set",
+    ],
+    sells: [
+      "Warm up tight muscles before the session instead of stretching cold.",
+      "Heat loosens what cold can't. Use it on the stuff that never quite lets go.",
+      "Start warm and the whole session feels easier.",
+    ],
     packSrc: "/pain-relief/pdp/heat-therapy-spray/pack.png",
     fieldSrc: L.heat.src,
     stills: [L.heat, L.heatHeader, L.yellowApply],
-  },
-  {
-    id: "heat-roll-on",
-    leadTitle: "Targeted areas,\nmidday tension,\na warming roll on",
-    whatIsAnswer:
-      "A warming roll on for joints, necks, and the middle of a workday. Roll, press, wait. Topical. Read the label before use.",
-    chips: ["Targeted", "Midday", "On the go"],
-    packSrc: "/pain-relief/pdp/heat-roll-on/pack.png",
-    fieldSrc: L.heat.src,
-    stills: [L.heatHeader, L.heat, L.track],
-  },
-  {
-    id: "morning-spray",
-    leadTitle: "Stiff mornings,\nthe first hour,\na warming start",
-    whatIsAnswer:
-      "A morning spray for stiff joints and the first hour of the day. Point, spray, let it absorb. Topical. Read the label before use.",
-    chips: ["Mornings", "Warmup", "Post sleep"],
-    packSrc: "/pain-relief/pdp/morning-spray/pack.png",
-    fieldSrc: L.morning.src,
-    stills: [L.morning, L.field, L.portrait],
   },
   {
     id: "evening-spray",
     leadTitle: "The last hour,\nsore muscles,\nan evening spray",
     whatIsAnswer:
       "An evening spray for sore muscles and the last hour of the day. Spray, let it absorb, rest. Topical. Read the label before use.",
-    chips: ["Evening", "Pre bed", "Tired legs"],
+    chips: ["Calm", "Comfort", "Rest"],
+    callouts: [
+      "A gentler scent",
+      "For evening aches",
+      "Part of the bedtime routine",
+    ],
+    sells: [
+      "The day's over and your body's still tense. This is for that hour.",
+      "Soreness always gets louder when you finally sit down.",
+      "Part of the routine before bed, like brushing your teeth.",
+    ],
     packSrc: "/pain-relief/pdp/evening-spray/pack.png",
     fieldSrc: L.evening.src,
     stills: [L.evening, L.blackApply, L.bag],
@@ -467,45 +494,68 @@ const SPECS: readonly PainReliefPdpSpec[] = [
     leadTitle: "Warm up.\nCool down.\nA two spray pair",
     whatIsAnswer:
       "Heat spray and cryotherapy spray together. Warm up before activity. Cool down after. Alternate if you want contrast. Topical. Read the label before use.",
-    chips: ["Warmup", "Cooldown", "Contrast"],
+    chips: ["Readiness", "Recovery", "Balance"],
+    callouts: [
+      "Both ends covered",
+      "The part most people skip",
+      "One kit, whole session",
+    ],
+    sells: [
+      "Heat before, cold after. Two sprays, one kit, the way athletes have done it forever.",
+      "Warm up properly, cool down properly. Most people skip one and feel it.",
+      "Everything you need for a training day, in one go.",
+    ],
     packSrc: "/pain-relief/pdp/hot-cold-system/pack.png",
     fieldSrc: L.hotBack.src,
     stills: [L.hotBack, L.hotLeg, L.ice],
-  },
-  {
-    id: "morning-evening-duo",
-    leadTitle: "Both ends of the day.\nOne pair.",
-    whatIsAnswer:
-      "Morning spray and evening spray in one pair. One for the start of the day. One for the close. Topical. Read the label before use.",
-    chips: ["Morning", "Evening", "Daily rhythm"],
-    packSrc: "/pain-relief/pdp/morning-evening-duo/pack.png",
-    fieldSrc: L.morning.src,
-    stills: [L.morning, L.evening, L.ice],
   },
   {
     id: "rapid-relief-duo",
     leadTitle: "Broad areas.\nJoints by hand.\nA two step kit",
     whatIsAnswer:
       "The cooling spray for broad areas. The cream for joints you want to work in by hand. Topical. Read the label before use.",
-    chips: ["Cooling", "By hand", "Two step"],
+    chips: ["Relief", "Comfort", "Confidence"],
+    callouts: [
+      "Two ways to apply",
+      "Spray the back, rub the knee",
+      "Covered either way",
+    ],
+    sells: [
+      "The spray covers ground fast. The cream goes into the spot that needs hands.",
+      "Spray the whole back, work the cream into the one place that's really angry.",
+      "Two formats, so you're covered either way.",
+    ],
     packSrc: "/pain-relief/pdp/rapid-relief-duo/pack.png",
     fieldSrc: L.howTo.src,
     stills: [L.howTo, L.jar, L.cryo],
   },
-  {
-    id: "performance-recovery",
-    leadTitle: "Hard sessions.\nTight tissue.\nThe close of the day",
-    whatIsAnswer:
-      "Three products in one kit. Max strength for cooling. Heat roll on for tight tissue. Evening spray to close the day. Topical. Read the label before use.",
-    chips: ["Hard sessions", "Tight tissue", "Wind down"],
-    packSrc: "/pain-relief/pdp/performance-recovery/pack.png",
-    fieldSrc: L.gym.src,
-    stills: [L.max, L.heatHeader, L.evening],
-  },
 ];
 
+export function painReliefBarrageWords(
+  id: string,
+): readonly [string, string, string] | undefined {
+  return SPECS.find((spec) => spec.id === id)?.chips;
+}
+
+export function painReliefMenuPreview(id: string): {
+  fieldSrc: string;
+  callouts: readonly { chip: string; body: string }[];
+} | null {
+  const spec = SPECS.find((row) => row.id === id);
+  if (!spec) return null;
+  return {
+    fieldSrc: spec.fieldSrc,
+    callouts: spec.chips.map((chip, index) => ({
+      chip,
+      body: spec.callouts[index],
+    })),
+  };
+}
+
 export const PAIN_RELIEF_PDPS: Record<string, CategoryPdpData> = Object.fromEntries(
-  SPECS.map((spec) => [spec.id, buildPdp(spec)]),
+  SPECS.filter((spec) => painReliefProducts.some((product) => product.id === spec.id)).map(
+    (spec) => [spec.id, buildPdp(spec)],
+  ),
 );
 
-export const PAIN_RELIEF_SLUGS = SPECS.map((spec) => spec.id);
+export const PAIN_RELIEF_SLUGS = painReliefProducts.map((product) => product.id);

@@ -11,6 +11,8 @@ export type ProductFixture = {
   mediaFit?: "cover" | "contain";
   mediaAspect?: string;
   href?: string;
+  /** Still listed. Purchase is closed. */
+  soldOut?: boolean;
 };
 
 export type SubcategoryFixture = {

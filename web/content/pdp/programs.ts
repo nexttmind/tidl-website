@@ -1,3 +1,6 @@
+import { catalogIdFor } from "@/content/catalog/routes";
+import { intakeHref } from "@/content/clinical/entry-map";
+import { catalogVialSrc } from "@/content/fixtures/catalog";
 import { valueFields } from "@/content/fixtures/value-fields";
 import type { CategoryPairingData } from "@/components/category/CategoryPairing";
 import type { ThemeId } from "@/content/brand/peptide-identity";
@@ -29,6 +32,7 @@ type Still = { src: string; label: string; swatch: string };
 
 type ProgramSpec = {
   themeId: ThemeId;
+  catalogId: string;
   slug: string;
   entrySlug: string;
   title: string;
@@ -79,7 +83,7 @@ function benefits(id: ThemeId, stills: readonly Still[]): PdpBenefitItem[] {
 function buildPdp(spec: ProgramSpec): CategoryPdpData {
   const notes = callouts(spec.themeId);
   const card = fieldCard(spec.themeId);
-  const ctaHref = `/care/intake?entry=${spec.entrySlug}`;
+  const ctaHref = intakeHref(spec.entrySlug);
   const [one, two, three] = spec.stills;
 
   return {
@@ -89,10 +93,11 @@ function buildPdp(spec: ProgramSpec): CategoryPdpData {
     category: "Program",
     title: spec.title,
     themeId: spec.themeId,
+    catalogId: spec.catalogId,
     price: "$197",
     compareAtPrice: "$297",
     tagline: spec.tagline,
-    primaryCta: "Get started",
+    primaryCta: "Start your assessment",
     primaryCtaHref: ctaHref,
     body: spec.body,
     payLine: PDP_PAY_LINE,
@@ -159,7 +164,7 @@ function buildPdp(spec: ProgramSpec): CategoryPdpData {
     lead: {
       title: spec.leadTitle,
       body: "Start with a free intake. A licensed clinician reviews your history and decides whether this program is right for you, if prescribed.",
-      cta: { label: "Get started", href: "#buy" },
+      cta: { label: "Start your assessment", href: "#buy" },
       media: {
         id: `pdp.${spec.themeId}.lead`,
         label: "Lead lifestyle",
@@ -173,7 +178,7 @@ function buildPdp(spec: ProgramSpec): CategoryPdpData {
     benefits: {
       headline: "Benefits",
       subtitle: card.lede,
-      cta: { label: "Get started", href: "#buy" },
+      cta: { label: "Start your assessment", href: "#buy" },
       items: benefits(spec.themeId, spec.stills),
     },
     social: PDP_SOCIAL,
@@ -220,7 +225,7 @@ function buildPdp(spec: ProgramSpec): CategoryPdpData {
     pairing: spec.pairing
       ? {
           title: "Complete your routine",
-          cta: { label: "Get started", href: ctaHref },
+          cta: { label: "Start your assessment", href: ctaHref },
           ...spec.pairing,
         }
       : undefined,
@@ -230,6 +235,7 @@ function buildPdp(spec: ProgramSpec): CategoryPdpData {
 const SPECS: readonly ProgramSpec[] = [
   {
     themeId: "athlete",
+    catalogId: "rest-rebuild",
     slug: "athletes",
     entrySlug: "athletes",
     title: "Dynamic Training",
@@ -240,7 +246,7 @@ const SPECS: readonly ProgramSpec[] = [
     leadTitle: "Recovery,\ntissue repair,\nclinician guided care",
     whatIsAnswer:
       "A program for the days between sessions. Tissue, joints, and sleep, reviewed by a physician. Available if prescribed after clinical review. Molecule details appear only after login, inside intake, and on the prescription.",
-    vialSrc: "/pdp/cutouts/athlete.png?v=5",
+    vialSrc: catalogVialSrc("athlete"),
     fieldSrc: "/landing/lifestyle/athlete-field.png",
     heroVideo: "/landing/hero/athletes.mp4",
     heroPoster: "/landing/hero/athletes.jpg",
@@ -273,6 +279,7 @@ const SPECS: readonly ProgramSpec[] = [
   },
   {
     themeId: "creative",
+    catalogId: "focus",
     slug: "creators-and-builders",
     entrySlug: "creators",
     title: "Focus",
@@ -283,7 +290,7 @@ const SPECS: readonly ProgramSpec[] = [
     leadTitle: "Focus,\nrest,\nclinician guided care",
     whatIsAnswer:
       "A program for people who ship creative work. Focus, rest, and the load of chronic pressure, reviewed by a physician. Available if prescribed after clinical review. Molecule details appear only after login, inside intake, and on the prescription.",
-    vialSrc: "/pdp/cutouts/creative.png?v=3",
+    vialSrc: catalogVialSrc("creative"),
     fieldSrc: "/landing/lifestyle/creative-field.png",
     heroVideo: "/landing/hero/creators-and-builders.mp4",
     heroPoster: "/landing/hero/creators-and-builders.jpg",
@@ -295,6 +302,7 @@ const SPECS: readonly ProgramSpec[] = [
   },
   {
     themeId: "executive",
+    catalogId: "mens-peak-performance",
     slug: "ceos-and-executives",
     entrySlug: "executives",
     title: "Peak Performance",
@@ -305,7 +313,7 @@ const SPECS: readonly ProgramSpec[] = [
     leadTitle: "Stamina,\ncomposition,\nclinician guided care",
     whatIsAnswer:
       "A program for high demand calendars. Stamina, composition, and clear decisions across a long day, reviewed by a physician. Available if prescribed after clinical review. Molecule details appear only after login, inside intake, and on the prescription.",
-    vialSrc: "/pdp/cutouts/executive.png?v=3",
+    vialSrc: catalogVialSrc("executive"),
     fieldSrc: "/landing/lifestyle/executive-field.png",
     heroVideo: "/landing/hero/ceos-and-executives.mp4",
     heroPoster: "/landing/hero/ceos-and-executives.jpg",
@@ -317,6 +325,7 @@ const SPECS: readonly ProgramSpec[] = [
   },
   {
     themeId: "legacy",
+    catalogId: "longevity",
     slug: "healthspan",
     entrySlug: "healthspan",
     title: "Healthspan",
@@ -327,7 +336,7 @@ const SPECS: readonly ProgramSpec[] = [
     leadTitle: "Metabolic support,\ncapacity,\nclinician guided care",
     whatIsAnswer:
       "A program for function you still want to use. Metabolic drift, strength, and a physician reading your numbers, not an average. Available if prescribed after clinical review. Molecule details appear only after login, inside intake, and on the prescription.",
-    vialSrc: "/pdp/cutouts/legacy.png?v=6",
+    vialSrc: catalogVialSrc("legacy"),
     fieldSrc: "/landing/lifestyle/legacy-field.png",
     heroVideo: "/landing/hero/healthspan.mp4",
     heroPoster: "/landing/hero/healthspan.jpg",
@@ -339,6 +348,7 @@ const SPECS: readonly ProgramSpec[] = [
   },
   {
     themeId: "parents",
+    catalogId: "stress-mood",
     slug: "parents",
     entrySlug: "parents",
     title: "Stress & Mood",
@@ -349,7 +359,7 @@ const SPECS: readonly ProgramSpec[] = [
     leadTitle: "Energy,\nrest,\nclinician guided care",
     whatIsAnswer:
       "A program for the version of you that still has something left after work and bedtime. Energy, rest, and household load, reviewed by a physician. Available if prescribed after clinical review. Molecule details appear only after login, inside intake, and on the prescription.",
-    vialSrc: "/pdp/cutouts/parents.png?v=3",
+    vialSrc: catalogVialSrc("parents"),
     fieldSrc: "/landing/lifestyle/parents-field.png",
     heroVideo: "/landing/hero/parents.mp4",
     heroPoster: "/landing/hero/parents.jpg",
@@ -361,6 +371,7 @@ const SPECS: readonly ProgramSpec[] = [
   },
   {
     themeId: "traveler",
+    catalogId: "cellular-health",
     slug: "travelers",
     entrySlug: "travelers",
     title: "Jetlag Recovery",
@@ -371,7 +382,7 @@ const SPECS: readonly ProgramSpec[] = [
     leadTitle: "Rhythm,\nrecovery,\nclinician guided care",
     whatIsAnswer:
       "A program that does not pause at the gate. Rhythm, recovery, and continuity across time zones, reviewed by a physician. Available if prescribed after clinical review. Molecule details appear only after login, inside intake, and on the prescription.",
-    vialSrc: "/pdp/cutouts/traveler.png?v=3",
+    vialSrc: catalogVialSrc("traveler"),
     fieldSrc: "/landing/lifestyle/traveler-field.png",
     heroVideo: "/landing/hero/travelers.mp4",
     heroPoster: "/landing/hero/travelers.jpg",

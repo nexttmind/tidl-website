@@ -2,24 +2,42 @@
 
 import {
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
   type ReactNode,
 } from "react";
+import { SoldOutTitle } from "@/components/category/SoldOutTitle";
 import { Button } from "@/components/ui/Button";
 import { usePricingTerms } from "@/components/legal/PricingTermsProvider";
 import { ShopBloomPair } from "@/components/home/ShopBloomPair";
 import { MarketingImage } from "@/components/media/MarketingImage";
+import { optCssImageSet } from "@/lib/media/opt-manifest";
+import {
+  catalogFieldId,
+  pdpStageSrc,
+  shopCatalogItem,
+} from "@/components/home/shop-catalog";
+import {
+  menuBarrageActive,
+  subscribeMenuBarrage,
+} from "@/components/chrome/menu-barrage-session";
+import { stageLockupStyle } from "@/components/home/lockup-vial-fit";
 import { bloomStyle, shopPlate } from "@/components/home/shop-plates";
+import shop from "@/components/home/LandingShop.module.css";
 import { heroTheme, type ThemeId } from "@/content/brand/peptide-identity";
 import { FaqAccordion } from "@/components/pdp/FaqAccordion";
 import { PriceBreakdown } from "@/components/pdp/PriceBreakdown";
+import { PurchaseModule } from "@/components/pdp/PurchaseModule";
 import {
   ProductGallery,
   type GalleryPlate,
 } from "@/components/pdp/ProductGallery";
 import type { PdpPlanOption } from "@/content/pdp/types";
+import { PDP_PAYMENT_NOTE } from "@/content/pdp/pricing";
+import { launchPageExists } from "@/content/pdp/launch-pricing";
+import { usePdpForm } from "@/components/pdp/PdpFormContext";
 import { PromoCallout } from "@/components/pdp/PromoCallout";
 import {
   DiscountNotecard,
@@ -30,6 +48,12 @@ import {
   type TrustIconId,
 } from "@/components/pdp/TrustBadge";
 import styles from "./ProductBuyBox.module.css";
+
+/** Sold out stays a dead button unless the destination is an external store. */
+function buyHref(soldOut: boolean, href: string | undefined) {
+  if (!soldOut) return href;
+  return href?.startsWith("http") ? href : undefined;
+}
 
 type PlanOption = PdpPlanOption;
 type FaqItem = {
@@ -57,10 +81,12 @@ type PromoShape = {
 type ProductBuyBoxProps = {
   title: string;
   stockLabel?: string;
+  soldOut?: boolean;
   price: string;
   compareAtPrice?: string;
   primaryCta: string;
   primaryCtaHref?: string;
+  complianceLine?: string;
   body: string;
   trust: readonly TrustItem[];
   planLabel: string;
@@ -83,17 +109,29 @@ type ProductBuyBoxProps = {
   heroSrc?: string;
   /** Value props around the split vial. */
   heroCallouts?: readonly HeroCallout[];
-  /** Category field for the split right wash. Maps to Figma vial wraps. */
+  /** Category field fallback when no catalog plate exists. */
   themeId?: ThemeId;
+  /** Shop catalog id. Prefer this for vial, bloom, and plate. */
+  catalogId?: string;
+  /** Hero plate, bloom, and cutout. Does not turn on launch purchase. */
+  artId?: string;
   category?: string;
   tagline?: string;
-  /** Highlight buy-box fields that came from PrescribeRx sandbox. */
-  sandboxLive?: boolean;
+  dek?: readonly [string, string];
   payLine?: string;
 };
 
 function clamp01(n: number) {
   return Math.min(1, Math.max(0, n));
+}
+
+function onceOnGrid(text: string): string {
+  return text
+    .replace(/,?\s*if prescribed after clinical review/gi, "")
+    .replace(/,?\s*if prescribed/gi, "")
+    .replace(/\s{2,}/g, " ")
+    .replace(/\s+\./g, ".")
+    .trim();
 }
 
 type DiscountCard = {
@@ -106,11 +144,13 @@ type DiscountCard = {
 
 function DecisionColumn({
   stockLabel,
+  soldOut = false,
   title,
   price,
   compareAtPrice,
   primaryCta,
   primaryCtaHref,
+  complianceLine,
   body,
   trust,
   planLabel,
@@ -119,14 +159,15 @@ function DecisionColumn({
   discount,
   faq,
   disclaimer,
-  sandboxLive,
 }: {
   stockLabel?: string;
+  soldOut?: boolean;
   title: string;
   price: string;
   compareAtPrice?: string;
   primaryCta: string;
   primaryCtaHref: string;
+  complianceLine?: string;
   body: string;
   trust: readonly TrustItem[];
   planLabel: string;
@@ -135,35 +176,24 @@ function DecisionColumn({
   discount: DiscountCard | null;
   faq: readonly FaqItem[];
   disclaimer: string;
-  sandboxLive?: boolean;
 }) {
-  const live = Boolean(sandboxLive);
   return (
     <div className={styles.infoCol}>
       <header className={styles.identity}>
-        {live ? <p className={styles.sandboxMark}>Sandbox</p> : null}
-        {stockLabel ? (
-          <p className={`${styles.stock} ${live ? styles.sandboxValue : ""}`}>
-            {stockLabel}
-          </p>
+        {stockLabel && !soldOut ? (
+          <p className={styles.stock}>{stockLabel}</p>
         ) : null}
         <h1 id="pdp-title" className={styles.title}>
-          {title}
+          {soldOut ? <SoldOutTitle>{title}</SoldOutTitle> : title}
         </h1>
         <p className={styles.body}>{body}</p>
       </header>
 
       <div className={styles.offer}>
         <div className={styles.priceRow}>
-          <p className={`${styles.price} ${live ? styles.sandboxValue : ""}`}>
-            {price}
-          </p>
+          <p className={styles.price}>{price}</p>
           {compareAtPrice ? (
-            <p
-              className={`${styles.compareAt} ${live ? styles.sandboxValue : ""}`}
-            >
-              {compareAtPrice}
-            </p>
+            <p className={styles.compareAt}>{compareAtPrice}</p>
           ) : null}
         </div>
         <div className={styles.plan}>
@@ -181,9 +211,16 @@ function DecisionColumn({
       </div>
 
       <div className={styles.action}>
-        <Button href={primaryCtaHref} className={styles.cta}>
+        <Button
+          href={buyHref(soldOut, primaryCtaHref)}
+          disabled={!buyHref(soldOut, primaryCtaHref)}
+          className={styles.cta}
+        >
           {primaryCta}
         </Button>
+        {complianceLine ? (
+          <p className={styles.compliance}>{complianceLine}</p>
+        ) : null}
         <ul className={styles.trust}>
           {trust.map((item) => (
             <li key={item.text}>
@@ -213,39 +250,43 @@ function DecisionColumn({
 }
 
 function SplitDecision({
+  catalogId,
   category,
   title,
+  soldOut = false,
   price,
   compareAtPrice,
   tagline,
+  dek,
   body,
   planLabel,
   planOptions,
   primaryCta,
   primaryCtaHref,
+  complianceLine,
   payLine,
   disclaimer,
   media,
-  stockLabel,
-  sandboxLive,
 }: {
+  catalogId?: string;
   category?: string;
   title: string;
+  soldOut?: boolean;
   price: string;
   compareAtPrice?: string;
   tagline?: string;
+  dek?: readonly [string, string];
   body: string;
   planLabel: string;
   planOptions: readonly PlanOption[];
   primaryCta: string;
   primaryCtaHref: string;
+  complianceLine?: string;
   payLine?: string;
   disclaimer: string;
   media?: ReactNode;
-  stockLabel?: string;
-  sandboxLive?: boolean;
 }) {
-  const live = Boolean(sandboxLive);
+  const launch = Boolean(catalogId && launchPageExists(catalogId));
   const chips = planOptions.filter((option) => option.value);
   const [plan, setPlan] = useState(
     () =>
@@ -265,116 +306,115 @@ function SplitDecision({
   return (
     <div className={styles.splitCopy}>
       <div className={styles.splitLead}>
-        {live ? <p className={styles.sandboxMark}>Sandbox</p> : null}
         {category ? <p className={styles.splitCategory}>{category}</p> : null}
-        {stockLabel ? (
-          <p
-            className={`${styles.stock} ${live ? styles.sandboxValue : ""}`}
-          >
-            {stockLabel}
+        <h1 id="pdp-title" className={styles.splitTitle}>
+          {soldOut ? <SoldOutTitle>{title}</SoldOutTitle> : title}
+        </h1>
+        {dek ? (
+          <p className={styles.splitDek} data-pdp-dek="">
+            <span>{dek[0]}</span> <span>{dek[1]}</span>
           </p>
         ) : null}
-        <h1 id="pdp-title" className={styles.splitTitle}>
-          {title}
-        </h1>
-        <div className={styles.splitPriceRow} aria-live="polite">
-          <p
-            className={`${styles.splitPrice} ${live ? styles.sandboxValue : ""}`}
-          >
-            {offerPrice}
-            {cadence ? (
-              <span className={styles.splitCadence}>{cadence}</span>
-            ) : null}
-          </p>
-          {afterPrice ? (
-            <p
-              className={`${styles.splitAfter} ${live ? styles.sandboxValue : ""}`}
-            >
-              {afterPrice}
-              {afterCadence ? (
-                <span className={styles.splitCadence}>{afterCadence}</span>
+        {launch ? null : (
+          <div className={styles.splitPriceRow} aria-live="polite">
+            <p className={styles.splitPrice}>
+              {offerPrice}
+              {cadence ? (
+                <span className={styles.splitCadence}>{cadence}</span>
               ) : null}
             </p>
-          ) : null}
-          {offerCompare ? (
-            <p
-              className={`${styles.splitCompare} ${live ? styles.sandboxValue : ""}`}
-            >
-              {offerCompare}
-            </p>
-          ) : null}
-        </div>
+            {afterPrice ? (
+              <p className={styles.splitAfter}>
+                {afterPrice}
+                {afterCadence ? (
+                  <span className={styles.splitCadence}>{afterCadence}</span>
+                ) : null}
+              </p>
+            ) : null}
+            {offerCompare ? (
+              <p className={styles.splitCompare}>{offerCompare}</p>
+            ) : null}
+          </div>
+        )}
       </div>
       {media}
       <div className={styles.splitRest}>
         {tagline ? (
-          <p
-            className={`${styles.splitTagline} ${live ? styles.sandboxValue : ""}`}
-          >
-            {tagline}
-          </p>
+          <p className={styles.splitTagline}>{onceOnGrid(tagline)}</p>
         ) : null}
-        <p className={styles.splitBody}>{body}</p>
+        <p className={styles.splitBody}>{onceOnGrid(body)}</p>
 
-        {chips.length > 0 ? (
-          <div className={styles.splitPlan}>
-            <p className={styles.splitPlanLabel} id="pdp-plan-label">
-              {planLabel}
-            </p>
-            <div
-              className={styles.splitChips}
-              role="group"
-              aria-labelledby="pdp-plan-label"
+        {launch && catalogId ? (
+          <PurchaseModule catalogId={catalogId} ctaHref={primaryCtaHref} />
+        ) : (
+          <>
+            {chips.length > 0 ? (
+              <div className={styles.splitPlan}>
+                <p className={styles.splitPlanLabel} id="pdp-plan-label">
+                  {planLabel}
+                </p>
+                <div
+                  className={styles.splitChips}
+                  role="group"
+                  aria-labelledby="pdp-plan-label"
+                >
+                  {chips.map((option) => {
+                    const selectedChip = plan === option.value;
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
+                        className={[
+                          styles.splitChip,
+                          selectedChip ? styles.splitChipOn : "",
+                        ]
+                          .filter(Boolean)
+                          .join(" ")}
+                        aria-pressed={selectedChip}
+                        aria-label={
+                          option.saveLabel
+                            ? `${option.label}, ${option.saveLabel} if prescribed`
+                            : option.label
+                        }
+                        onClick={() => setPlan(option.value)}
+                      >
+                        {option.saveLabel ? (
+                          <span className={styles.splitSave} aria-hidden>
+                            <span className={styles.splitSaveAmt}>{option.saveLabel}</span>
+                          </span>
+                        ) : null}
+                        {option.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : null}
+
+            <Button
+              href={buyHref(soldOut, primaryCtaHref)}
+              disabled={!buyHref(soldOut, primaryCtaHref)}
+              className={[styles.splitCta, styles.splitCtaFrost].join(" ")}
             >
-              {chips.map((option) => {
-                const selected = plan === option.value;
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    className={[
-                      styles.splitChip,
-                      selected ? styles.splitChipOn : "",
-                    ]
-                      .filter(Boolean)
-                      .join(" ")}
-                    aria-pressed={selected}
-                    aria-label={
-                      option.saveLabel
-                        ? `${option.label}, ${option.saveLabel} if prescribed`
-                        : option.label
-                    }
-                    onClick={() => setPlan(option.value)}
-                  >
-                    {option.saveLabel ? (
-                      <span className={styles.splitSave} aria-hidden>
-                        <span className={styles.splitSaveAmt}>{option.saveLabel}</span>
-                      </span>
-                    ) : null}
-                    {option.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        ) : null}
-
-        <Button href={primaryCtaHref} className={[styles.splitCta, styles.splitCtaFrost].join(" ")}>
-          <span className={styles.splitCtaLabel}>{primaryCta}</span>
-          {selected ? (
-            <span className={styles.splitCtaSupply}>{selected.label}</span>
-          ) : null}
-        </Button>
-        {offerPay ? <p className={styles.splitPay}>{offerPay}</p> : null}
+              <span className={styles.splitCtaLabel}>{primaryCta}</span>
+              {selected ? (
+                <span className={styles.splitCtaSupply}>{selected.label}</span>
+              ) : null}
+            </Button>
+            {complianceLine ? (
+              <p className={styles.splitCompliance}>{complianceLine}</p>
+            ) : null}
+            {offerPay ? <p className={styles.splitPay}>{offerPay}</p> : null}
+            <p className={styles.splitPay}>{PDP_PAYMENT_NOTE}</p>
+          </>
+        )}
         <details className={styles.splitTerms}>
           <summary className={styles.splitTermsSummary}>Price details</summary>
-          {selected?.first ? <PriceBreakdown plan={selected} /> : null}
+          {!launch && selected?.first ? <PriceBreakdown plan={selected} /> : null}
           <p className={styles.splitDisclaimer}>{disclaimer}</p>
-          {selected?.first ? (
-            <button type="button" className={styles.splitSafety} onClick={openModal}>
-              Full price and cancellation terms
-            </button>
-          ) : null}
+          <button type="button" className={styles.splitSafety} onClick={openModal}>
+            Full price and cancellation terms
+          </button>
         </details>
       </div>
     </div>
@@ -384,10 +424,12 @@ function SplitDecision({
 export function ProductBuyBox({
   title,
   stockLabel,
+  soldOut = false,
   price,
   compareAtPrice,
   primaryCta,
   primaryCtaHref = "#how",
+  complianceLine,
   body,
   trust,
   planLabel,
@@ -399,20 +441,32 @@ export function ProductBuyBox({
   stickyMedia = false,
   layout = "default",
   heroSrc,
-  heroCallouts,
   themeId,
+  catalogId,
+  artId,
   category,
   tagline,
-  sandboxLive,
+  dek,
   payLine,
 }: ProductBuyBoxProps) {
   const scrollRootRef = useRef<HTMLElement>(null);
   const splitMediaRef = useRef<HTMLDivElement>(null);
-  const [progress, setProgress] = useState(0);
+  const art = artId ? shopCatalogItem(artId) : undefined;
+  const fieldKey = art ? undefined : catalogFieldId(catalogId, themeId);
+  const tokenKey = artId ?? fieldKey;
+  const pdpForm = usePdpForm();
+  const stageForm =
+    catalogId && pdpForm?.catalogId === catalogId ? pdpForm.form : undefined;
+  const formStage =
+    catalogId && pdpForm?.catalogId === catalogId ? pdpForm.heroSrc : undefined;
+  const stageSrc =
+    formStage ??
+    (artId ? pdpStageSrc(artId) : catalogId ? pdpStageSrc(catalogId) : undefined);
+  const stageFormRef = useRef(stageForm);
+  const [stageReplay, setStageReplay] = useState(false);
+  const [condensed, setCondensed] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [splitExpanded, setSplitExpanded] = useState(false);
-  const condensed = progress >= 0.98;
-
   const promoText =
     typeof promo === "string"
       ? promo
@@ -446,59 +500,182 @@ export function ProductBuyBox({
   }, [stickyMedia]);
 
   useEffect(() => {
-    if (layout !== "split" || !heroCallouts?.length) return;
+    if (layout !== "split") return;
+    const narrow = window.matchMedia("(width < 1025px)");
+    const root = document.documentElement;
+    const lock = () => {
+      if (!narrow.matches) {
+        root.style.removeProperty("--screen-w");
+        root.removeAttribute("data-screen-lock");
+        return;
+      }
+      const vv = window.visualViewport;
+      const w = Math.round(Math.min(root.clientWidth, vv?.width ?? root.clientWidth));
+      root.style.setProperty("--screen-w", `${w}px`);
+      root.setAttribute("data-screen-lock", "");
+    };
+    lock();
+    narrow.addEventListener("change", lock);
+    window.addEventListener("resize", lock);
+    window.visualViewport?.addEventListener("resize", lock);
+    return () => {
+      narrow.removeEventListener("change", lock);
+      window.removeEventListener("resize", lock);
+      window.visualViewport?.removeEventListener("resize", lock);
+      root.style.removeProperty("--screen-w");
+      root.removeAttribute("data-screen-lock");
+    };
+  }, [layout]);
+
+  useLayoutEffect(() => {
+    if (layout !== "split") return;
     const media = splitMediaRef.current;
     if (!media) return;
-    const narrowMq = window.matchMedia("(width < 1025px)");
 
-    let timer = 0;
-    let cancelled = false;
-    const sync = () => {
-      if (narrowMq.matches) return;
-      const mediaRect = media.getBoundingClientRect();
-      if (mediaRect.width < 2 || mediaRect.height < 2) return;
-      const origin = mediaRect;
-      media.style.setProperty("--field-w", `${origin.width}px`);
-      media.style.setProperty("--field-h", `${origin.height}px`);
-      const sample = (ink: HTMLElement) => {
-        const callout = ink.closest("li");
-        const shown =
-          !callout || parseFloat(getComputedStyle(callout).opacity) > 0.8;
-        const rect = ink.getBoundingClientRect();
-        ink.style.setProperty("--chip-x", `${rect.left - origin.left}px`);
-        ink.style.setProperty("--chip-y", `${rect.top - origin.top}px`);
-        if (shown) ink.dataset.sampled = "true";
-      };
-      media.querySelectorAll<HTMLElement>("[data-chip-ink]").forEach(sample);
+    const narrow = window.matchMedia("(width < 1025px)");
+    let frame = 0;
+    let observed: Element | null = null;
+    let ro: ResizeObserver;
+
+    const measure = () => {
+      const host = media.querySelector<HTMLElement>("[data-glass-host]");
+      const vial = media.querySelector<HTMLElement>("[data-bloom-vial]");
+      if (!host) return;
+      if (vial && vial !== observed) {
+        if (observed) ro.unobserve(observed);
+        ro.observe(vial);
+        observed = vial;
+      }
+      if (!vial || !narrow.matches) {
+        host.style.removeProperty("--glass-w");
+        host.style.removeProperty("--glass-h");
+        host.style.removeProperty("--glass-x");
+        host.style.removeProperty("--glass-y");
+        media.style.removeProperty("--media-tuck");
+        media.parentElement?.style.removeProperty("--art-drop");
+        return;
+      }
+      const rect = vial.getBoundingClientRect();
+      const hostRect = host.getBoundingClientRect();
+      const hostCs = getComputedStyle(host);
+      const transform = getComputedStyle(vial).transform;
+      let sx = 1;
+      let sy = 1;
+      if (transform && transform !== "none") {
+        const matrix = new DOMMatrix(transform);
+        if (matrix.a) sx = matrix.a;
+        if (matrix.d) sy = matrix.d;
+      }
+      const span = Number.parseFloat(hostCs.getPropertyValue("--lockup-vial-span"));
+      const aspect = Number.parseFloat(hostCs.getPropertyValue("--lockup-vial-aspect"));
+      const mid = Number.parseFloat(hostCs.getPropertyValue("--lockup-vial-mid"));
+      const imageW = rect.width / sx;
+      const imageH = rect.height / sy;
+      let w = imageW;
+      let h = imageH;
+      let cx = rect.left + rect.width / 2;
+      let cy = rect.top + rect.height / 2;
+      if (span > 0 && aspect > 0 && mid > 0) {
+        h = imageH * span;
+        w = h * aspect;
+        cx = rect.left + rect.width / 2;
+        cy = rect.top + rect.height * mid;
+      }
+      if (w < 2 || h < 2) return;
+      // Same frame for the vial and the pen. The pen plate is measured
+      // from the drawn vial, which is seated at the isolate size.
+      // The pill is square, so the vial's wide plate leaves long side
+      // gaps. Match the top and bottom gap on the left and right.
+      // Sprays, creams, the pill, and the kit are wider than a vial.
+      // Size their wash from the vial aspect, then use the vial plate.
+      const plateH = Math.round(h * 1.28);
+      const pill = host.getAttribute("data-bloom") === "sexual-health";
+      const bundle = host.getAttribute("data-kind") === "bundle";
+      const vialAspect = 402 / 924;
+      const drawW =
+        !pill && !bundle && w / h > vialAspect ? h * vialAspect : w;
+      let plateW = pill ? Math.round(w + (plateH - h)) : Math.round(drawW * 2.5);
+      const sideInset = 16;
+      if (bundle) {
+        plateW = Math.min(plateW, Math.max(0, window.innerWidth - sideInset * 2));
+      }
+      cx -= hostRect.left;
+      cy -= hostRect.top;
+      let glassX = cx - plateW / 2;
+      if (bundle) {
+        const minX = sideInset - hostRect.left;
+        const maxX = window.innerWidth - sideInset - plateW - hostRect.left;
+        glassX = Math.min(Math.max(glassX, minX), maxX);
+      }
+      host.style.setProperty("--glass-w", `${plateW}px`);
+      host.style.setProperty("--glass-h", `${plateH}px`);
+      host.style.setProperty("--glass-x", `${glassX}px`);
+      host.style.setProperty("--glass-y", `${cy - plateH / 2}px`);
+      const copy = media.parentElement;
+      if (copy) {
+        const mediaRect = media.getBoundingClientRect();
+        /* An off-screen rect makes the plate slack nonsense. Keep the last tuck. */
+        if (mediaRect.bottom < 0 || mediaRect.top > window.innerHeight) return;
+        const plateBottom = hostRect.top + cy + plateH / 2;
+        const slack = mediaRect.bottom - plateBottom;
+        /* Tuck closes the empty band under the plate. It does not depend on
+         * scroll. --art-drop used to push the vial back below the header by
+         * growing margin-top from the scroll position. Scroll anchoring added
+         * that same delta back into scrollY, so the two chased until the cap
+         * and the hero shuddered. Leave the margin alone. */
+        if (copy.style.getPropertyValue("--art-drop")) {
+          copy.style.removeProperty("--art-drop");
+        }
+        const nextTuck = Math.max(0, Math.min(240, Math.round(slack)));
+        const tuckNow =
+          Number.parseFloat(getComputedStyle(media).getPropertyValue("--media-tuck")) || 0;
+        if (Math.abs(nextTuck - tuckNow) > 1) {
+          media.style.setProperty("--media-tuck", `${nextTuck}px`);
+          schedule();
+        }
+      }
     };
-    const queue = (delay = 40) => {
-      window.clearTimeout(timer);
-      timer = window.setTimeout(sync, delay);
+
+    const schedule = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(measure);
     };
 
-    const onTransitionEnd = () => queue();
-    const onPointerEnter = () => queue(760);
-    const onResize = () => queue();
+    const info = media.closest("section");
+    const cover = () => {
+      if (!narrow.matches || !info) return;
+      const vv = window.visualViewport;
+      const laid = Math.ceil(
+        Math.max(window.innerHeight, vv?.height ?? 0, document.documentElement.clientHeight),
+      );
+      info.style.setProperty("--field-cover", `${laid}px`);
+    };
 
-    const ro = new ResizeObserver(onResize);
+    ro = new ResizeObserver(schedule);
     ro.observe(media);
-    media.addEventListener("transitionend", onTransitionEnd);
-    media.addEventListener("pointerenter", onPointerEnter);
-    window.addEventListener("resize", onResize);
-    void document.fonts.ready.then(() => {
-      if (!cancelled) queue(splitExpanded ? 760 : 40);
-    });
-    queue(splitExpanded ? 760 : 40);
-
+    schedule();
+    cover();
+    media.addEventListener("load", schedule, true);
+    media.addEventListener("transitionend", schedule);
+    media.addEventListener("animationend", schedule);
+    const settled = window.setTimeout(schedule, 1700);
+    narrow.addEventListener("change", schedule);
+    window.addEventListener("scroll", cover, { passive: true });
+    window.visualViewport?.addEventListener("resize", cover);
+    window.visualViewport?.addEventListener("scroll", cover);
     return () => {
-      cancelled = true;
-      window.clearTimeout(timer);
+      cancelAnimationFrame(frame);
+      window.clearTimeout(settled);
       ro.disconnect();
-      media.removeEventListener("transitionend", onTransitionEnd);
-      media.removeEventListener("pointerenter", onPointerEnter);
-      window.removeEventListener("resize", onResize);
+      media.removeEventListener("load", schedule, true);
+      media.removeEventListener("transitionend", schedule);
+      media.removeEventListener("animationend", schedule);
+      narrow.removeEventListener("change", schedule);
+      window.removeEventListener("scroll", cover);
+      window.visualViewport?.removeEventListener("resize", cover);
+      window.visualViewport?.removeEventListener("scroll", cover);
     };
-  }, [layout, heroCallouts, splitExpanded, themeId]);
+  }, [layout, stageSrc]);
 
   useEffect(() => {
     if (layout !== "split") return;
@@ -515,20 +692,52 @@ export function ProductBuyBox({
     const narrow = window.matchMedia("(width < 1025px)").matches;
 
     if (narrow) {
-      setSplitExpanded(true);
-      return;
+      let cancelled = false;
+      let imagesReady = false;
+      const play = () => {
+        if (cancelled || !imagesReady || menuBarrageActive()) return;
+        setSplitExpanded(true);
+      };
+      const imgs = Array.from(media.querySelectorAll("img"));
+      const pending = imgs.filter((img) => !(img.complete && img.naturalWidth > 0));
+      const unsub = subscribeMenuBarrage(play);
+      if (pending.length === 0) {
+        imagesReady = true;
+        play();
+        return () => {
+          cancelled = true;
+          unsub();
+        };
+      }
+      let left = pending.length;
+      const done = () => {
+        left -= 1;
+        if (left > 0) return;
+        imagesReady = true;
+        play();
+      };
+      for (const img of pending) {
+        if (img.complete) {
+          done();
+          continue;
+        }
+        img.addEventListener("load", done, { once: true });
+        img.addEventListener("error", done, { once: true });
+      }
+      return () => {
+        cancelled = true;
+        unsub();
+        for (const img of pending) {
+          img.removeEventListener("load", done);
+          img.removeEventListener("error", done);
+        }
+      };
     }
 
     if (hoverMq.matches) {
-      let hovered = false;
-      const onEnter = () => {
-        hovered = true;
-        window.clearTimeout(timer);
-      };
+      const onEnter = () => setSplitExpanded(true);
       media.addEventListener("pointerenter", onEnter);
-      const timer = window.setTimeout(() => {
-        if (!hovered) setSplitExpanded(true);
-      }, 5000);
+      const timer = window.setTimeout(() => setSplitExpanded(true), 5000);
       return () => {
         window.clearTimeout(timer);
         media.removeEventListener("pointerenter", onEnter);
@@ -559,6 +768,26 @@ export function ProductBuyBox({
     };
   }, [layout]);
 
+  useLayoutEffect(() => {
+    if (layout !== "split") return;
+    const previous = stageFormRef.current;
+    stageFormRef.current = stageForm;
+    if (previous == null || previous === stageForm) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setStageReplay(false);
+      setSplitExpanded(true);
+      return;
+    }
+
+    setStageReplay(true);
+    setSplitExpanded(false);
+    const timer = window.setTimeout(() => {
+      setStageReplay(false);
+      setSplitExpanded(true);
+    }, 48);
+    return () => window.clearTimeout(timer);
+  }, [layout, stageForm]);
+
   useEffect(() => {
     if (!stickyMedia) return;
     const root = scrollRootRef.current;
@@ -571,7 +800,7 @@ export function ProductBuyBox({
         `${document.documentElement.clientWidth}px`,
       );
       root.style.setProperty("--buy-frame-h", `${window.innerHeight}px`);
-      setProgress(1);
+      setCondensed(true);
       return;
     }
 
@@ -592,7 +821,7 @@ export function ProductBuyBox({
       /* Morph over first ~55vh of section scroll; sticky media continues after. */
       const travel = Math.max(window.innerHeight * 0.55, 1);
       const next = clamp01(-rect.top / travel);
-      setProgress(next);
+      setCondensed(next >= 0.98);
       root.style.setProperty("--buy-p", next.toFixed(4));
     };
 
@@ -625,11 +854,13 @@ export function ProductBuyBox({
   const decision = (
     <DecisionColumn
       stockLabel={stockLabel}
+      soldOut={soldOut}
       title={title}
       price={price}
       compareAtPrice={compareAtPrice}
       primaryCta={primaryCta}
       primaryCtaHref={primaryCtaHref}
+      complianceLine={complianceLine}
       body={body}
       trust={trust}
       planLabel={planLabel}
@@ -638,17 +869,33 @@ export function ProductBuyBox({
       discount={discount}
       faq={faq}
       disclaimer={disclaimer}
-      sandboxLive={sandboxLive}
     />
   );
 
   if (layout === "split") {
     const field = themeId ? heroTheme(themeId) : null;
+    const catalog = art ?? shopCatalogItem(catalogId ?? themeId ?? "");
     const plate = themeId ? shopPlate(themeId) : null;
-    const fieldStyle = field
+    const bloom = catalog?.bloom ?? plate?.bloom;
+    const lockupStyle =
+      stageForm === "vial-pen" && catalog
+        ? stageLockupStyle(catalog.id, catalog.kind, catalog.vialSrc, catalog.penLockupSrc)
+        : undefined;
+    const plateSrc = catalog?.plateSrc ?? plate?.plateSrc;
+    const paintKey = artId ?? fieldKey;
+    const platePaint =
+      !paintKey && plateSrc
+        ? ({ backgroundImage: optCssImageSet(plateSrc, 1920) } as CSSProperties)
+        : undefined;
+    const nightPaint = paintKey
+      ? "var(--field-image)"
+      : plateSrc
+        ? optCssImageSet(plateSrc, 1920)
+        : field?.night.css;
+    const fieldStyle = nightPaint
       ? ({
-          "--theme-night": field.night.css,
-          "--theme-primary": field.night.primary,
+          "--theme-night": nightPaint,
+          "--theme-primary": field?.night.primary,
         } as CSSProperties)
       : undefined;
 
@@ -656,48 +903,41 @@ export function ProductBuyBox({
       <div
         ref={splitMediaRef}
         className={styles.splitMedia}
+        data-split-media=""
         data-expanded={splitExpanded ? "true" : undefined}
+        data-stage-replay={stageReplay ? "" : undefined}
+        style={bloom ? bloomStyle(bloom) : undefined}
       >
-        {heroSrc && plate ? (
+        {heroSrc && (catalog || plate) && bloom ? (
           <>
-            <span className={styles.splitFieldExpand} aria-hidden>
-              <span className={styles.splitFieldGrain} />
-            </span>
+            <span
+              className={styles.splitFieldExpand}
+              aria-hidden
+              data-catalog-field={paintKey}
+              style={platePaint}
+            />
             <div
-              className={styles.splitBloomHost}
-              data-bloom={plate.id}
-              style={bloomStyle(plate.bloom)}
+              className={`${styles.splitBloomHost} ${shop.bloomSeated}`}
+              data-glass-host=""
+              data-bloom={catalog?.id ?? plate?.id}
+              data-kind={catalog?.kind}
+              data-stage-lockup={lockupStyle ? "" : undefined}
+              style={lockupStyle}
             >
-              <span className={styles.splitGlassCard} aria-hidden />
+              <span className={styles.splitGlassCard} data-glass-plate="" aria-hidden />
               <div className={styles.splitStage}>
                 <ShopBloomPair
-                  vialSrc={heroSrc}
-                  bloomSrc={plate.bloomSrc}
+                  vialSrc={stageSrc ?? catalog?.vialSrc ?? heroSrc}
+                  bloomSrc={catalog?.bloomSrc ?? plate?.bloomSrc ?? ""}
+                  showBloom
                   alt={title}
+                  loading="eager"
+                  fetchPriority="high"
+                  sizes="(width < 721px) 92vw, (width < 1025px) 72vw, 760px"
+                  vialSizes="(width < 721px) 84vw, (width < 1025px) 52vw, 460px"
                 />
               </div>
             </div>
-            {heroCallouts && heroCallouts.length > 0 ? (
-              <ul className={styles.splitCallouts} aria-hidden>
-                {heroCallouts.map((item, index) => (
-                  <li
-                    key={item.chip}
-                    className={styles.splitCallout}
-                    data-side={item.side}
-                    data-anchor={item.anchor}
-                    style={{ "--callout-i": index } as CSSProperties}
-                  >
-                    <span className={styles.splitCalloutChip}>
-                      <span className={styles.splitCalloutChipInk} data-chip-ink="">
-                        {item.chip}
-                      </span>
-                    </span>
-                    <span className={styles.splitCalloutStem} />
-                    <p className={styles.splitCalloutBody}>{item.body}</p>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
           </>
         ) : heroSrc ? (
           <MarketingImage
@@ -718,35 +958,44 @@ export function ProductBuyBox({
         id="buy"
         aria-labelledby="pdp-title"
         data-theme={field?.id}
+        data-catalog-tokens={tokenKey}
         style={fieldStyle}
       >
         <div
           className={styles.splitInfo}
-          data-field={field ? "true" : undefined}
+          data-field={nightPaint ? "true" : undefined}
         >
-          {field ? (
+          {nightPaint ? (
             <>
-              <div className={styles.splitField} aria-hidden />
-              <div className={styles.splitGrain} aria-hidden />
-              <div className={styles.splitGlass} aria-hidden />
+              <div
+                className={styles.splitField}
+                aria-hidden
+                data-catalog-field={paintKey}
+                data-pain-header={art ? "true" : undefined}
+                style={platePaint}
+              />
+              {fieldKey || art ? null : <div className={styles.splitGrain} aria-hidden />}
+              <div className={styles.splitGlass} aria-hidden data-split-glass="" />
             </>
           ) : null}
           <SplitDecision
+            catalogId={catalogId}
             category={category}
             title={title}
+            soldOut={soldOut}
             price={price}
             compareAtPrice={compareAtPrice}
             tagline={tagline}
+            dek={dek}
             body={body}
             planLabel={planLabel}
             planOptions={planOptions}
             primaryCta={primaryCta}
             primaryCtaHref={primaryCtaHref}
+            complianceLine={complianceLine}
             payLine={payLine}
             disclaimer={disclaimer}
             media={splitMedia}
-            stockLabel={stockLabel}
-            sandboxLive={sandboxLive}
           />
         </div>
       </section>
@@ -768,10 +1017,6 @@ export function ProductBuyBox({
     );
   }
 
-  const cardStyle = {
-    "--buy-p": progress.toFixed(4),
-  } as CSSProperties;
-
   return (
     <section
       ref={scrollRootRef}
@@ -785,7 +1030,7 @@ export function ProductBuyBox({
       aria-labelledby="pdp-title"
       data-condensed={condensed ? "true" : "false"}
     >
-      <div className={styles.card} style={cardStyle}>
+      <div className={styles.card}>
         <div className={styles.columnsMorph}>
           <div className={styles.mediaTrack}>
             <div className={styles.mediaMorph}>{galleryNode}</div>

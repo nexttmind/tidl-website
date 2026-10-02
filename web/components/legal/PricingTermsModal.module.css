@@ -116,7 +116,7 @@
   }
 }
 
-@media (max-width: 720px) {
+@media (width < 721px) {
   .root {
     padding: 16px 12px;
   }

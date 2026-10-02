@@ -16,13 +16,13 @@ export const PDP_CARE_TERMS = {
   inclusionsOral:
     "If prescribed, this supply includes your oral plan, shipping, clinician review, and ongoing care through the portal.",
   firstAndOngoing:
-    "First month pricing is the amount due today if prescribed. Ongoing pricing is what you pay at each renewal for the supply you chose. A single order has no renewal.",
+    "First month pricing is what you pay after a clinician prescribes. Ongoing pricing is what you pay at each renewal for the supply you chose. A single order has no renewal.",
   renewals:
     "Monthly, quarterly, and six month supplies renew at the end of the period you chose unless you cancel first. You receive a reminder before each renewal. The renewal charge is the ongoing price for that supply, not the first month price.",
   cancellation:
     "Cancel any time in the portal or by writing care. Cancel before the next renewal and you are not charged for the next period. There is no cancellation fee. The current period is not refunded once the pharmacy has released the fill. You can pause instead of cancel if you want the next fill later.",
   notPrescribed:
-    "Intake is free. You are charged when you place the order. If a clinician does not prescribe, you are refunded in full, including the member price and the prescription price, and any renewal is cancelled. You keep portal access to the decision.",
+    "Intake is free. Payment is collected after a clinician reviews your intake and, if prescribed, the pharmacy is ready to fill. If a clinician does not prescribe, you are not charged. You keep portal access to the decision.",
   commitmentIntro:
     "There is no annual lock. Your commitment is the current period you selected. After that, you renew only if you have not cancelled.",
 } as const;
@@ -126,6 +126,9 @@ export const PDP_PLAN_OPTIONS: readonly PdpPlanOption[] = [
     billed: "$822 due today if prescribed for six months.",
   },
 ];
+
+export const PDP_PAYMENT_NOTE =
+  "Payment is collected after a clinician reviews your intake and, if prescribed, the pharmacy is ready to fill. You then pay for the prescription and care.";
 
 export const PDP_PAY_LINE =
   "First month $197 if prescribed. Then $177 each month.\nMember and prescription listed below.";

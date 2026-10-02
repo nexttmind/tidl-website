@@ -1,8 +1,10 @@
 /** Ask TIDL AI — catalog, starters, and answer routing. Goal framed. No molecule names. */
 
+import { catalogHref } from "@/content/catalog/routes";
 import {
   CATALOG_HREF,
   catalogMenuPairSrc,
+  catalogProductSrc,
   catalogVialSrc,
 } from "@/content/fixtures/catalog";
 import {
@@ -19,9 +21,17 @@ export type CatalogLink = {
   keywords: readonly string[];
   /** Mega menu thumb. Isolated vial, transparent plate. */
   imageSrc?: string;
-  /** Title language line under the label in the mega menu. */
+  /** Apex-derived short description under the label in the mega menu. */
   navSubtitle?: string;
 };
+
+export type MegaMenuGroup = {
+  id: string;
+  title: string;
+  items: readonly CatalogLink[];
+};
+
+export const LABS_HREF = "/labs";
 
 export type AskAnswer = {
   paragraphs: readonly string[];
@@ -36,7 +46,7 @@ export const TREATMENTS: readonly CatalogLink[] = [
     label: "Weight Loss",
     href: "/treatments/weight-loss",
     blurb: "Feel in control of hunger, cravings, and what comes next.",
-    navSubtitle: "Quiet The Food Noise",
+    navSubtitle: "Appetite, satiety, and metabolic control",
     imageSrc: catalogVialSrc("weight-loss"),
     keywords: ["weight", "metabolic", "appetite", "food noise", "body composition"],
   },
@@ -45,43 +55,43 @@ export const TREATMENTS: readonly CatalogLink[] = [
     label: "Sexual Health",
     href: "/treatments/sexual-health",
     blurb: "Private care for better intimacy and confidence.",
-    navSubtitle: "Have Better Sex",
+    navSubtitle: "Desire and performance, for men and women",
     imageSrc: catalogVialSrc("sexual-health"),
     keywords: ["sexual", "intimacy", "libido", "erectile"],
   },
   {
     id: "mens-health",
-    label: "Energy & Strength",
+    label: "Men's Peak Performance",
     href: "/treatments/mens-health",
     blurb: "Wake up with energy, drive, and room to recover.",
-    navSubtitle: "Take Back Your Mornings",
+    navSubtitle: "Energy, strength and drive as one protocol",
     imageSrc: catalogVialSrc("mens-health"),
     keywords: ["testosterone", "trt", "hormone", "low t", "energy", "strength", "men"],
   },
   {
     id: "womens-balance",
-    label: "Balance & Beauty",
+    label: "Women's Total Balance",
     href: "/treatments/womens-balance",
     blurb: "Care that keeps pace with every hormonal chapter.",
-    navSubtitle: "Steady Through Every Shift",
+    navSubtitle: "A GLP 1 program with cellular and lipotropic support",
     imageSrc: catalogVialSrc("womens-balance"),
     keywords: ["women", "woman", "perimenopause", "menopause", "cycle", "balance", "beauty"],
   },
   {
     id: "recovery-performance",
-    label: "Recovery & Performance",
+    label: "Repair & Mobility",
     href: "/treatments/recovery-and-performance",
     blurb: "Bounce back faster between the sessions that matter.",
-    navSubtitle: "Recover Ready For More",
+    navSubtitle: "Repair and mobility for tissue under load",
     imageSrc: catalogVialSrc("recovery-performance"),
     keywords: ["recovery", "performance", "training", "soreness", "muscle"],
   },
   {
     id: "skin-hair",
-    label: "Skin & Hair",
+    label: "Hair, Skin & Nails",
     href: "/treatments/skin-and-hair",
     blurb: "Clarity in the mirror. Density you can feel.",
-    navSubtitle: "Glow Inside And Out",
+    navSubtitle: "Hair you want to keep, with skin and nail support",
     imageSrc: catalogVialSrc("skin-hair"),
     keywords: ["skin", "hair", "acne", "thinning"],
   },
@@ -91,9 +101,9 @@ export const PROGRAMS: readonly CatalogLink[] = [
   {
     id: "executives",
     label: "Peak Performance",
-    href: "/programs/ceos-and-executives",
+    href: "/treatments/mens-health",
     blurb: "High output care for people who live in meetings.",
-    navSubtitle: "Find Peak Performance",
+    navSubtitle: "Energy, strength and drive as one protocol",
     imageSrc: catalogVialSrc("executive"),
     keywords: ["ceo", "executive", "founder", "leadership", "board"],
   },
@@ -102,7 +112,7 @@ export const PROGRAMS: readonly CatalogLink[] = [
     label: "Appetite Balance",
     href: "/stacks/transformation",
     blurb: "A full reset for mind, body, and the days between.",
-    navSubtitle: "Time To Transform",
+    navSubtitle: "Body composition, appetite, and healthy aging",
     imageSrc: catalogVialSrc("transformation"),
     keywords: ["transformation", "mind", "body", "reset", "change", "appetite"],
   },
@@ -111,7 +121,7 @@ export const PROGRAMS: readonly CatalogLink[] = [
     label: "Healthspan",
     href: "/programs/healthspan",
     blurb: "Care built for the years you want to feel capable.",
-    navSubtitle: "Build Your Legacy",
+    navSubtitle: "Metabolic support, capacity, and a physician reading your numbers",
     imageSrc: catalogVialSrc("legacy"),
     keywords: ["healthspan", "longevity", "aging", "legacy"],
   },
@@ -120,16 +130,16 @@ export const PROGRAMS: readonly CatalogLink[] = [
     label: "Stress & Mood",
     href: "/programs/parents",
     blurb: "Care that respects sleep debt, school runs, and real life.",
-    navSubtitle: "Create Balance",
+    navSubtitle: "Mood, stress, and clearer days",
     imageSrc: catalogVialSrc("parents"),
     keywords: ["parent", "parents", "mom", "dad", "family", "stress", "mood"],
   },
   {
     id: "athletes",
-    label: "Dynamic Training",
+    label: "Rest & Rebuild",
     href: "/programs/athletes",
     blurb: "Train hard. Recover harder. Show up ready.",
-    navSubtitle: "Train Harder",
+    navSubtitle: "Recovery, repair and sleep between sessions",
     imageSrc: catalogVialSrc("athlete"),
     keywords: ["athlete", "athletes", "sport", "compete", "training", "improve"],
   },
@@ -138,18 +148,9 @@ export const PROGRAMS: readonly CatalogLink[] = [
     label: "Focus",
     href: "/programs/creators-and-builders",
     blurb: "Focus and stamina for people who ship creative work.",
-    navSubtitle: "Find Your Focus",
+    navSubtitle: "Sustained attention and rest on a hard schedule",
     imageSrc: catalogVialSrc("creative"),
     keywords: ["creator", "creative", "builder", "maker", "studio", "focus"],
-  },
-  {
-    id: "travelers",
-    label: "Jetlag Recovery",
-    href: "/programs/travelers",
-    blurb: "Stay steady across time zones, flights, and long trips.",
-    navSubtitle: "Travel With Ease",
-    imageSrc: catalogVialSrc("traveler"),
-    keywords: ["travel", "traveler", "flight", "jet lag", "timezone"],
   },
 ] as const;
 
@@ -159,9 +160,9 @@ export const PAIN_RELIEF: CatalogLink = {
   label: painReliefCopy.title,
   href: PAIN_RELIEF_HREF,
   blurb: painReliefCopy.lede,
-  navSubtitle: "For Sore Days",
+  navSubtitle: "Sore tissue and everyday inflammation",
   imageSrc: painReliefMenuSrc,
-  keywords: ["pain", "sore", "topical", "spray", "cream", "roll on"],
+  keywords: ["pain", "sore", "topical", "spray", "cream"],
 };
 
 /** Footer Treatments column. Health goals first, then lifestyle programs, then topicals. */
@@ -177,15 +178,328 @@ export const CATALOG_INDEX: CatalogLink = {
   label: "All Treatments",
   href: CATALOG_HREF,
   blurb: "Health goals and treatments in one catalog.",
-  navSubtitle: "Browse The Catalog",
+  navSubtitle: "Health goals and treatments in one place",
   imageSrc: catalogMenuPairSrc,
   keywords: ["all", "catalog", "browse", "treatments"],
 };
 
-/** Treatments mega menu. Same as the footer list, plus the catalog index. */
-export const MEGA_MENU_ITEMS: readonly CatalogLink[] = [
-  ...ALL_TREATMENTS,
-  CATALOG_INDEX,
+function catalogById(list: readonly CatalogLink[], id: string): CatalogLink {
+  const item = list.find((row) => row.id === id);
+  if (!item) {
+    throw new Error(`Missing catalog link: ${id}`);
+  }
+  return item;
+}
+
+function menuLink(
+  base: CatalogLink,
+  patch: Pick<CatalogLink, "id" | "label"> & Partial<CatalogLink>,
+): CatalogLink {
+  return { ...base, ...patch };
+}
+
+const sexualHealthGoal = catalogById(TREATMENTS, "sexual-health");
+const transformationGoal = catalogById(PROGRAMS, "transformation");
+const healthspanGoal = catalogById(PROGRAMS, "healthspan");
+
+export const COMPOUND_VIAL = {
+  "glp-1": "/landing/shop/vials/compounds/glp-1.png",
+  tirzepatide: catalogProductSrc("tirzepatide"),
+  semaglutide: catalogProductSrc("semaglutide"),
+  testosterone: "/landing/shop/vials/compounds/testosterone.png",
+  tesamorelin: catalogProductSrc("tesamorelin"),
+  nad: "/landing/shop/vials/compounds/nad.png",
+  sermorelin: catalogProductSrc("sermorelin"),
+  glutathione: "/landing/shop/vials/compounds/glutathione.png",
+  "pt-141": "/landing/shop/vials/compounds/pt-141.png",
+  b12: catalogProductSrc("b12"),
+  "lipo-c": catalogProductSrc("lipo-c"),
+  "methylene-blue": catalogProductSrc("methylene-blue"),
+  "at-home-lab": catalogProductSrc("at-home-lab"),
+  "body-composition": catalogProductSrc("body-composition"),
+  "complete-stack": catalogProductSrc("complete-stack"),
+  "lean-cut": catalogProductSrc("lean-cut"),
+  "sexual-health": catalogProductSrc("sexual-health"),
+} as const;
+
+/** Ids with a ground plate in /landing/catalog/plates. A plate does not imply a vial. */
+const COMPOUND_PLATE = [
+  "glp-1",
+  "tirzepatide",
+  "semaglutide",
+  "testosterone",
+  "tesamorelin",
+  "nad",
+  "sermorelin",
+  "glutathione",
+  "methylene-blue",
+  "pt-141",
+  "b12",
+  "lipo-c",
+  "body-composition",
+  "complete-stack",
+  "lean-cut",
+  "sexual-health",
+  "at-home-lab",
+  "pain-relief",
+  "weight-loss",
+  "transformation",
+  "mens-health",
+  "recovery-performance",
+  "athletes",
+  "travelers",
+  "healthspan",
+  "creators",
+  "parents",
+  "womens-balance",
+  "skin-hair",
+] as const;
+
+export type CompoundPlateId = (typeof COMPOUND_PLATE)[number];
+
+export function compoundPlateId(id: string): CompoundPlateId | undefined {
+  return (COMPOUND_PLATE as readonly string[]).includes(id)
+    ? (id as CompoundPlateId)
+    : undefined;
+}
+
+const tirzepatideItem = menuLink(transformationGoal, {
+  id: "tirzepatide",
+  label: "Tirzepatide",
+  href: "/products/tirzepatide",
+  navSubtitle: "Dual action appetite support, physician guided",
+  imageSrc: COMPOUND_VIAL.tirzepatide,
+  keywords: [...transformationGoal.keywords, "tirzepatide"],
+});
+
+const semaglutideItem: CatalogLink = {
+  id: "semaglutide",
+  label: "Semaglutide",
+  href: "/products/semaglutide",
+  blurb: "Physician guided GLP 1 care, if prescribed.",
+  navSubtitle: "Appetite support, physician guided",
+  imageSrc: COMPOUND_VIAL.semaglutide,
+  keywords: ["semaglutide", "glp", "weight"],
+};
+
+const tesamorelinItem = menuLink(healthspanGoal, {
+  id: "tesamorelin",
+  label: "Tesamorelin",
+  href: "/products/tesamorelin",
+  navSubtitle: "A body composition protocol, physician guided",
+  imageSrc: COMPOUND_VIAL.tesamorelin,
+  keywords: [...healthspanGoal.keywords, "tesamorelin"],
+});
+
+const sermorelinItem: CatalogLink = {
+  id: "sermorelin",
+  label: "Sermorelin",
+  href: "/products/sermorelin",
+  blurb: "Physician guided longevity care, if prescribed.",
+  navSubtitle: "Supports your body's own rhythm, taken at night",
+  imageSrc: COMPOUND_VIAL.sermorelin,
+  keywords: ["sermorelin", "longevity", "healthspan"],
+};
+
+export const LABS_ITEM: CatalogLink = {
+  id: "at-home-lab",
+  label: "MD Reviewed Blood Test",
+  href: LABS_HREF,
+  blurb: "A single-use collection device shipped to you. Portal results in 72 hours.",
+  navSubtitle: "Results In 72 Hours",
+  imageSrc: COMPOUND_VIAL["at-home-lab"],
+  keywords: ["lab", "blood", "test", "panel", "reddrop"],
+};
+
+const b12Item: CatalogLink = {
+  id: "b12",
+  label: "B12",
+  href: "/products/b12",
+  blurb: "Physician guided cellular health care, if prescribed.",
+  navSubtitle: "Weekly B12, physician guided",
+  imageSrc: COMPOUND_VIAL.b12,
+  keywords: ["b12", "b 12", "cellular", "energy"],
+};
+
+const methyleneBlueItem: CatalogLink = {
+  id: "methylene-blue",
+  label: "Methylene Blue",
+  href: "/products/methylene-blue",
+  blurb: "Physician guided cellular health care, if prescribed.",
+  navSubtitle: "A daily capsule for focus, physician guided",
+  imageSrc: COMPOUND_VIAL["methylene-blue"],
+  keywords: ["methylene blue", "meth blue", "cellular", "longevity"],
+};
+
+const lipoCItem: CatalogLink = {
+  id: "lipo-c",
+  label: "Lipo C",
+  href: "/products/lipo-c",
+  blurb: "Physician guided metabolic care, if prescribed.",
+  navSubtitle: "Weekly lipotropic support, physician guided",
+  imageSrc: COMPOUND_VIAL["lipo-c"],
+  keywords: ["lipo", "lipo c", "weight", "metabolic"],
+};
+
+const bodyCompositionItem = menuLink(transformationGoal, {
+  id: "body-composition",
+  label: "Body Composition",
+  href: "/treatments/body-composition",
+  navSubtitle: "Composition and recovery",
+  imageSrc: COMPOUND_VIAL["body-composition"],
+  keywords: [...transformationGoal.keywords, "composition", "bundle"],
+});
+
+const completeStackItem: CatalogLink = {
+  id: "complete-stack",
+  label: "Complete Stack",
+  href: "/treatments/complete-stack",
+  blurb: "Physician guided stacked care, if prescribed.",
+  navSubtitle: "Energy, repair, and metabolic care in one protocol",
+  imageSrc: COMPOUND_VIAL["complete-stack"],
+  keywords: ["complete", "stack", "bundle", "protocol"],
+};
+
+const leanCutItem: CatalogLink = {
+  id: "lean-cut",
+  label: "Lean & Cut",
+  href: "/treatments/lean-cut",
+  blurb: "Physician guided body composition care, if prescribed.",
+  navSubtitle: "Dual action weight loss with hormone support",
+  imageSrc: COMPOUND_VIAL["lean-cut"],
+  keywords: ["lean", "cut", "bundle", "weight"],
+};
+
+const sexualHealthBundle = menuLink(sexualHealthGoal, {
+  id: "sexual-health",
+  label: "Sexual Health",
+  imageSrc: COMPOUND_VIAL["sexual-health"],
+});
+
+const bloodTestItem = menuLink(LABS_ITEM, {
+  id: "at-home-lab",
+  label: "MD Reviewed Blood Test",
+});
+
+/**
+ * Header Treatments dropdown. Products, bundles, and treatments from
+ * Figma 1785:120977. Hrefs go to the catalog PDP for that item. Footer
+ * and Ask TIDL stay goal framed.
+ */
+export const MEGA_MENU_GROUPS: readonly MegaMenuGroup[] = [
+  {
+    id: "products",
+    title: "Products",
+    items: [
+      tirzepatideItem,
+      semaglutideItem,
+      b12Item,
+      lipoCItem,
+      methyleneBlueItem,
+      sermorelinItem,
+      tesamorelinItem,
+      bloodTestItem,
+    ],
+  },
+  {
+    id: "bundles",
+    title: "Product Bundles",
+    items: [
+      {
+        id: "head-start",
+        label: "Head Start",
+        href: catalogHref("head-start"),
+        blurb: "Physician stacked momentum, appetite, and energy, if prescribed.",
+        navSubtitle: "GLP 1 starter, with a molecule choice",
+        imageSrc: catalogProductSrc("head-start"),
+        keywords: ["head", "start", "bundle"],
+      },
+      {
+        id: "rest-rise",
+        label: "Rest & Rise",
+        href: catalogHref("rest-rise"),
+        blurb: "Physician stacked overnight repair and morning energy, if prescribed.",
+        navSubtitle: "Rest, repair, and rise",
+        imageSrc: catalogProductSrc("rest-rise"),
+        keywords: ["rest", "rise", "bundle"],
+      },
+      {
+        id: "energy-lift",
+        label: "Energy Lift",
+        href: catalogHref("energy-lift"),
+        blurb: "Physician stacked energy and stamina, if prescribed.",
+        navSubtitle: "Energy, stamina, and focus",
+        imageSrc: catalogProductSrc("energy-lift"),
+        keywords: ["energy", "lift", "bundle"],
+      },
+      bodyCompositionItem,
+      menuLink(catalogById(PROGRAMS, "transformation"), {
+        id: "appetite-balance",
+        label: "Appetite Balance",
+      }),
+      menuLink(catalogById(PROGRAMS, "creators"), {
+        id: "focus",
+        label: "Focus",
+      }),
+    ],
+  },
+  {
+    id: "treatments",
+    title: "Treatments",
+    items: [
+      catalogById(TREATMENTS, "weight-loss"),
+      menuLink(catalogById(TREATMENTS, "womens-balance"), {
+        id: "womens-total-balance",
+        label: "Women's Total Balance",
+      }),
+      leanCutItem,
+      completeStackItem,
+      menuLink(catalogById(TREATMENTS, "mens-health"), {
+        id: "mens-peak-performance",
+        label: "Men's Peak Performance",
+      }),
+      catalogById(TREATMENTS, "sexual-health"),
+      menuLink(catalogById(TREATMENTS, "recovery-performance"), {
+        id: "repair-mobility",
+        label: "Repair & Mobility",
+      }),
+      menuLink(catalogById(PROGRAMS, "athletes"), {
+        id: "rest-rebuild",
+        label: "Rest & Rebuild",
+        navSubtitle: "Recovery, repair and sleep between sessions",
+      }),
+      menuLink(catalogById(PROGRAMS, "healthspan"), {
+        id: "longevity",
+        label: "Longevity",
+      }),
+      menuLink(catalogById(PROGRAMS, "parents"), {
+        id: "stress-mood",
+        label: "Stress & Mood",
+      }),
+      menuLink(catalogById(TREATMENTS, "skin-hair"), {
+        id: "hair-skin-nails",
+        label: "Hair, Skin & Nails",
+      }),
+    ],
+  },
+];
+
+export const MEGA_MENU_ITEMS: readonly CatalogLink[] = MEGA_MENU_GROUPS.flatMap(
+  (group) => group.items,
+);
+
+/**
+ * Homepage header notecards. Figma product row from 1785:120977.
+ */
+export const HEADER_NOTECARDS: readonly CatalogLink[] = [
+  tirzepatideItem,
+  semaglutideItem,
+  b12Item,
+  lipoCItem,
+  methyleneBlueItem,
+  sermorelinItem,
+  tesamorelinItem,
+  bloodTestItem,
 ];
 
 export const SUGGESTED_QUESTIONS = [

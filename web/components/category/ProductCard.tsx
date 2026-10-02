@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/Button";
 import { MediaSlot } from "@/components/media/MediaSlot";
+import { SoldOutTitle } from "@/components/category/SoldOutTitle";
 import type { ProductFixture } from "@/content/fixtures/hand-and-body";
 import styles from "./ProductCard.module.css";
 
@@ -24,13 +25,23 @@ export function ProductCard({ product }: { product: ProductFixture }) {
       </div>
       <div className={styles.body}>
         <h3 className={styles.name}>
-          <a href={href}>{product.name}</a>
+          {product.soldOut ? (
+            <SoldOutTitle>
+              <a href={href}>{product.name}</a>
+            </SoldOutTitle>
+          ) : (
+            <a href={href}>{product.name}</a>
+          )}
         </h3>
         <p className={styles.meta}>{product.meta}</p>
         <p className={styles.price}>{product.price}</p>
         <div className={styles.actions}>
-          <Button href={href} className={styles.cta}>
-            Shop
+          <Button
+            href={product.soldOut ? undefined : href}
+            disabled={product.soldOut}
+            className={styles.cta}
+          >
+            {product.soldOut ? "Sold out" : "Shop"}
           </Button>
         </div>
       </div>

@@ -1,57 +1,74 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { ShopBloomPair } from "@/components/home/ShopBloomPair";
-import { bloomStyle, shopPlate } from "@/components/home/shop-plates";
+import { shopCatalogItem } from "@/components/home/shop-catalog";
+import { bloomStyle } from "@/components/home/shop-plates";
 import shop from "@/components/home/LandingShop.module.css";
-import {
-  CLINICAL_ENTRIES,
-  intakeHref,
-  symptomsIntakeHref,
-} from "@/content/clinical/entry-map";
-import {
-  CATALOG_PRICE,
-  catalogNotecardCopy,
-} from "@/content/fixtures/catalog";
-import type { ValueFieldCard } from "@/content/fixtures/value-fields";
+import { catalogHref, catalogRoute } from "@/content/catalog/routes";
+import { intakeHref, symptomsIntakeHref } from "@/content/clinical/entry-map";
+import { catalogPriceLine } from "@/content/pdp/launch-pricing";
+import { CATALOG_NOTECARD_BODY } from "@/content/pdp/catalog";
 import styles from "./CatalogNotecard.module.css";
 
-function intakeForItem(item: ValueFieldCard): string {
-  const entry = CLINICAL_ENTRIES.find((row) => row.sourceHref === item.href);
-  return entry ? intakeHref(entry.slug) : symptomsIntakeHref();
+const CROSS_ICON = "/landing/section-2/icons/cross.svg";
+
+function intakeForId(id: string): string {
+  const route = catalogRoute(id);
+  if (!route || id === "at-home-lab") return catalogHref(id);
+  if (id === "pain-relief") return "/pain-relief";
+  return intakeHref(route.entrySlug) || symptomsIntakeHref();
 }
 
 type CatalogNotecardProps = {
-  item: ValueFieldCard;
+  id: string;
+  label: string;
 };
 
-export function CatalogNotecard({ item }: CatalogNotecardProps) {
-  const headingId = `${item.id}-note`;
-  const copy = catalogNotecardCopy(item.id);
-  const plate = shopPlate(item.id);
+export function CatalogNotecard({ id, label }: CatalogNotecardProps) {
+  const headingId = `${id}-note`;
+  const item = shopCatalogItem(id);
+  if (!item) return null;
+  const body = CATALOG_NOTECARD_BODY[id] ?? item.label;
+  const href = catalogHref(id);
+  const price = catalogPriceLine(id);
 
   return (
     <article
       className={`${styles.card} ${shop.bloomHost}`}
       aria-labelledby={headingId}
-      data-bloom={item.id}
-      style={bloomStyle(plate.bloom)}
+      data-bloom={id}
+      data-kind={item.kind}
+      style={bloomStyle(item.bloom)}
     >
       <div className={styles.media}>
-        <ShopBloomPair vialSrc={plate.vialSrc} bloomSrc={plate.bloomSrc} />
+        <ShopBloomPair
+          vialSrc={item.vialSrc}
+          bloomSrc={item.bloomSrc}
+          sizes="(width < 721px) 78vw, (width < 1025px) 70vw, 640px"
+          vialSizes="(width < 721px) 72vw, (width < 1025px) 46vw, 400px"
+        />
       </div>
       <div className={styles.body}>
         <h3 id={headingId} className={styles.kicker}>
           <span className={styles.kickerIcon}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={item.iconSrc} alt="" width={28} height={28} />
+            <img src={CROSS_ICON} alt="" width={28} height={28} />
           </span>
-          {item.pill}
+          {label}
         </h3>
-        <p className={styles.lede}>{copy.body}</p>
-        <p className={styles.price}>{CATALOG_PRICE}</p>
+        <p className={styles.lede}>{body}</p>
+        {price ? <p className={styles.price}>{price}</p> : null}
         <div className={styles.actions}>
-          <Button href={intakeForItem(item)} className={styles.cta}>
-            Get Started
+          <Button href={intakeForId(id)} className={styles.cta}>
+            {id === "pain-relief"
+              ? "Shop Pain Relief"
+              : id === "at-home-lab"
+                ? "Order kit"
+                : "Get started"}
           </Button>
+          <Link href={href} className={styles.view}>
+            View
+          </Link>
         </div>
       </div>
     </article>

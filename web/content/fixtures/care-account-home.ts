@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Logged-in account home. Demo sample data, not live PHI.
  * Named agents allowed: portal boundary after physician review.
  */
@@ -144,7 +144,7 @@ function deliveredOrder(
     tracking: {
       carrier: "UPS",
       number: `1Z ${id.slice(-6)} 03 0000 0001`,
-      shipTo: "90405 · Santa Monica, CA",
+      shipTo: "90405 ┬╖ Santa Monica, CA",
       events: [
         {
           label: "Order confirmed",
@@ -191,7 +191,7 @@ function currentOrderFrom(protocol: CareProtocolOrder): AccountOrder {
     tracking: {
       carrier: "UPS",
       number: "1Z 884 103 03 2391 4412",
-      shipTo: "Ocean Ave · Santa Monica, CA 90405",
+      shipTo: "Ocean Ave ┬╖ Santa Monica, CA 90405",
       events: [
         {
           label: "Order confirmed",

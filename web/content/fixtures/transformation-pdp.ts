@@ -1,5 +1,6 @@
 /** Transformation stack PDP. Goal framed. No molecule names. No outcome claims. */
 
+import { catalogVialSrc } from "@/content/fixtures/catalog";
 import type { CategoryPdpData } from "@/content/pdp/types";
 import {
   PDP_CARE_STAGES,
@@ -20,20 +21,20 @@ import {
 
 const CALLOUTS = [
   {
-    chip: "Appetite",
-    body: "Built for food noise that has been running the day",
+    chip: "Freedom",
+    body: "When food takes up too much room",
     side: "left" as const,
     anchor: "cap" as const,
   },
   {
-    chip: "Muscle",
-    body: "Built for losing fat without giving up lean mass",
+    chip: "Simplicity",
+    body: "More than a number on the scale",
     side: "right" as const,
     anchor: "label" as const,
   },
   {
-    chip: "Guidance",
-    body: "Built for a physician adjusting the protocol as you go",
+    chip: "Care",
+    body: "Months, not weeks",
     side: "left" as const,
     anchor: "base" as const,
   },
@@ -49,6 +50,7 @@ export const transformationPdp: CategoryPdpData = {
   category: "Stack",
   title: "Appetite Balance",
   themeId: "transformation",
+  catalogId: "appetite-balance",
   price: "$197",
   compareAtPrice: "$297",
   tagline: "Physician guided GLP 1 stack",
@@ -56,7 +58,7 @@ export const transformationPdp: CategoryPdpData = {
   primaryCtaHref: CTA_HREF,
   body: "Appetite, composition, and the months it takes, if prescribed after clinical review. Delivered through the TIDL Flow pen from a US based compounding pharmacy.",
   payLine: PDP_PAY_LINE,
-  heroSrc: "/pdp/cutouts/transformation.png?v=4",
+  heroSrc: catalogVialSrc("transformation"),
   heroCallouts: CALLOUTS,
   trust: PDP_TRUST,
   planLabel: PDP_PLAN_LABEL,
@@ -138,36 +140,36 @@ export const transformationPdp: CategoryPdpData = {
     cta: { label: "Get started", href: "#buy" },
     items: [
       {
-        title: "Appetite",
+        title: "Freedom",
         description:
           "The day has been organized around the next meal. This stack is built to change that, with a physician on the protocol, not another set of rules.",
         media: {
           id: "pdp.transformation.benefit-1",
-          label: "Appetite",
+          label: "Freedom",
           swatch: "#1e241f",
           note: "Dressed",
           src: "/landing/imagery/transformation/01-getting-dressed.png",
         },
       },
       {
-        title: "Muscle",
+        title: "Simplicity",
         description:
-          "Keep the shape you trained for. The protocol treats composition as the job, not a side effect of eating less.",
+          "One plan instead of a system of rules. The protocol takes the tracking and the math off the day.",
         media: {
           id: "pdp.transformation.benefit-2",
-          label: "Muscle",
+          label: "Simplicity",
           swatch: "#6b6662",
           note: "Fabric",
           src: "/landing/imagery/transformation/02-fabric-crop.png",
         },
       },
       {
-        title: "Guidance",
+        title: "Care",
         description:
           "A physician stays in it after the first month. Dose, pace, and hold points move with how you actually respond.",
         media: {
           id: "pdp.transformation.benefit-3",
-          label: "Guidance",
+          label: "Care",
           swatch: "#454237",
           note: "Dresser",
           src: "/landing/imagery/transformation/03-dresser.png",

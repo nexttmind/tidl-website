@@ -1,6 +1,8 @@
 /*
  * Full-bleed 50/50 seam (matches PdpLeadSplit / HowItWorks / Quality).
  * Left: sticky title stack. Right: benefit rows only — never in the left half.
+ * Desktop no longer renders this section; the campaign barrage replaced it.
+ * The phone / tablet full-screen benefit cards below 1025 are unchanged.
  */
 
 .root {
@@ -314,5 +316,13 @@
 @media (prefers-reduced-motion: reduce) {
   .intro {
     position: static;
+  }
+}
+
+/* Desktop replaced by the campaign barrage. Keep after the unscoped base so
+ * it wins the display cascade. */
+@media (width >= 1025px) {
+  .root {
+    display: none;
   }
 }

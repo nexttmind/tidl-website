@@ -17,6 +17,8 @@ import {
 } from "@/content/fixtures/categories";
 import { symptomsCta } from "@/content/clinical/entry-map";
 import { Button } from "@/components/ui/Button";
+import { MarketingImage } from "@/components/media/MarketingImage";
+import { optImgSrc, optVideoSrc } from "@/lib/media/opt-manifest";
 import styles from "./LandingCategory.module.css";
 
 const openCareCta = symptomsCta();
@@ -246,6 +248,7 @@ export function LandingCategory({
   /** Skip transitions while snapping back to the default clip before replay. */
   const [instant, setInstant] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [isCompact, setIsCompact] = useState(false);
   const [scrim, setScrim] = useState<ProtocolScrim>({
     fadePx: 48,
     mid: 0.62,
@@ -264,6 +267,14 @@ export function LandingCategory({
     categories.findIndex((c) => c.slug === activeSlug),
   );
   const active = categories[activeIndex];
+  const leavingSlugRef = useRef(activeSlug);
+  const [leavingSlug, setLeavingSlug] = useState(activeSlug);
+
+  useEffect(() => {
+    if (leavingSlugRef.current === activeSlug) return;
+    setLeavingSlug(leavingSlugRef.current);
+    leavingSlugRef.current = activeSlug;
+  }, [activeSlug]);
 
   const clearSeq = useCallback(() => {
     if (seqRef.current !== null) {
@@ -274,11 +285,16 @@ export function LandingCategory({
 
   useEffect(() => {
     const motionMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const compactMq = window.matchMedia("(width < 1025px)");
     const syncMotion = () => setReduceMotion(motionMq.matches);
+    const syncCompact = () => setIsCompact(compactMq.matches);
     syncMotion();
+    syncCompact();
     motionMq.addEventListener("change", syncMotion);
+    compactMq.addEventListener("change", syncCompact);
     return () => {
       motionMq.removeEventListener("change", syncMotion);
+      compactMq.removeEventListener("change", syncCompact);
     };
   }, []);
 
@@ -439,6 +455,7 @@ export function LandingCategory({
             <div className={styles.notecardClip}>
               {categories.map((category) => {
                 const isActive = category.slug === active.slug;
+                const showMedia = isActive || category.slug === leavingSlug;
                 return (
                 <div
                   key={category.slug}
@@ -446,29 +463,28 @@ export function LandingCategory({
                   data-active={isActive ? "true" : "false"}
                   aria-hidden={!isActive}
                 >
-                  {category.heroVideo && !reduceMotion ? (
+                  {showMedia && isActive && category.heroVideo && !reduceMotion ? (
                     <video
                       key={category.heroVideo}
-                      src={category.heroVideo}
-                      poster={category.heroSrc}
+                      src={
+                        optVideoSrc(category.heroVideo, isCompact ? 720 : 1080) ??
+                        category.heroVideo
+                      }
+                      poster={optImgSrc(category.heroSrc, isCompact ? 800 : 1600)}
                       muted
                       loop
                       playsInline
-                      autoPlay={isActive}
-                      ref={(el) => {
-                        if (!el) return;
-                        if (isActive) {
-                          void el.play().catch(() => undefined);
-                        } else {
-                          el.pause();
-                          el.currentTime = 0;
-                        }
-                      }}
+                      autoPlay
+                      preload="metadata"
                     />
-                  ) : (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img src={category.heroSrc} alt="" />
-                  )}
+                  ) : showMedia ? (
+                    <MarketingImage
+                      src={category.heroSrc}
+                      alt=""
+                      sizes="100vw"
+                      loading={isActive ? "eager" : "lazy"}
+                    />
+                  ) : null}
                 </div>
                 );
               })}

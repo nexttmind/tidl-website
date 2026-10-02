@@ -340,14 +340,14 @@
   color: var(--care-text-tertiary, rgba(255, 255, 255, 0.42));
 }
 
-@media (max-width: 520px) {
+@media (width < 721px) {
   .reviewList li {
     grid-template-columns: 1fr;
     gap: var(--space-1);
   }
 }
 
-@media (min-width: 901px) {
+@media (width >= 1025px) {
   .actionsRow {
     display: flex;
     justify-content: center;

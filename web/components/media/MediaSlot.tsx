@@ -1,5 +1,5 @@
 import { MarketingImage } from "@/components/media/MarketingImage";
-import { optVideoSrc } from "@/lib/media/opt-manifest";
+import { optImgSrc, optVideoSrc } from "@/lib/media/opt-manifest";
 import styles from "./MediaSlot.module.css";
 
 type MediaSlotProps = {
@@ -51,7 +51,12 @@ export function MediaSlot({
   const useFill = fill || aspect === "auto";
   const hasMedia = Boolean(src || videoSrc);
   const boost = vivid ?? (hasMedia && fit === "cover");
-  const mobileVideo = videoSrc ? optVideoSrc(videoSrc) : undefined;
+  const mobileVideo = videoSrc ? optVideoSrc(videoSrc, 720) : undefined;
+  const desktopVideo = videoSrc
+    ? (optVideoSrc(videoSrc, 1080) ?? videoSrc)
+    : undefined;
+  const posterSrc = poster ?? src;
+  const posterOpt = posterSrc ? optImgSrc(posterSrc, 1200) : undefined;
 
   return (
     <div
@@ -79,7 +84,7 @@ export function MediaSlot({
       {videoSrc ? (
         <video
           className={styles.media}
-          poster={poster ?? src}
+          poster={posterOpt}
           autoPlay
           muted
           loop
@@ -90,7 +95,7 @@ export function MediaSlot({
           {mobileVideo ? (
             <source src={mobileVideo} media="(width < 1025px)" />
           ) : null}
-          <source src={videoSrc} />
+          <source src={desktopVideo ?? videoSrc} />
         </video>
       ) : src ? (
         <MarketingImage

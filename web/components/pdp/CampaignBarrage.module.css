@@ -1,92 +1,135 @@
+/*
+ * Scroll-driven campaign stills, all widths.
+ * Every beat is full bleed cover. Wide plates swap in on desktop when
+ * a 16:9 derivative exists.
+ */
+
 .root {
-  display: none;
+  --beat: 28vh;
+  position: relative;
+  display: block;
+  /* Break out of .layout-frame so stills run the real viewport, not 1728. */
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  height: calc(var(--beats) * var(--beat));
+  background: var(--color-night);
+  overflow-anchor: none;
+  box-sizing: border-box;
 }
 
-@media (721px <= width < 1025px) {
+.pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  background: var(--color-night);
+}
+
+.backdrop {
+  position: absolute;
+  inset: -28px;
+  width: calc(100% + 56px);
+  height: calc(100% + 56px);
+  object-fit: cover;
+  object-position: center;
+  filter: blur(22px) saturate(1.04) brightness(0.52);
+  transform: scale(1.06);
+  pointer-events: none;
+}
+
+.frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+}
+
+/* Desktop editorial captions: one benefit per third of the run, fitted to
+ * the full section width by the component, crossfading between beats. */
+.captions {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  padding-inline: var(--layout-gutter);
+  box-sizing: border-box;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.caption {
+  grid-area: 1 / 1;
+  margin: 0;
+  width: 100%;
+  font-family: var(--font-display);
+  /* Base before the fit routine measures; JS overrides inline. */
+  font-size: calc(8vw * var(--font-display-scale));
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--text-inverse);
+  text-shadow: 0 2px 44px color-mix(in srgb, var(--color-night) 60%, transparent);
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 460ms ease,
+    transform 760ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.caption[data-active="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+.captionInk {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.mark {
+  position: absolute;
+  left: var(--layout-gutter);
+  bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
+  z-index: 2;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  color: var(--text-inverse);
+}
+
+@media (width < 1025px) {
   .root {
-    --beat: 28vh;
-    display: block;
-    position: relative;
-    height: calc(var(--beats) * var(--beat));
-    background: var(--color-night);
-    overflow-anchor: none;
-  }
-
-  .pin {
-    position: sticky;
-    top: 0;
-    height: 100svh;
-    overflow: hidden;
-    background: var(--color-night);
-  }
-
-  .still {
-    position: absolute;
-    inset: 0;
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    opacity: 1;
-    pointer-events: none;
+    max-width: 100%;
+    margin-left: 0;
   }
 
-  .mark {
-    position: absolute;
-    left: var(--layout-gutter);
-    bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
-    z-index: 1;
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 0.14em;
-    line-height: 1;
-    color: var(--text-inverse);
+  .backdrop {
+    display: none;
   }
 }
 
 @media (width < 721px) {
   .root {
     --beat: 24vh;
-    display: block;
-    position: relative;
-    height: calc(var(--beats) * var(--beat));
-    background: var(--color-night);
-    overflow-anchor: none;
-  }
-
-  .pin {
-    position: sticky;
-    top: 0;
-    height: 100svh;
-    overflow: hidden;
-    background: var(--color-night);
-  }
-
-  .still {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    opacity: 1;
-    pointer-events: none;
-  }
-
-  .mark {
-    position: absolute;
-    left: var(--layout-gutter);
-    bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
-    z-index: 1;
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 0.14em;
-    line-height: 1;
-    color: var(--text-inverse);
   }
 }
 
@@ -99,18 +142,59 @@
     position: relative;
     height: auto;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(4, 1fr);
     gap: 2px;
   }
 
+  .backdrop {
+    display: none;
+  }
+
+  .captions {
+    display: none;
+  }
+
+  .frame,
   .still {
     position: relative;
     inset: auto;
-    opacity: 1;
+    object-fit: cover;
     aspect-ratio: 3 / 4;
   }
 
   .mark {
     display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) and (width < 1025px) {
+  .root {
+    height: 100svh;
+  }
+
+  .pin {
+    display: block;
+    height: 100svh;
+    height: 100lvh;
+  }
+
+  .frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  .frame:not(:first-of-type) {
+    display: none;
+  }
+
+  .still {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
   }
 }

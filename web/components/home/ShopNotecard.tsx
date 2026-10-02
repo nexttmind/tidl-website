@@ -1,3 +1,4 @@
+import { MarketingImage } from "@/components/media/MarketingImage";
 import styles from "./ShopNotecard.module.css";
 
 export type ShopNotecardProps = {
@@ -25,8 +26,7 @@ export function ShopNotecard({
       <span className={styles.code}>{code}</span>
       <h3 className={styles.name}>{name}</h3>
       <div className={styles.media}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={vialSrc} alt="" width={720} height={720} />
+        <MarketingImage src={vialSrc} alt="" width={720} height={720} sizes="220px" />
       </div>
       <span className={styles.cta}>
         {ctaLabel}

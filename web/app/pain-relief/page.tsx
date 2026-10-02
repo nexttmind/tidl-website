@@ -17,7 +17,7 @@ import styles from "./page.module.css";
 export const metadata = {
   title: "TIDL · Pain Relief",
   description:
-    "TIDL sprays, roll ons, and creams for sore days, training days, and the hours in between.",
+    "TIDL sprays and creams for sore days, training days, and the hours in between.",
 };
 
 export default function PainReliefPage() {

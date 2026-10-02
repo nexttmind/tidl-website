@@ -2,7 +2,7 @@
   position: relative;
   overflow: hidden;
   width: 100%;
-  padding: var(--space-6) 0;
+  padding: var(--landing-section-gap, var(--space-6)) 0;
   background: transparent;
 }
 
@@ -17,6 +17,7 @@
 .notecard {
   position: relative;
   isolation: isolate;
+  container-type: size;
   width: 100%;
   aspect-ratio: 1630 / 605;
   border-radius: 40px;
@@ -47,6 +48,12 @@
   background-size: 180px 180px;
 }
 
+.railShell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
 .track {
   position: relative;
   z-index: 1;
@@ -67,15 +74,46 @@
 }
 
 .rail {
+  --card-h: 72.727cqh;
+  --card-w: calc(var(--card-h) * 330 / 440);
+  --rail-gap: 24cqh;
+  --plate-open: calc(0.78 * 1.15 * 1300 / 924);
+  --plate-rest: calc(0.78 * 1300 / 924);
+  --bundle-plate-open: calc(
+    var(--plate-open) * 0.75 * 1824 / 974 * var(--card-h)
+  );
+  --bundle-plate-rest: calc(
+    var(--plate-rest) * 0.75 * 1824 / 974 * var(--card-h)
+  );
+  --bundle-nudge: max(
+    0px,
+    calc(
+      (var(--bundle-plate-open) - var(--card-w)) / 2 - var(--rail-gap) / 2 +
+        3cqh
+    )
+  );
+  --bundle-rest-nudge: max(
+    0px,
+    calc(
+      (var(--bundle-plate-rest) - var(--card-w)) / 2 - var(--rail-gap) / 2 +
+        3cqh
+    )
+  );
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 45px;
+  gap: var(--rail-gap);
   height: 100%;
   width: max-content;
+}
+
+.railChunk {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: inherit;
+  height: 100%;
   will-change: transform;
-  transform: translate3d(var(--rail-x, 0px), 0, 0);
-  backface-visibility: hidden;
 }
 
 .jump {
@@ -85,8 +123,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: clamp(36px, 7.27cqh, 44px);
+  height: clamp(36px, 7.27cqh, 44px);
   padding: 0;
   border: 1px solid color-mix(in srgb, var(--color-white) 28%, transparent);
   border-radius: 50%;
@@ -120,8 +158,36 @@
   transition-duration: 90ms;
 }
 
-.card {
+.card,
+.bloomSeated,
+.bloomHost {
   --settle: 800ms cubic-bezier(0.4, 0, 0.2, 1);
+  --card-ar: calc(440 / 330);
+  --vial-h: 0.78;
+  --hover-n: 1;
+  --cta-vial-h: var(--vial-h);
+  --plate-src-h: 0.78;
+  --plate-h: calc(var(--plate-src-h) * var(--hover-n) * 1300 / 924);
+  --plate-center: 0.5;
+  --vial-draw-w: 1;
+  --vial-draw-h: var(--vial-h);
+  --seat-w: calc(var(--vial-draw-w) * var(--group-w) / var(--lock-vw));
+  --seat-h: calc(
+    var(--vial-draw-h) * var(--card-ar) * var(--group-w) / var(--lock-vh)
+  );
+  --seat: min(var(--seat-w), var(--seat-h));
+}
+
+/* Shop card ratio. Hosts that are not 330/440 wrap the pair in this. */
+.bloomFrame {
+  position: relative;
+  display: block;
+  width: auto;
+  height: 100%;
+  aspect-ratio: 330 / 440;
+}
+
+.card {
   position: relative;
   display: flex;
   align-items: center;
@@ -137,6 +203,48 @@
   color: inherit;
   text-decoration: none;
   cursor: pointer;
+  transition: transform var(--settle);
+}
+
+.bloomSeated {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.bloomSeated .bloomStage,
+.bloomSeated:hover .bloomStage,
+.bloomSeated:focus-within .bloomStage {
+  opacity: 1;
+  transform:
+    translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+    translate(0, 0)
+    scale(var(--seat, 1));
+}
+
+.bloomSeated .vial,
+.bloomSeated:hover .vial,
+.bloomSeated:focus-within .vial {
+  width: auto;
+  height: calc(var(--vial-h) * 100%);
+  max-width: none;
+  transform: none;
+  filter: none;
+}
+
+.notecard .card {
+  width: auto;
+  height: 72.727cqh;
+  max-height: none;
+  border-radius: calc(40 / 440 * 72.727cqh);
+}
+
+.card:hover,
+.card:focus-within {
+  --hover-n: 1.15;
+  --cta-vial-h: calc(var(--vial-h) * 1.15);
 }
 
 .card:focus {
@@ -148,24 +256,39 @@
   outline-offset: 2px;
 }
 
-.card:hover {
+.card:hover,
+.card:focus-within {
   z-index: 3;
+}
+
+@media (hover: hover) and (pointer: fine) and (width >= 1025px) {
+  .card:has(~ .card[data-kind="bundle"]:hover),
+  .card:has(~ .card[data-kind="bundle"]:focus-within) {
+    transform: translateX(calc(-1 * var(--bundle-nudge)));
+  }
+
+  .card[data-kind="bundle"]:hover ~ .card,
+  .card[data-kind="bundle"]:focus-within ~ .card {
+    transform: translateX(var(--bundle-nudge));
+  }
 }
 
 .plate {
   position: absolute;
-  width: 75%;
-  height: 85%;
+  width: auto;
+  height: calc(var(--plate-h) * 100%);
+  aspect-ratio: 975 / 1300;
   left: 50%;
-  top: 12.5%;
-  transform: translateX(-50%) scale(1);
+  top: calc(var(--plate-center) * 100%);
+  transform: translate(-50%, -50%);
   overflow: hidden;
-  /* 32px radius on 330×440 white-matte exports. 30px sat outside the paint. */
-  border-radius: calc(32 / 330 * 100%) / calc(32 / 440 * 100%);
+  border-radius: inherit;
   opacity: 0;
   transition:
     opacity var(--settle),
-    transform var(--settle);
+    transform var(--settle),
+    height var(--settle),
+    width var(--settle);
 }
 
 .plateImg {
@@ -177,31 +300,21 @@
   transform: scale(1.03);
 }
 
-.plate::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: inherit;
-  opacity: 0.2;
-  mix-blend-mode: overlay;
-  background-image: var(--section-bg-grain);
-  background-size: 120px 120px;
-  background-repeat: repeat;
-}
-
 .card:hover .plate,
 .card:focus-within .plate {
   opacity: 1;
-  transform: translateX(-50%) scale(1.15);
+  transform: translate(-50%, -50%);
 }
 
 .shopCta {
-  /* Sit inside the plate (75% × 85%), with room from the rounded corners. */
+  --vial-bottom: calc(0.5 + var(--cta-vial-h) / 2);
+  --plate-bottom: calc(var(--plate-center) + var(--plate-h) / 2);
+  --cta-mid: calc((var(--vial-bottom) + var(--plate-bottom)) / 2);
   position: absolute;
-  left: calc(12.5% + 16px);
-  right: calc(12.5% + 16px);
-  bottom: calc(2.5% + 18px);
+  left: 10%;
+  right: 10%;
+  top: calc(var(--cta-mid) * 100%);
+  bottom: auto;
   z-index: 3;
   display: flex;
   justify-content: center;
@@ -210,7 +323,10 @@
   overflow: visible;
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--settle) 140ms;
+  transform: translateY(-50%);
+  transition:
+    opacity var(--settle) 140ms,
+    top var(--settle);
 }
 
 .card:hover .shopCta,
@@ -227,14 +343,15 @@
   width: max-content;
   max-width: 100%;
   min-width: 0;
-  min-height: 32px;
+  min-height: clamp(30px, calc(32 / 440 * 72.727cqh), 32px);
   height: auto;
-  padding: 7px 14px;
+  padding: clamp(6px, calc(7 / 440 * 72.727cqh), 7px)
+    clamp(12px, calc(14 / 440 * 72.727cqh), 14px);
   border: none;
-  border-radius: var(--radius-pill);
-  background: color-mix(in srgb, var(--color-white) 18%, transparent);
+  border-radius: 0;
+  background: transparent;
   font-family: var(--font-ui);
-  font-size: 12px;
+  font-size: clamp(11px, calc(12 / 440 * 72.727cqh), 12px);
   font-weight: 500;
   letter-spacing: 0.01em;
   line-height: 1.2;
@@ -242,18 +359,12 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: var(--text-inverse);
-}
-
-.card:hover .shopCtaBtn,
-.card:focus-within .shopCtaBtn {
-  backdrop-filter: blur(16px) saturate(1.2);
-  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  color: var(--color-white);
 }
 
 .vial {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   width: 78%;
   height: 78%;
   object-fit: contain;
@@ -265,7 +376,95 @@
   transition: transform var(--settle) 90ms;
 }
 
+.card .vial {
+  width: auto;
+  height: 78%;
+  max-width: none;
+}
+
+.card[data-kind="bundle"],
+.bloomSeated[data-kind="bundle"],
+.bloomHost[data-kind="bundle"] {
+  --vial-h: 0.72;
+  --vial-draw-w: 0.92;
+  --vial-draw-h: 0.72;
+}
+
+.card[data-kind="bundle"] .plate {
+  width: calc(var(--plate-h) * 0.75 * 1824 / 974 * 100%);
+  height: calc(var(--plate-h) * 100%);
+  aspect-ratio: auto;
+}
+
+.card[data-kind="bundle"] .vial,
+.bloomSeated[data-kind="bundle"] .vial,
+.bloomHost[data-kind="bundle"] .vial {
+  width: 92%;
+  height: 72%;
+  max-width: 92%;
+}
+
+.card[data-bloom="at-home-lab"],
+.bloomSeated[data-bloom="at-home-lab"],
+.bloomHost[data-bloom="at-home-lab"] {
+  --vial-h: 0.52;
+  --vial-draw-w: 0.92;
+  --vial-draw-h: 0.52;
+}
+
+.card[data-bloom="at-home-lab"] .vial,
+.bloomSeated[data-bloom="at-home-lab"] .vial,
+.bloomHost[data-bloom="at-home-lab"] .vial {
+  width: 92%;
+  height: 52%;
+}
+
+.card[data-bloom="methylene-blue"],
+.bloomSeated[data-bloom="methylene-blue"],
+.bloomHost[data-bloom="methylene-blue"] {
+  --vial-h: 0.52;
+  --vial-draw-w: 0.8;
+  --vial-draw-h: 0.52;
+}
+
+.card[data-bloom="methylene-blue"] .vial,
+.bloomSeated[data-bloom="methylene-blue"] .vial,
+.bloomHost[data-bloom="methylene-blue"] .vial {
+  width: auto;
+  height: 52%;
+  max-width: 80%;
+}
+
+.card[data-bloom="pain-relief"],
+.bloomSeated[data-bloom="pain-relief"],
+.bloomHost[data-bloom="pain-relief"] {
+  --vial-h: 0.72;
+  --vial-draw-w: 0.88;
+  --vial-draw-h: 0.72;
+}
+
+.card[data-bloom="pain-relief"] .vial,
+.bloomSeated[data-bloom="pain-relief"] .vial,
+.bloomHost[data-bloom="pain-relief"] .vial {
+  width: 88%;
+  height: 72%;
+  max-width: 88%;
+}
+
+.card[data-bloom="sexual-health"],
+.bloomSeated[data-bloom="sexual-health"],
+.bloomHost[data-bloom="sexual-health"] {
+  --vial-h: 0.58;
+  --vial-draw-w: 0.7;
+  --vial-draw-h: 0.58;
+}
+
+.card[data-bloom="sexual-health"] .vial,
+.bloomSeated[data-bloom="sexual-health"] .vial,
 .bloomHost[data-bloom="sexual-health"] .vial {
+  width: auto;
+  height: 58%;
+  max-width: 70%;
   filter: url(#tidl-pill-defringe);
 }
 
@@ -306,7 +505,7 @@
   transform:
     translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
     translate(10px, 16px)
-    scale(1);
+    scale(var(--seat, 1));
   pointer-events: none;
   transition: transform var(--settle);
 }
@@ -325,7 +524,7 @@
   transform:
     translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
     translate(0, 0)
-    scale(1.15);
+    scale(calc(var(--seat, 1) * 1.15));
 }
 
 .bloomHost:hover .bloomStage,
@@ -351,7 +550,7 @@
   transform:
     translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
     translate(0, 0)
-    scale(1);
+    scale(var(--seat, 1));
 }
 
 .card[data-settled="true"] .vial,
@@ -402,7 +601,7 @@
   transform:
     translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
     translate(0, 0)
-    scale(0.72);
+    scale(calc(var(--seat, 1) * 0.72));
 }
 
 .card[data-entrance="expand"][data-seated="true"] .bloomStage,
@@ -411,7 +610,7 @@
   transform:
     translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
     translate(0, 0)
-    scale(1);
+    scale(var(--seat, 1));
 }
 
 .bloomSlot {
@@ -460,6 +659,11 @@
   transform-origin: var(--vial-x) var(--vial-y);
 }
 
+.card[data-bloom="transformation"] .bloom,
+.bloomHost[data-bloom="transformation"] .bloom {
+  transform: scale(var(--bloom-img-scale, 1)) rotate(180deg);
+}
+
 .bloomSway {
   position: absolute;
   inset: 0;
@@ -488,6 +692,7 @@
     will-change: auto;
   }
 
+  .card,
   .plate,
   .vial,
   .bloomStage {
@@ -495,12 +700,14 @@
   }
 
   .bloomStage {
-    transform: translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)));
+    transform:
+      translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+      scale(var(--seat, 1));
   }
 
   .card:hover .plate,
   .card:focus-within .plate {
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
   }
 
   .card:hover .vial,
@@ -515,7 +722,9 @@
   .card:focus-within .bloomStage,
   .bloomHost:hover .bloomStage,
   .bloomHost:focus-within .bloomStage {
-    transform: translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)));
+    transform:
+      translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+      scale(var(--seat, 1));
   }
 
   .bloomHost .bloomStage,
@@ -532,6 +741,12 @@
     transition: none;
   }
 
+  .card:hover .shopCta,
+  .card:focus-within .shopCta {
+    top: calc(var(--cta-mid) * 100%);
+    bottom: auto;
+  }
+
   .jump:active {
     transform: translateY(-50%);
   }
@@ -539,14 +754,9 @@
 
 @media (prefers-reduced-transparency: reduce) {
   .notecard::before,
-  .jump,
-  .shopCtaBtn {
+  .jump {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-  }
-
-  .shopCta .shopCtaBtn {
-    background: color-mix(in srgb, var(--color-white) 32%, transparent);
   }
 
   .notecard::before {
@@ -559,15 +769,21 @@
     background: color-mix(in srgb, var(--color-night) 78%, transparent);
     border-color: color-mix(in srgb, var(--color-white) 45%, transparent);
   }
-
-  .shopCta .shopCtaBtn:hover {
-    background: color-mix(in srgb, var(--color-white) 28%, transparent);
-  }
 }
 
 @media (hover: none) {
+  .card[data-kind="bundle"] {
+    margin-inline: var(--bundle-rest-nudge);
+  }
+
+  .card:hover,
+  .card:focus-within {
+    --hover-n: 1;
+    --cta-vial-h: var(--vial-h);
+  }
+
   .card {
-    touch-action: manipulation;
+    touch-action: pan-y;
   }
 
   .plate,
@@ -580,16 +796,15 @@
 
   .plate {
     opacity: 1;
-    transform: translateX(-50%) scale(1);
+    transform: translate(-50%, -50%);
   }
 
-  .shopCta {
+  .shopCta,
+  .card:hover .shopCta,
+  .card:focus-within .shopCta {
     opacity: 1;
-  }
-
-  .shopCta .shopCtaBtn {
-    backdrop-filter: blur(16px) saturate(1.2);
-    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    top: calc(var(--cta-mid) * 100%);
+    bottom: auto;
   }
 
   .bloomHost .bloomStage {
@@ -597,7 +812,7 @@
     transform:
       translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
       translate(0, 0)
-      scale(1);
+      scale(var(--seat, 1));
   }
 
   .vial,
@@ -612,7 +827,7 @@
   .card:hover .plate,
   .card:focus-within .plate {
     opacity: 1;
-    transform: translateX(-50%) scale(1);
+    transform: translate(-50%, -50%);
   }
 
   .card:hover .bloomStage,
@@ -622,13 +837,27 @@
     transform:
       translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
       translate(0, 0)
-      scale(1);
+      scale(var(--seat, 1));
   }
 }
 
 @media (width < 721px), (721px <= width < 1025px) {
+  .jump {
+    display: none;
+  }
+
+  .card[data-kind="bundle"] {
+    margin-inline: var(--bundle-rest-nudge);
+  }
+
+  .card:hover,
+  .card:focus-within {
+    --hover-n: 1;
+    --cta-vial-h: var(--vial-h);
+  }
+
   .card {
-    touch-action: manipulation;
+    touch-action: pan-y;
   }
 
   .plate,
@@ -649,8 +878,7 @@
   .card:focus-within .vial {
     opacity: var(--plant-o, 1);
     transform:
-      translateY(var(--plant-y, 0px))
-      rotate(var(--plant-r, 0deg))
+      translateY(calc(var(--plant-y, 0px) + var(--vial-rest-y, 0px)))
       scale(var(--plant-s, 1));
     filter: none;
     transition: none;
@@ -663,11 +891,76 @@
     opacity: var(--bloom-o, 0);
     transform:
       translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
-      translate(0, 0)
-      scale(var(--bloom-s, 0.88));
+      translate(0, var(--vial-rest-y, 0px))
+      scale(calc(var(--seat, 1) * var(--bloom-s, 0.88)));
     transition: none;
     mask-image: none;
     -webkit-mask-image: none;
+  }
+
+  .card[data-bloomed="true"] .vial,
+  .card[data-bloomed="true"]:hover .vial,
+  .card[data-bloomed="true"]:focus-within .vial {
+    opacity: 1;
+    transform: translateY(var(--vial-rest-y, 0px)) scale(1);
+  }
+
+  .card[data-bloomed="true"] .bloomStage,
+  .card[data-bloomed="true"]:hover .bloomStage,
+  .card[data-bloomed="true"]:focus-within .bloomStage {
+    opacity: 1;
+    transform:
+      translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+      translate(0, var(--vial-rest-y, 0px))
+      scale(var(--seat, 1));
+  }
+
+  .card[data-flourish="1"] .vial {
+    animation: shop-vial-pop 2800ms linear forwards;
+  }
+
+  .card[data-flourish="1"] .bloomStage {
+    animation: shop-bloom-pop 2800ms linear forwards;
+  }
+}
+
+@keyframes shop-vial-pop {
+  0% {
+    transform: translateY(calc(0px + var(--vial-rest-y, 0px))) scale(1);
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  20% {
+    transform: translateY(calc(-8px + var(--vial-rest-y, 0px))) scale(1.08);
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  100% {
+    transform: translateY(var(--vial-rest-y, 0px)) scale(1);
+  }
+}
+
+@keyframes shop-bloom-pop {
+  0% {
+    opacity: 0;
+    transform:
+      translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+      translate(0, var(--vial-rest-y, 0px))
+      scale(calc(var(--seat, 1) * 0.88));
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  20% {
+    opacity: 1;
+    transform:
+      translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+      translate(0, var(--vial-rest-y, 0px))
+      scale(calc(var(--seat, 1) * 1.32));
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  100% {
+    opacity: 1;
+    transform:
+      translate(calc(-1 * var(--vial-x)), calc(-1 * var(--vial-y)))
+      translate(0, var(--vial-rest-y, 0px))
+      scale(var(--seat, 1));
   }
 }
 
@@ -683,8 +976,9 @@
 
 @media (721px <= width < 1025px) {
   .root {
-    overflow: visible;
-    padding: 90px 0 92px;
+    overflow-x: clip;
+    overflow-y: visible;
+    padding: 63px 0 63px;
   }
 
   .inner {
@@ -695,9 +989,38 @@
 
   .notecard {
     aspect-ratio: auto;
-    height: min(500px, 64vh);
+    height: min(calc(500px * 0.7), calc(64vh * 0.7));
     border-radius: 0;
-    overflow: visible;
+    overflow-x: clip;
+    overflow-y: visible;
+  }
+
+  .rail {
+    gap: 0;
+  }
+
+  .notecard .card {
+    --shop-card-w: min(calc(340px * 0.7), calc(52vw * 0.7));
+    --shop-note-h: min(calc(500px * 0.7), calc(64vh * 0.7));
+    --shop-card-h: min(
+      calc(var(--shop-card-w) * 430 / 300),
+      calc(var(--shop-note-h) * 0.96)
+    );
+    --plate-draw-w: calc(var(--plate-h) * var(--shop-card-h) * 975 / 1300);
+    --cta-btn-h: calc(30px * 0.7);
+    --vial-rest-y: calc(
+      (var(--vial-h) - var(--plate-h)) * var(--shop-card-h) / 8 - var(--cta-btn-h) / 4
+    );
+    width: var(--shop-card-w);
+    height: auto;
+    max-height: 96%;
+    aspect-ratio: 300 / 430;
+    border-radius: calc(28px * 0.7);
+    margin-inline: calc((var(--plate-draw-w) - var(--shop-card-w)) / 2 + 21px);
+  }
+
+  .notecard .card[data-kind="bundle"] {
+    --plate-draw-w: calc(var(--plate-h) * 0.75 * 1824 / 974 * var(--shop-card-w));
   }
 
   .notecard::before,
@@ -707,41 +1030,9 @@
 
   .track {
     padding-inline: 0;
-    overflow: visible;
-  }
-
-  .card {
-    width: min(340px, 52vw);
-    height: auto;
-    max-height: 96%;
-    aspect-ratio: 300 / 430;
-    border-radius: 28px;
-    overflow: visible;
-  }
-
-  .rail {
-    gap: 28px;
-  }
-
-  .plate {
-    width: 86%;
-    height: 94%;
-    top: 3%;
-  }
-
-  .pair {
-    padding-bottom: 40px;
-  }
-
-  .vial {
-    width: 66%;
-    height: 64%;
-  }
-
-  .shopCta {
-    left: calc(7% + 14px);
-    right: calc(7% + 14px);
-    bottom: calc(8% + 24px);
+    overflow-x: clip;
+    overflow-y: visible;
+    touch-action: pan-y;
   }
 
   .bloom,
@@ -752,8 +1043,9 @@
 
 @media (width < 721px) {
   .root {
-    overflow: visible;
-    padding: 90px 0 92px;
+    overflow-x: clip;
+    overflow-y: visible;
+    padding: 58px 0 34px;
   }
 
   .inner {
@@ -763,9 +1055,39 @@
   }
 
   .notecard {
-    height: min(440px, 64vh);
+    aspect-ratio: auto;
+    height: min(calc(440px * 0.7), calc(64vh * 0.7));
     border-radius: 0;
-    overflow: visible;
+    overflow-x: clip;
+    overflow-y: visible;
+  }
+
+  .rail {
+    gap: 0;
+  }
+
+  .notecard .card {
+    --shop-card-w: min(calc(300px * 0.7), calc(74vw * 0.7));
+    --shop-note-h: min(calc(440px * 0.7), calc(64vh * 0.7));
+    --shop-card-h: min(
+      calc(var(--shop-card-w) * 430 / 300),
+      calc(var(--shop-note-h) * 0.96)
+    );
+    --plate-draw-w: calc(var(--plate-h) * var(--shop-card-h) * 975 / 1300);
+    --cta-btn-h: calc(30px * 0.7);
+    --vial-rest-y: calc(
+      (var(--vial-h) - var(--plate-h)) * var(--shop-card-h) / 8 - var(--cta-btn-h) / 4
+    );
+    width: var(--shop-card-w);
+    height: auto;
+    max-height: 96%;
+    aspect-ratio: 300 / 430;
+    border-radius: calc(28px * 0.7);
+    margin-inline: calc((var(--plate-draw-w) - var(--shop-card-w)) / 2 + 21px);
+  }
+
+  .notecard .card[data-kind="bundle"] {
+    --plate-draw-w: calc(var(--plate-h) * 0.75 * 1824 / 974 * var(--shop-card-w));
   }
 
   .notecard::before,
@@ -775,35 +1097,9 @@
 
   .track {
     padding-inline: 0;
-    overflow: visible;
-  }
-
-  .rail {
-    gap: 24px;
-  }
-
-  .card {
-    width: min(300px, 74vw);
-    height: auto;
-    max-height: 96%;
-    aspect-ratio: 300 / 430;
-    border-radius: 28px;
-    overflow: visible;
-  }
-
-  .plate {
-    width: 88%;
-    height: 94%;
-    top: 3%;
-  }
-
-  .pair {
-    padding-bottom: 40px;
-  }
-
-  .vial {
-    width: 68%;
-    height: 64%;
+    overflow-x: clip;
+    overflow-y: visible;
+    touch-action: pan-y;
   }
 
   .bloom,
@@ -818,16 +1114,15 @@
   .jumpRight {
     right: var(--space-3);
   }
+}
 
-  .shopCta {
-    left: calc(6% + 12px);
-    right: calc(6% + 12px);
-    bottom: calc(8% + 22px);
-  }
-
+@media (width < 721px), (721px <= width < 1025px) {
   .shopCta .shopCtaBtn {
-    min-height: 30px;
-    padding: 6px 12px;
+    min-height: 0;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
     font-size: 11px;
+    color: var(--color-white);
   }
 }

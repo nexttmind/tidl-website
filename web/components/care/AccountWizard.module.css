@@ -151,32 +151,6 @@
   font-size: 0.9rem;
 }
 
-.notice {
-  margin: 0;
-  color: var(--care-text-secondary, rgba(255, 255, 255, 0.72));
-  font-size: 0.9rem;
-  line-height: 1.45;
-}
-
-.forgotBtn {
-  appearance: none;
-  background: none;
-  border: none;
-  color: var(--care-text-secondary, rgba(255, 255, 255, 0.72));
-  font: inherit;
-  font-size: 0.9rem;
-  text-decoration: underline;
-  text-underline-offset: 0.18em;
-  cursor: pointer;
-  min-height: 44px;
-  padding: 0.4rem 0.2rem;
-}
-
-.forgotBtn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
 .footer {
   margin-top: var(--space-4);
   display: flex;

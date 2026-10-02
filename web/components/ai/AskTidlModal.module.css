@@ -621,7 +621,7 @@
   }
 }
 
-@media (min-width: 640px) {
+@media (width >= 721px) {
   .root {
     align-items: center;
     padding: 24px;

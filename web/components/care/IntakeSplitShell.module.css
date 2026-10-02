@@ -146,7 +146,7 @@
   box-sizing: border-box;
 }
 
-@media (max-width: 900px) {
+@media (width < 1025px) {
   .frame {
     grid-template-columns: 1fr;
     height: auto;
@@ -186,6 +186,20 @@
   .panelBody {
     max-width: none;
     padding: var(--space-4) var(--space-5) var(--space-6);
+  }
+}
+
+@media (width < 721px) {
+  .mediaPane {
+    height: min(56vw, 240px);
+    min-height: 240px;
+    padding: var(--space-3);
+    padding-bottom: 0;
+  }
+
+  .panelBody {
+    padding: var(--space-4);
+    padding-bottom: var(--space-6);
   }
 }
 

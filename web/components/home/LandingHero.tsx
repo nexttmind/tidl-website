@@ -2,26 +2,50 @@
 
 import {
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
   type CSSProperties,
   type KeyboardEvent,
   type MouseEvent,
   type PointerEvent,
   type ReactNode,
 } from "react";
+import { useRouter } from "next/navigation";
 import { MarketingImage } from "@/components/media/MarketingImage";
+import { menuTapStartsBarrage } from "@/components/chrome/MenuBarrage";
+import { playMenuBarrage } from "@/components/chrome/menu-barrage-session";
 import { Button } from "@/components/ui/Button";
 import { heroTheme, type ThemeId } from "@/content/brand/peptide-identity";
+import { peptideGuideChips } from "@/content/fixtures/peptide-guide";
+import { shopCatalogItem } from "./shop-catalog";
 import { connectionPrefersLite } from "@/lib/media/connection";
-import { optVideoSrc } from "@/lib/media/opt-manifest";
+import { optImgSrc, optVideoSrc } from "@/lib/media/opt-manifest";
 import styles from "./LandingHero.module.css";
 import mountFade from "@/components/motion/MountFade.module.css";
 
+type HeroMediaBand = "pending" | "compact" | "desktop";
+
+function subscribeHeroBand(onChange: () => void) {
+  const mq = window.matchMedia("(width < 1025px)");
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+}
+
+function readHeroBand(): HeroMediaBand {
+  return window.matchMedia("(width < 1025px)").matches ? "compact" : "desktop";
+}
+
+/** SSR and the first paint ship one poster. Desktop mounts neighbors after idle. */
+function useHeroMediaBand(): HeroMediaBand {
+  return useSyncExternalStore(subscribeHeroBand, readHeroBand, () => "pending");
+}
+
 export type HeroSlide = {
   id: string;
-  /** Short label for the left chapter rail. */
+  /** Treatment name for the left chapter rail. */
   railLabel: string;
   headline: string;
   subtext: string;
@@ -52,6 +76,8 @@ type LandingHeroProps = {
    * not sitting under LandingTop.
    */
   flush?: boolean;
+  /** Keep the clip playing while any of these elements are on screen, even if the hero is below the fold. */
+  playWhileVisibleId?: string | readonly string[];
   ariaLabel?: string;
 };
 
@@ -133,6 +159,91 @@ function readHeroTravelPx(root: HTMLElement) {
   return Number.isFinite(px) && px > 0 ? px : window.innerHeight * 0.55;
 }
 
+const PHONE_HEADLINE: Record<string, string> = {
+  focus: "Stay sharp",
+  "body-composition": "Get lean and strong",
+  "mens-peak-performance": "Keep your edge",
+  longevity: "Live longer and better",
+  "rest-rebuild": "Show up ready",
+  "energy-lift": "Clear and calm",
+  "repair-mobility": "Recover quickly",
+  "womens-total-balance": "Rediscover balance",
+};
+
+function viewCtaLabel(id: string, name: string) {
+  const kind = shopCatalogItem(id)?.kind;
+  if (kind === "treatment") return `View ${name} Treatments`;
+  if (kind === "bundle") return `View ${name} Bundle`;
+  return `View ${name}`;
+}
+
+const inkCanvas = typeof document !== "undefined" ? document.createElement("canvas") : null;
+
+function sampleVideoInk(video: HTMLVideoElement, el: HTMLElement): string | null {
+  if (!inkCanvas || !video.videoWidth || !video.videoHeight) return null;
+  const view = video.getBoundingClientRect();
+  const target = el.getBoundingClientRect();
+  if (view.width < 1 || target.width < 1) return null;
+  const pos = getComputedStyle(video).objectPosition.split(/\s+/);
+  const axis = (token: string | undefined, fallback: number) => {
+    if (!token || token === "center") return 0.5;
+    if (token === "left" || token === "top") return 0;
+    if (token === "right" || token === "bottom") return 1;
+    if (token.endsWith("%")) return Number.parseFloat(token) / 100;
+    return fallback;
+  };
+  const px = axis(pos[0], 0.5);
+  const py = axis(pos[1], 0.5);
+  const scale = Math.max(view.width / video.videoWidth, view.height / video.videoHeight);
+  const offsetX = (video.videoWidth * scale - view.width) * px;
+  const offsetY = (video.videoHeight * scale - view.height) * py;
+  const x = target.left + target.width / 2 - view.left;
+  const y = target.top + target.height / 2 - view.top;
+  const sx = (x + offsetX) / scale;
+  const sy = (y + offsetY) / scale;
+  const ctx = inkCanvas.getContext("2d", { willReadFrequently: true });
+  if (!ctx) return null;
+  inkCanvas.width = 8;
+  inkCanvas.height = 8;
+  try {
+    ctx.drawImage(video, sx - 16, sy - 16, 32, 32, 0, 0, 8, 8);
+    const data = ctx.getImageData(0, 0, 8, 8).data;
+    let r = 0;
+    let g = 0;
+    let b = 0;
+    const n = data.length / 4;
+    for (let i = 0; i < data.length; i += 4) {
+      r += data[i];
+      g += data[i + 1];
+      b += data[i + 2];
+    }
+    const avg = [r / n, g / n, b / n];
+    const lin = (c: number) => {
+      const s = c / 255;
+      return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+    };
+    const luminance = 0.2126 * lin(avg[0]) + 0.7152 * lin(avg[1]) + 0.0722 * lin(avg[2]);
+    const cap = 0.14;
+    const factor = luminance > cap ? Math.sqrt(cap / luminance) : 1;
+    const q = (channel: number) => Math.round((channel * factor) / 8) * 8;
+    return `rgb(${q(avg[0])} ${q(avg[1])} ${q(avg[2])})`;
+  } catch {
+    return null;
+  }
+}
+
+function HeroGoodFor({ id }: { id: string }) {
+  const chips = peptideGuideChips(id);
+  if (chips.length === 0) return null;
+  return (
+    <ul className={styles.goodFor} aria-label="Good for">
+      {chips.map((chip) => (
+        <li key={chip}>{chip}</li>
+      ))}
+    </ul>
+  );
+}
+
 /** Full-bleed hero that scrubs into a Programs-matched notecard on scroll. */
 export function LandingHero({
   id,
@@ -142,8 +253,10 @@ export function LandingHero({
   catalog,
   onSlideChange,
   flush = false,
+  playWhileVisibleId,
   ariaLabel = "Hero",
 }: LandingHeroProps) {
+  const router = useRouter();
   const scrollRootRef = useRef<HTMLElement>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const userPausedRef = useRef(false);
@@ -151,6 +264,8 @@ export function LandingHero({
   const loopCountRef = useRef(0);
   const indexRef = useRef(0);
   const progressRef = useRef(0);
+  const mediaFillRef = useRef<HTMLSpanElement>(null);
+  const mediaPillRef = useRef<HTMLDivElement>(null);
   const startIndex = useMemo(
     () => pickStartIndex(slides.length, startMode),
     // Start index is fixed for the lifetime of this mount.
@@ -160,11 +275,12 @@ export function LandingHero({
   const [index, setIndex] = useState(startIndex);
   const [playing, setPlaying] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [mediaT, setMediaT] = useState(0);
+  const [condensed, setCondensed] = useState(false);
   const [isPhone, setIsPhone] = useState(false);
   const [isCompact, setIsCompact] = useState(false);
   const [allowVideo, setAllowVideo] = useState(false);
+  const mediaBand = useHeroMediaBand();
+  const [armNeighbors, setArmNeighbors] = useState(false);
   const scrubbingRef = useRef(false);
   const resumeAfterScrubRef = useRef(false);
   const swipeRef = useRef<{
@@ -173,6 +289,9 @@ export function LandingHero({
     y: number;
     armed: boolean;
   } | null>(null);
+  const viewPillRef = useRef<HTMLAnchorElement>(null);
+  const copyRef = useRef<HTMLDivElement>(null);
+  const [viewInk, setViewInk] = useState("rgb(26 34 42)");
   const suppressClickRef = useRef(false);
   const slideCount = slides.length;
   const multi = slides.length > 1;
@@ -224,7 +343,23 @@ export function LandingHero({
   useEffect(() => {
     onSlideChange?.(index);
   }, [index, onSlideChange]);
-  const condensed = progress >= 0.98;
+
+  const paintMediaT = (value: number) => {
+    const next = clamp01(value);
+    const fill = mediaFillRef.current;
+    if (fill) {
+      fill.style.width = `${next * 100}%`;
+      fill.style.transform = "none";
+    }
+    const pill = mediaPillRef.current;
+    if (!pill) return;
+    const now = String(Math.round(next * 100));
+    if (pill.getAttribute("aria-valuenow") !== now) {
+      pill.setAttribute("aria-valuenow", now);
+    }
+  };
+  const paintMediaTRef = useRef(paintMediaT);
+  paintMediaTRef.current = paintMediaT;
 
   useEffect(() => {
     if (!multi || slideCount < 2) return;
@@ -327,6 +462,39 @@ export function LandingHero({
   }, []);
 
   useEffect(() => {
+    if (mediaBand !== "desktop") return;
+    const arm = () => setArmNeighbors(true);
+    if (typeof window.requestIdleCallback === "function") {
+      const id = window.requestIdleCallback(arm, { timeout: 1600 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const timer = window.setTimeout(arm, 1600);
+    return () => window.clearTimeout(timer);
+  }, [mediaBand]);
+
+  useEffect(() => {
+    if (mediaBand !== "compact" || !allowVideo || slides.length < 2) return;
+    const next = slides[(index + 1) % slides.length];
+    const src = next ? optVideoSrc(next.mediaSrc, 1080) : undefined;
+    if (!src) return;
+    let video: HTMLVideoElement | null = null;
+    const timer = window.setTimeout(() => {
+      video = document.createElement("video");
+      video.preload = "auto";
+      video.muted = true;
+      video.playsInline = true;
+      video.src = src;
+      video.load();
+    }, 800);
+    return () => {
+      window.clearTimeout(timer);
+      if (!video) return;
+      video.removeAttribute("src");
+      video.load();
+    };
+  }, [allowVideo, index, mediaBand, slides]);
+
+  useEffect(() => {
     const root = scrollRootRef.current;
     if (!root) return;
 
@@ -341,7 +509,7 @@ export function LandingHero({
       const travel = Math.max(readHeroTravelPx(root), 1);
       const next = clamp01(-rect.top / travel);
       progressRef.current = next;
-      setProgress(next);
+      setCondensed(next >= 0.98);
       root.style.setProperty("--hero-p", next.toFixed(4));
     };
 
@@ -365,6 +533,7 @@ export function LandingHero({
     let attachRaf = 0;
     let progressRaf = 0;
     let observer: IntersectionObserver | null = null;
+    let beaconObserver: IntersectionObserver | null = null;
     let active: HTMLVideoElement | null = null;
     let unlockLoop: (() => void) | null = null;
     let observed = false;
@@ -373,6 +542,10 @@ export function LandingHero({
     const activeMedia = trackItems[displayPos]?.slide.mediaSrc ?? null;
     const sameMedia = prevTrackMediaRef.current === activeMedia;
     prevTrackMediaRef.current = activeMedia;
+
+    // Index updates before the track position. Wait for the next slide
+    // instead of finishing the clip that just ended a second time.
+    if (trackItems[displayPos]?.realIndex !== index) return;
 
     videoRefs.current.forEach((video, i) => {
       if (!video || i === displayPos) return;
@@ -389,7 +562,7 @@ export function LandingHero({
     if (!sameMedia) {
       loopCountRef.current = 0;
       userPausedRef.current = false;
-      setMediaT(0);
+      paintMediaTRef.current(0);
     }
 
     const readProgress = (video: HTMLVideoElement) => {
@@ -416,11 +589,11 @@ export function LandingHero({
       loopCountRef.current += 1;
       if (multi && loopCountRef.current >= loopsBeforeAdvance) {
         loopCountRef.current = 0;
-        setMediaT(0);
+        paintMediaTRef.current(0);
         setIndex((current) => (current + 1) % slides.length);
         return;
       }
-      setMediaT(0);
+      paintMediaTRef.current(0);
       try {
         video.currentTime = 0;
       } catch {
@@ -448,12 +621,15 @@ export function LandingHero({
           progressRaf = window.requestAnimationFrame(tick);
           return;
         }
-        const duration = readMediaDuration(video);
-        setMediaT(readProgress(video));
+        const duration = video.duration;
+        paintMediaTRef.current(readProgress(video));
+        // Seekable end grows while a clip buffers. Using it as duration
+        // advances the hero before the file has played.
         if (
+          Number.isFinite(duration) &&
           duration > 0 &&
           !video.paused &&
-          video.currentTime >= Math.max(duration - 0.08, duration * 0.97)
+          video.currentTime >= Math.max(0, duration - 0.08)
         ) {
           finishClip(video);
           return;
@@ -489,10 +665,10 @@ export function LandingHero({
       stopProgress();
       if (scrubbingRef.current) return;
       setPlaying(false);
-      if (active) setMediaT(readProgress(active));
+      if (active) paintMediaTRef.current(readProgress(active));
     };
     const onReady = () => {
-      if (active) setMediaT(readProgress(active));
+      if (active) paintMediaTRef.current(readProgress(active));
       syncPlayback();
     };
     const onEnded = () => {
@@ -525,17 +701,58 @@ export function LandingHero({
       active.addEventListener("loadedmetadata", onReady);
       active.addEventListener("durationchange", onReady);
 
+      let videoVisible = false;
+      let beaconVisible = false;
+      const applyVisibility = () => {
+        observed = true;
+        visibleRef.current = videoVisible || beaconVisible;
+        syncPlayback();
+      };
+
       observer = new IntersectionObserver(
         ([entry]) => {
-          observed = true;
-          visibleRef.current =
+          videoVisible =
             entry.isIntersecting && entry.intersectionRatio >= 0.25;
-          syncPlayback();
+          applyVisibility();
         },
         { threshold: [0, 0.25, 0.5, 1] },
       );
       observer.observe(active);
-      setMediaT(readProgress(active));
+
+      const beaconIds = !playWhileVisibleId
+        ? []
+        : typeof playWhileVisibleId === "string"
+          ? [playWhileVisibleId]
+          : [...playWhileVisibleId];
+      const beacons = beaconIds
+        .map((beaconId) => document.getElementById(beaconId))
+        .filter((el): el is HTMLElement => Boolean(el));
+      const visibleBeacons = new Set<Element>();
+      for (const beacon of beacons) {
+        const rect = beacon.getBoundingClientRect();
+        if (rect.bottom > 0 && rect.top < window.innerHeight) {
+          visibleBeacons.add(beacon);
+        }
+      }
+      beaconVisible = visibleBeacons.size > 0;
+      beaconObserver = beacons.length
+        ? new IntersectionObserver(
+            (entries) => {
+              for (const entry of entries) {
+                if (entry.isIntersecting) visibleBeacons.add(entry.target);
+                else visibleBeacons.delete(entry.target);
+              }
+              beaconVisible = visibleBeacons.size > 0;
+              applyVisibility();
+            },
+            { threshold: 0 },
+          )
+        : null;
+      if (beaconObserver) {
+        for (const beacon of beacons) beaconObserver.observe(beacon);
+      }
+
+      paintMediaTRef.current(readProgress(active));
       if (!active.paused) pumpProgress(active);
       syncPlayback();
     };
@@ -547,6 +764,7 @@ export function LandingHero({
       stopProgress();
       if (attachRaf) window.cancelAnimationFrame(attachRaf);
       observer?.disconnect();
+      beaconObserver?.disconnect();
       if (!active) return;
       if (unlockLoop) active.removeEventListener("timeupdate", unlockLoop);
       active.removeEventListener("play", onPlay);
@@ -564,9 +782,108 @@ export function LandingHero({
     loopsBeforeAdvance,
     multi,
     reduceMotion,
+    playWhileVisibleId,
     slides.length,
     trackItems,
+    index,
   ]);
+
+  useLayoutEffect(() => {
+    const copy = copyRef.current;
+    if (!copy) return;
+    const compact = window.matchMedia("(width < 1025px)");
+    let follow = 0;
+
+    const visibleTileBottom = (panel: Element) => {
+      let bottom = -Infinity;
+      for (const tile of panel.querySelectorAll<HTMLElement>('[class*="bloomCard"]')) {
+        const box = tile.getBoundingClientRect();
+        if (box.width < 1 || box.height < 1) continue;
+        let visibleBottom = box.bottom;
+        let visibleTop = box.top;
+        let node = tile.parentElement;
+        while (node && node !== document.body) {
+          const overflow = getComputedStyle(node).overflowY;
+          if (overflow === "hidden" || overflow === "clip") {
+            const clip = node.getBoundingClientRect();
+            visibleBottom = Math.min(visibleBottom, clip.bottom);
+            visibleTop = Math.max(visibleTop, clip.top);
+          }
+          node = node.parentElement;
+        }
+        if (visibleBottom - visibleTop < 40) continue;
+        if (visibleBottom > bottom) bottom = visibleBottom;
+      }
+      return bottom;
+    };
+
+    const sync = () => {
+      if (!compact.matches) {
+        copy.style.removeProperty("--hero-copy-center");
+        return;
+      }
+      const copyBox = copy.getBoundingClientRect();
+      const video = copy.closest("section")?.querySelector("video");
+      const videoTop = video?.getBoundingClientRect().top ?? copyBox.top;
+      const cta = copy.querySelector("a");
+      if (!cta) return;
+      const ctaTop = cta.getBoundingClientRect().top;
+      const tileFloor = videoTop - window.innerHeight;
+      let tileEdge = -Infinity;
+      const panels = document.querySelectorAll(
+        '[class*="mobileLoadPanel"], [class*="desktopLoadMega"]',
+      );
+      for (const panel of panels) {
+        if (panel instanceof HTMLElement && panel.dataset.collapsed === "true") continue;
+        const tileBottom = visibleTileBottom(panel);
+        if (tileBottom > tileFloor && tileBottom < ctaTop) {
+          tileEdge = Math.max(tileEdge, tileBottom);
+        }
+      }
+      const menuOpen = tileEdge > -Infinity;
+      const topEdge = menuOpen ? tileEdge : videoTop;
+      const ratio = menuOpen ? 0.4 : 0.5;
+      const center = topEdge + (ctaTop - topEdge) * ratio - copyBox.top;
+      const next = `${Math.round(center)}px`;
+      if (copy.style.getPropertyValue("--hero-copy-center") !== next) {
+        copy.style.setProperty("--hero-copy-center", next);
+      }
+    };
+
+    const followFor = () => {
+      window.cancelAnimationFrame(follow);
+      const start = performance.now();
+      const step = (now: number) => {
+        sync();
+        if (now - start < 700) follow = window.requestAnimationFrame(step);
+      };
+      follow = window.requestAnimationFrame(step);
+    };
+
+    const mo = new MutationObserver(followFor);
+    mo.observe(document.body, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["data-mobile-open", "data-open", "data-collapsed"],
+    });
+    const watch = new ResizeObserver(sync);
+    watch.observe(copy);
+    watch.observe(document.body);
+
+    sync();
+    window.addEventListener("resize", sync);
+    window.addEventListener("scroll", followFor, { passive: true });
+    compact.addEventListener("change", sync);
+    return () => {
+      window.cancelAnimationFrame(follow);
+      mo.disconnect();
+      watch.disconnect();
+      window.removeEventListener("resize", sync);
+      window.removeEventListener("scroll", followFor);
+      compact.removeEventListener("change", sync);
+      copy.style.removeProperty("--hero-copy-center");
+    };
+  }, []);
 
   const goTo = (next: number) => {
     if (!slides.length) return;
@@ -575,6 +892,34 @@ export function LandingHero({
     loopCountRef.current = 0;
     userPausedRef.current = false;
     setIndex(wrapped);
+  };
+
+  useEffect(() => {
+    if (!isCompact) return;
+    let timer = 0;
+    const tick = () => {
+      const video = videoRefs.current[displayPos];
+      const pill = viewPillRef.current;
+      if (!video || !pill) return;
+      const next = sampleVideoInk(video, pill);
+      if (next) setViewInk((prev) => (prev === next ? prev : next));
+    };
+    tick();
+    timer = window.setInterval(tick, 280);
+    return () => window.clearInterval(timer);
+  }, [displayPos, isCompact, index]);
+
+  const onMediaHitClick = (event: MouseEvent<HTMLButtonElement>) => {
+    if (!slide || suppressClickRef.current) return;
+    if (!isCompact) {
+      togglePlayback();
+      return;
+    }
+    if (!menuTapStartsBarrage(slide.id, event)) {
+      router.push(slide.cta.href);
+      return;
+    }
+    playMenuBarrage(router, slide.id, slide.cta.href);
   };
 
   const togglePlayback = () => {
@@ -598,7 +943,7 @@ export function LandingHero({
     if (!video) return;
     const duration = readMediaDuration(video);
     const next = clamp01(fraction);
-    setMediaT(next);
+    paintMediaT(next);
     if (duration <= 0) return;
     try {
       video.currentTime = next * duration;
@@ -689,6 +1034,11 @@ export function LandingHero({
     if (!isCompact || !multi) return;
     if (e.pointerType === "mouse" && e.button !== 0) return;
     if (swipeIgnoresTarget(e.target)) return;
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      /* ignore if the pointer is already released */
+    }
     swipeRef.current = {
       pointerId: e.pointerId,
       x: e.clientX,
@@ -739,7 +1089,6 @@ export function LandingHero({
 
   const field = heroTheme(slide.themeId ?? slide.id);
   const cardStyle = {
-    "--hero-p": progress.toFixed(4),
     ...(field
       ? {
           "--theme-wash": field.atmosphere.wash,
@@ -790,31 +1139,36 @@ export function LandingHero({
               }}
             >
               {trackItems.map((item, i) => {
-                const neighborWindow = isCompact ? 0 : 1;
-                const mountVideo =
-                  allowVideo && Math.abs(i - displayPos) <= neighborWindow;
-                const derivedMobile = optVideoSrc(item.slide.mediaSrc);
+                const delta = i - displayPos;
+                const mountMedia =
+                  mediaBand === "compact" ||
+                  delta === 0 ||
+                  (mediaBand === "desktop" && armNeighbors && delta === 1);
+                const mountVideo = allowVideo && mountMedia;
                 const mediaSrc =
-                  isCompact && (item.slide.mediaSrcMobile || derivedMobile)
-                    ? (item.slide.mediaSrcMobile ?? derivedMobile ?? item.slide.mediaSrc)
-                    : item.slide.mediaSrc;
+                  optVideoSrc(item.slide.mediaSrc, 1080) ??
+                  (isCompact ? item.slide.mediaSrcMobile : undefined);
                 const mediaPosition = isPhone
                   ? (item.slide.mediaPositionPhone ?? "center 28%")
                   : item.slide.mediaPosition;
-                const poster = item.slide.posterSrc;
+                const poster = item.slide.posterSrc
+                  ? optImgSrc(item.slide.posterSrc, 1600)
+                  : undefined;
+                const posterSrc = item.slide.posterSrc;
                 return (
                 <div
                   key={item.key}
                   className={styles.slide}
                   aria-hidden={item.realIndex !== index || i !== displayPos}
                 >
-                  {mountVideo ? (
+                  {mountMedia && mountVideo && mediaSrc ? (
                     <video
                       key={`${item.key}-${mediaSrc}`}
                       ref={(el) => {
                         videoRefs.current[i] = el;
                       }}
                       className={styles.media}
+                      data-landing-hero-video={i === displayPos ? "true" : undefined}
                       src={mediaSrc}
                       poster={poster}
                       muted
@@ -827,14 +1181,14 @@ export function LandingHero({
                           : undefined
                       }
                     />
-                  ) : poster ? (
+                  ) : mountMedia && posterSrc ? (
                     <MarketingImage
                       className={styles.media}
-                      src={poster}
+                      src={posterSrc}
                       alt=""
                       sizes="100vw"
                       loading={i === displayPos ? "eager" : "lazy"}
-                      fetchPriority={i === displayPos ? "high" : "auto"}
+                      fetchPriority={i === displayPos ? "high" : "low"}
                       style={
                         mediaPosition
                           ? { objectPosition: mediaPosition }
@@ -854,8 +1208,8 @@ export function LandingHero({
               className={styles.mediaHit}
               tabIndex={-1}
               aria-hidden
-              disabled={reduceMotion}
-              onClick={togglePlayback}
+              disabled={reduceMotion && !isCompact}
+              onClick={onMediaHitClick}
             />
 
             <div className={styles.stage}>
@@ -918,30 +1272,85 @@ export function LandingHero({
                 </nav>
               ) : null}
 
-              <div className={styles.copy}>
+              <div className={styles.copy} ref={copyRef}>
                 <div key={slide.id} className={styles.copyInner}>
-                  <div className={styles.copyText}>
-                    <h1 className={styles.headline}>{slide.headline}</h1>
+                  <div className={styles.copyGroup}>
+                    {isCompact ? <span className={styles.copyShade} aria-hidden /> : null}
+                    <div className={styles.copyText}>
+                      <h1 className={styles.headline}>
+                        {(isPhone ? (PHONE_HEADLINE[slide.id] ?? slide.headline) : slide.headline)
+                          .split("\n")
+                          .map((line, i) => (
+                          <span key={i}>
+                            {i > 0 ? <br /> : null}
+                            {line}
+                          </span>
+                        ))}
+                      </h1>
+                    </div>
+                    {isCompact ? <HeroGoodFor id={slide.id} /> : null}
                   </div>
-                  <div className={styles.ctaWrap} data-slide={slide.id}>
-                    <Button
-                      href={slide.cta.href}
-                      styleVariant="Ghost"
-                      className={styles.cta}
-                    >
-                      {slide.cta.label}
-                    </Button>
-                    {slide.secondaryCta ? (
-                      <span className={styles.ctaSecondarySlot}>
-                        <Button
-                          href={slide.secondaryCta.href}
-                          styleVariant="Ghost"
-                          className={styles.ctaSecondary}
-                        >
-                          {slide.secondaryCta.label}
-                        </Button>
-                      </span>
+                  <div className={styles.ctaBlock}>
+                    {isCompact ? (
+                      <a
+                        ref={viewPillRef}
+                        href={slide.cta.href}
+                        className={styles.viewPill}
+                        style={{ color: viewInk }}
+                        onClick={(event) => {
+                          if (!menuTapStartsBarrage(slide.id, event)) return;
+                          event.preventDefault();
+                          playMenuBarrage(router, slide.id, slide.cta.href);
+                        }}
+                      >
+                        {viewCtaLabel(slide.id, slide.railLabel)}
+                      </a>
                     ) : null}
+                    <div className={styles.ctaWrap} data-slide={slide.id}>
+                      <Button
+                        href={slide.cta.href}
+                        styleVariant="Ghost"
+                        className={styles.cta}
+                        onClick={(event) => {
+                          if (!menuTapStartsBarrage(slide.id, event)) return;
+                          const next = new URL(slide.cta.href, window.location.origin);
+                          const stays =
+                            next.origin === window.location.origin &&
+                            next.pathname === window.location.pathname &&
+                            next.search === window.location.search;
+                          if (stays) return;
+                          event.preventDefault();
+                          playMenuBarrage(router, slide.id, slide.cta.href);
+                        }}
+                      >
+                        {slide.id === "mens-peak-performance" ||
+                        slide.id === "womens-total-balance" ? (
+                          <span className={styles.ctaLabel}>
+                            {slide.id === "womens-total-balance"
+                              ? "Shop Women's Total"
+                              : "Shop Men's Peak"}{" "}
+                            <span className={styles.ctaRest}>
+                              {slide.id === "womens-total-balance"
+                                ? "Balance Treatments"
+                                : "Performance Treatments"}
+                            </span>
+                          </span>
+                        ) : (
+                          slide.cta.label
+                        )}
+                      </Button>
+                      {slide.secondaryCta ? (
+                        <span className={styles.ctaSecondarySlot}>
+                          <Button
+                            href={slide.secondaryCta.href}
+                            styleVariant="Ghost"
+                            className={styles.ctaSecondary}
+                          >
+                            {slide.secondaryCta.label}
+                          </Button>
+                        </span>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -980,6 +1389,7 @@ export function LandingHero({
                     <IconChevronLeft />
                   </button>
                   <div
+                    ref={mediaPillRef}
                     className={styles.progressPill}
                     role="slider"
                     tabIndex={0}
@@ -987,17 +1397,14 @@ export function LandingHero({
                     aria-orientation="horizontal"
                     aria-valuemin={0}
                     aria-valuemax={100}
-                    aria-valuenow={Math.round(clamp01(mediaT) * 100)}
+                    aria-valuenow={0}
                     onPointerDown={onScrubPointerDown}
                     onPointerMove={onScrubPointerMove}
                     onPointerUp={endScrub}
                     onPointerCancel={endScrub}
                     onKeyDown={onScrubKeyDown}
                   >
-                    <span
-                      className={styles.progressFill}
-                      style={{ transform: `scaleX(${clamp01(mediaT)})` }}
-                    />
+                    <span ref={mediaFillRef} className={styles.progressFill} />
                   </div>
                   <button
                     type="button"

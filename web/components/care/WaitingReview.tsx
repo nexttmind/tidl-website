@@ -18,6 +18,7 @@ import {
   readIntakeHandoff,
   type IntakeHandoff,
 } from "@/lib/prescriberx/intake-flow";
+import { careApiUnauthorized } from "@/lib/prescriberx/care-api-fetch";
 import {
   nextWaitPollMs,
   waitingPollTimedOut,
@@ -297,7 +298,7 @@ export function WaitingReview({
         );
         if (cancelled) return;
 
-        if (res.status === 401) {
+        if (await careApiUnauthorized(res)) {
           clearTimer();
           const login = new URLSearchParams();
           login.set("mode", "login");

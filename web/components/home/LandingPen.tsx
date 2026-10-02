@@ -155,6 +155,7 @@ export function LandingPen({ tags, slides, details = [] }: LandingPenProps) {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [pausedUntil, setPausedUntil] = useState(0);
   const [inView, setInView] = useState(false);
+  const [mediaNear, setMediaNear] = useState(false);
   /** Sticky user pause; survives scroll away / back. Manual advance does not clear it. */
   const [userPaused, setUserPaused] = useState(false);
   const [compact, setCompact] = useState(false);
@@ -192,7 +193,15 @@ export function LandingPen({ tags, slides, details = [] }: LandingPenProps) {
       },
     );
     observer.observe(el);
-    return () => observer.disconnect();
+    const near = new IntersectionObserver(
+      ([entry]) => setMediaNear(Boolean(entry?.isIntersecting)),
+      { rootMargin: "480px 0px", threshold: 0 },
+    );
+    near.observe(el);
+    return () => {
+      observer.disconnect();
+      near.disconnect();
+    };
   }, []);
 
   useEffect(() => {
@@ -245,13 +254,15 @@ export function LandingPen({ tags, slides, details = [] }: LandingPenProps) {
           onClick={advance}
         >
           <div className={styles.mediaStack} aria-hidden>
-            <MarketingImage
-              className={styles.media}
-              src={activeMedia}
-              alt=""
-              sizes="(width < 721px) 100vw, (width < 1025px) 80vw, 720px"
-              loading="eager"
-            />
+            {mediaNear ? (
+              <MarketingImage
+                className={styles.media}
+                src={activeMedia}
+                alt=""
+                sizes="(width < 721px) 100vw, (width < 1025px) 80vw, 720px"
+                loading="lazy"
+              />
+            ) : null}
           </div>
           <div className={styles.scrim} aria-hidden />
 

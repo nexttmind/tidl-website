@@ -259,6 +259,9 @@ export function pillSrcByCompoundKey(key: string): string | undefined {
   return PILL_ASSETS.find((p) => p.compoundKey === key)?.src;
 }
 
+/** Isolated cellular oral. Figma TIDL.com 1380:2. */
+export const CELLULAR_ORAL_PILL = "/brand/pills/cellular-oral.png?v=5";
+
 /** Representative pill thumb per Health Goals menu item. */
 export const TREATMENT_MENU_PILL: Readonly<Record<string, string>> = {
   "weight-loss": "/brand/pills/category-weight-loss.png",

@@ -1,6 +1,5 @@
-import { ALL_TREATMENTS } from "@/content/fixtures/ask-tidl";
-import { CATALOG_HREF } from "@/content/fixtures/catalog";
-import { PEPTIDE_GUIDE_HREF } from "@/content/fixtures/peptide-guide";
+import { SHOP_CATALOG } from "@/components/home/shop-catalog";
+import { catalogKindHref } from "@/content/catalog/routes";
 import { LEGAL_ROUTES } from "@/content/legal/entity";
 
 export type FooterHrefLink = {
@@ -19,20 +18,36 @@ export type FooterColumn = {
   links: readonly FooterLink[];
 };
 
-/** Site footer catalog — mirrors the Treatments mega menu. */
+function linksFor(kind: "product" | "bundle" | "treatment"): FooterHrefLink[] {
+  return SHOP_CATALOG.filter((item) => item.kind === kind).map((item) => ({
+    label: item.label,
+    href: item.href,
+  }));
+}
+
+/** Site footer catalog — products, bundles, treatments. */
 export const footerColumns: readonly FooterColumn[] = [
   {
+    title: "Products",
+    href: catalogKindHref("product"),
+    links: linksFor("product"),
+  },
+  {
+    title: "Product Bundles",
+    href: catalogKindHref("bundle"),
+    links: linksFor("bundle"),
+  },
+  {
     title: "Treatments",
-    href: CATALOG_HREF,
-    links: ALL_TREATMENTS.map(({ label, href }) => ({ label, href })),
+    href: catalogKindHref("treatment"),
+    links: linksFor("treatment"),
   },
   {
     title: "Company",
     links: [
       { label: "FAQs", href: "/faqs" },
       { label: "Pricing and Terms", action: "pricing-terms" },
-      { label: "Peptide Guide", href: PEPTIDE_GUIDE_HREF },
-      { label: "Find a Treatment", href: CATALOG_HREF },
+      { label: "Find a Treatment", href: catalogKindHref("treatment") },
       { label: "Careers", href: "/careers" },
     ],
   },

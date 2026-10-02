@@ -21,9 +21,18 @@ import {
   mapAccountHome,
   mergeOrderTracking,
 } from "@/lib/prescriberx/map-account-home";
+import { fetchCareApi } from "@/lib/prescriberx/care-api-fetch";
 import { nextWaitPollMs } from "@/lib/prescriberx/waiting-poll";
 import { PatientCareActions } from "./PatientCareActions";
 import styles from "./AccountHome.module.css";
+
+function accountLoginHref(entrySlug: string, nextPath: string): string {
+  const params = new URLSearchParams();
+  params.set("mode", "login");
+  params.set("entry", entrySlug);
+  params.set("next", nextPath);
+  return `/care/account?${params.toString()}`;
+}
 
 type Props = {
   entrySlug: string;
@@ -153,25 +162,6 @@ function RelatedCard({ item }: { item: ValueFieldCard }) {
   );
 }
 
-async function fetchPatientJson(path: string): Promise<{
-  unauthorized?: boolean;
-  ok: boolean;
-  data: unknown;
-}> {
-  const res = await fetch(path, {
-    headers: { Accept: "application/json" },
-    cache: "no-store",
-  });
-  if (res.status === 401) return { unauthorized: true, ok: false, data: null };
-  if (!res.ok) return { ok: false, data: null };
-  try {
-    const json = (await res.json()) as { data?: unknown };
-    return { ok: true, data: json.data ?? null };
-  } catch {
-    return { ok: false, data: null };
-  }
-}
-
 export function AccountHome({ entrySlug, demo = false }: Props) {
   const { openModal } = useAskTidl();
   const router = useRouter();
@@ -197,12 +187,13 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
     let cancelled = false;
     void (async () => {
       setLoadError(null);
-      const snapshot = await fetchPatientJson(
+      const portalNext = `/care/home?entry=${encodeURIComponent(entrySlug)}`;
+      const snapshot = await fetchCareApi(
         "/api/prescriberx/patient/snapshot",
       );
       if (cancelled) return;
       if (snapshot.unauthorized) {
-        router.replace("/care/account?mode=login");
+        router.replace(accountLoginHref(entrySlug, portalNext));
         return;
       }
       if (!snapshot.ok) {
@@ -238,12 +229,12 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
         });
         const currentId = mapped.currentOrder?.id;
         if (currentId && isOrderUuid(currentId)) {
-          const tracking = await fetchPatientJson(
+          const tracking = await fetchCareApi(
             `/api/prescriberx/patient/orders/${encodeURIComponent(currentId)}/tracking`,
           );
           if (cancelled) return;
           if (tracking.unauthorized) {
-            router.replace("/care/account?mode=login");
+            router.replace(accountLoginHref(entrySlug, portalNext));
             return;
           }
           if (tracking.ok && mapped.currentOrder) {
@@ -277,18 +268,17 @@ export function AccountHome({ entrySlug, demo = false }: Props) {
 
     const poll = async () => {
       if (cancelled || document.visibilityState === "hidden") return;
-      const res = await fetch(
+      const status = await fetchCareApi(
         `/api/prescriberx/encounters/${encodeURIComponent(encounterId)}/status`,
-        { headers: { Accept: "application/json" }, credentials: "include" },
       );
       if (cancelled) return;
-      if (res.status === 401) {
-        router.replace("/care/account?mode=login");
+      if (status.unauthorized) {
+        const portalNext = `/care/home?entry=${encodeURIComponent(entrySlug)}`;
+        router.replace(accountLoginHref(entrySlug, portalNext));
         return;
       }
-      if (res.ok) {
-        const json: unknown = await res.json();
-        const live = unwrapEncounterStatus(json);
+      if (status.ok) {
+        const live = unwrapEncounterStatus({ data: status.data });
         if (live) {
           setHome((prev) =>
             prev ? applyLiveEncounterStatus(prev, live, visitGate) : prev,

@@ -5,3 +5,31 @@
   width: 100%;
   background: var(--color-white);
 }
+
+/* Desktop keeps the catalog grid. Phone and tablet keep the family overview. */
+.desktop {
+  display: block;
+}
+
+.compact {
+  display: none;
+}
+
+@media (width < 1025px) {
+  .desktop {
+    display: none;
+  }
+
+  .compact {
+    display: block;
+  }
+
+  /* /treatments keeps the catalog browse, not the family overview. */
+  .showBrowse .desktop {
+    display: block;
+  }
+
+  .showBrowse .compact {
+    display: none;
+  }
+}

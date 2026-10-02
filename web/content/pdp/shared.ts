@@ -3,6 +3,7 @@ import {
   PDP_CARE_FAQ,
   PDP_CARE_TERMS,
   PDP_PAY_LINE,
+  PDP_PAYMENT_NOTE,
   PDP_PLAN_LABEL,
   PDP_PLAN_OPTIONS,
   PDP_SHARED_FAQ,
@@ -13,6 +14,7 @@ export {
   PDP_CARE_FAQ,
   PDP_CARE_TERMS,
   PDP_PAY_LINE,
+  PDP_PAYMENT_NOTE,
   PDP_PLAN_LABEL,
   PDP_PLAN_OPTIONS,
   PDP_SHARED_FAQ,
@@ -56,6 +58,9 @@ export const PDP_CARE_STAGES = [
     body: "Follow up through the portal. Your clinician can hold, adjust, or stop the plan. Pace follows how you feel, if prescribed.",
   },
 ] as const;
+
+export const PDP_COMPLIANCE_LINE =
+  "Physician guided. Available if prescribed after clinical review.";
 
 export const PDP_PROOF_THUMB = {
   quote: "The intake was clear and shipping was fast.",

@@ -90,6 +90,7 @@
   margin: 0;
   padding: 0;
   display: grid;
+  align-content: start;
   gap: var(--space-2);
 }
 
@@ -201,35 +202,55 @@
   color: rgba(255, 255, 255, 0.38);
 }
 
-@media (min-width: 768px) {
+@media (width >= 1025px) {
   .root {
-    padding: var(--space-8) 0 var(--space-5);
+    padding: 20px 0 var(--space-5);
   }
 
   .inner {
-    gap: var(--space-6);
+    gap: 16px;
     padding-inline: var(--space-8);
   }
 
   .brandBar {
     flex-direction: row;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
     gap: var(--space-6);
-    padding-bottom: var(--space-5);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    padding-bottom: 0;
   }
 
   .columns {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--space-5) var(--space-6);
+    align-items: start;
+    gap: 16px var(--space-7);
+  }
+
+  .columnTitle {
+    margin-bottom: 6px;
+  }
+
+  .list {
+    gap: 0;
+  }
+
+  .list li {
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  .list a,
+  .action {
+    display: block;
+    line-height: 1;
+    padding-block: 2px;
   }
 
   .columnWide {
     grid-column: span 2;
     display: grid;
     grid-template-columns: subgrid;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto auto;
   }
 
   .columnWide .columnTitle,
@@ -250,20 +271,6 @@
   }
 }
 
-@media (min-width: 1100px) {
-  .inner {
-    gap: var(--space-7);
-    padding-inline: var(--space-8);
-  }
-
-  .brandBar {
-    padding-bottom: var(--space-6);
-  }
-
-  .columns {
-    gap: var(--space-5) var(--space-7);
-  }
-}
 
 @media (width < 1025px) {
   .columnWide {

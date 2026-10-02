@@ -1,15 +1,31 @@
 "use client";
 
-import Image from "next/image";
 import {
   useEffect,
   useId,
   useRef,
   useState,
+  useSyncExternalStore,
   type FormEvent,
 } from "react";
+import { MarketingImage } from "@/components/media/MarketingImage";
 import { CAPTURE_COPY } from "@/content/fixtures/email-capture";
 import styles from "./EmailCaptureModal.module.css";
+
+function subscribePhone(onChange: () => void) {
+  const mq = window.matchMedia("(width < 721px)");
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+}
+
+function readPhone() {
+  return window.matchMedia("(width < 721px)").matches;
+}
+
+/** SSR and first paint assume phone so the sheet image is not in the HTML. */
+function usePhoneSheet() {
+  return useSyncExternalStore(subscribePhone, readPhone, () => true);
+}
 
 type Step = "email" | "phone" | "success";
 
@@ -38,6 +54,7 @@ function EmailCaptureModalContent({
 }) {
   const titleId = useId();
   const descId = useId();
+  const rootRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const phoneRef = useRef<HTMLInputElement>(null);
@@ -49,6 +66,50 @@ function EmailCaptureModalContent({
   const [leadId, setLeadId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const phoneSheet = usePhoneSheet();
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const sync = () => {
+      const face = document.querySelector("#buy [data-assessment]");
+      const control = face?.closest("a, button");
+      if (!(control instanceof HTMLElement)) {
+        root.style.clipPath = "";
+        return;
+      }
+      const rect = control.getBoundingClientRect();
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const visible =
+        rect.width > 0 &&
+        rect.height > 0 &&
+        rect.bottom > 0 &&
+        rect.right > 0 &&
+        rect.top < height &&
+        rect.left < width;
+      if (!visible) {
+        root.style.clipPath = "";
+        return;
+      }
+      const pad = 6;
+      const x1 = Math.max(0, rect.left - pad);
+      const y1 = Math.max(0, rect.top - pad);
+      const x2 = Math.min(width, rect.right + pad);
+      const y2 = Math.min(height, rect.bottom + pad);
+      root.style.clipPath = `polygon(evenodd, 0px 0px, ${width}px 0px, ${width}px ${height}px, 0px ${height}px, 0px 0px, ${x1}px ${y1}px, ${x1}px ${y2}px, ${x2}px ${y2}px, ${x2}px ${y1}px, ${x1}px ${y1}px)`;
+    };
+
+    sync();
+    window.addEventListener("scroll", sync, true);
+    window.addEventListener("resize", sync);
+    return () => {
+      window.removeEventListener("scroll", sync, true);
+      window.removeEventListener("resize", sync);
+      root.style.clipPath = "";
+    };
+  }, []);
 
   useEffect(() => {
     const prevOverflow = document.body.style.overflow;
@@ -187,7 +248,7 @@ function EmailCaptureModalContent({
     leadId || step === "success" ? "complete" : "dismiss";
 
   return (
-    <div className={styles.root} role="presentation">
+    <div ref={rootRef} className={styles.root} role="presentation">
       <button
         type="button"
         className={styles.backdrop}
@@ -203,14 +264,16 @@ function EmailCaptureModalContent({
         aria-describedby={descId}
       >
         <div className={styles.media}>
-          <Image
-            src={CAPTURE_COPY.media.src}
-            alt={CAPTURE_COPY.media.alt}
-            fill
-            sizes="(max-width: 720px) 100vw, 44vw"
-            className={styles.mediaImage}
-            priority
-          />
+          {phoneSheet ? null : (
+            <MarketingImage
+              src={CAPTURE_COPY.media.src}
+              alt={CAPTURE_COPY.media.alt}
+              sizes="(width < 1025px) 44vw, 440px"
+              className={styles.mediaImage}
+              loading="eager"
+              fetchPriority="high"
+            />
+          )}
           <div className={styles.mediaWash} aria-hidden />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

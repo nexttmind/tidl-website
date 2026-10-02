@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { catalogVialSrc } from "@/content/fixtures/catalog";
+import { CATALOG_VIAL_REV, catalogVialSrc } from "@/content/fixtures/catalog";
 import type { ThemeId } from "@/content/brand/peptide-identity";
 
 export type BloomLayout = {
@@ -16,6 +16,9 @@ export type BloomLayout = {
   imgScale?: number;
   /** Slot inset inside the bloom group: top, right, bottom, left (%). */
   slotInset?: readonly [number, number, number, number];
+  /** Isolate size in the same space as groupW/H. Seats the lockup to the card vial. */
+  vialW?: number;
+  vialH?: number;
 };
 
 export type ShopPlate = {
@@ -30,9 +33,9 @@ export type ShopPlate = {
 export const SHOP_PLATES: readonly ShopPlate[] = [
   {
     id: "creative",
-    plateSrc: "/landing/shop/plates/creative.png",
+    plateSrc: `/landing/shop/catalog/plates/creative.png?v=${CATALOG_VIAL_REV}`,
     vialSrc: catalogVialSrc("creative"),
-    bloomSrc: "/landing/shop/blooms/creative.png",
+    bloomSrc: `/landing/shop/catalog/blooms/creative.png?v=${CATALOG_VIAL_REV}`,
     bloom: {
       groupW: 483,
       groupH: 629.356,
@@ -47,9 +50,9 @@ export const SHOP_PLATES: readonly ShopPlate[] = [
   },
   {
     id: "transformation",
-    plateSrc: "/landing/shop/plates/transformation.png",
+    plateSrc: `/landing/shop/catalog/plates/transformation.png?v=${CATALOG_VIAL_REV}`,
     vialSrc: catalogVialSrc("transformation"),
-    bloomSrc: "/landing/shop/blooms/transformation.png",
+    bloomSrc: `/landing/shop/catalog/blooms/transformation.png?v=${CATALOG_VIAL_REV}`,
     bloom: {
       groupW: 470.32,
       groupH: 590.95,
@@ -64,9 +67,9 @@ export const SHOP_PLATES: readonly ShopPlate[] = [
   },
   {
     id: "mens-health",
-    plateSrc: "/landing/shop/plates/mens-health.png",
+    plateSrc: `/landing/shop/catalog/plates/mens-health.png?v=${CATALOG_VIAL_REV}`,
     vialSrc: catalogVialSrc("mens-health"),
-    bloomSrc: "/landing/shop/blooms/mens-health.png",
+    bloomSrc: `/landing/shop/catalog/blooms/mens-health.png?v=${CATALOG_VIAL_REV}`,
     bloom: {
       groupW: 433.98,
       groupH: 452.89,
@@ -81,9 +84,9 @@ export const SHOP_PLATES: readonly ShopPlate[] = [
   },
   {
     id: "traveler",
-    plateSrc: "/landing/shop/plates/traveler.png",
+    plateSrc: `/landing/shop/catalog/plates/traveler.png?v=${CATALOG_VIAL_REV}`,
     vialSrc: catalogVialSrc("traveler"),
-    bloomSrc: "/landing/shop/blooms/traveler.png",
+    bloomSrc: `/landing/shop/catalog/blooms/traveler.png?v=${CATALOG_VIAL_REV}`,
     bloom: {
       groupW: 398,
       groupH: 415,
@@ -98,9 +101,9 @@ export const SHOP_PLATES: readonly ShopPlate[] = [
   },
   {
     id: "weight-loss",
-    plateSrc: "/landing/shop/plates/weight-loss.png",
+    plateSrc: `/landing/shop/catalog/plates/weight-loss.png?v=${CATALOG_VIAL_REV}`,
     vialSrc: catalogVialSrc("weight-loss"),
-    bloomSrc: "/landing/shop/blooms/weight-loss.png",
+    bloomSrc: `/landing/shop/catalog/blooms/weight-loss.png?v=${CATALOG_VIAL_REV}`,
     bloom: {
       groupW: 1111.4,
       groupH: 807.47,
@@ -115,9 +118,9 @@ export const SHOP_PLATES: readonly ShopPlate[] = [
   },
   {
     id: "executive",
-    plateSrc: "/landing/shop/plates/executive.png",
+    plateSrc: `/landing/shop/catalog/plates/executive.png?v=${CATALOG_VIAL_REV}`,
     vialSrc: catalogVialSrc("executive"),
-    bloomSrc: "/landing/shop/blooms/executive.png",
+    bloomSrc: `/landing/shop/catalog/blooms/executive.png?v=${CATALOG_VIAL_REV}`,
     bloom: {
       groupW: 486,
       groupH: 667.44,
@@ -132,9 +135,9 @@ export const SHOP_PLATES: readonly ShopPlate[] = [
   },
   {
     id: "athlete",
-    plateSrc: "/landing/shop/plates/athlete.png",
+    plateSrc: `/landing/shop/catalog/plates/athlete.png?v=${CATALOG_VIAL_REV}`,
     vialSrc: catalogVialSrc("athlete"),
-    bloomSrc: "/landing/shop/blooms/athlete.png",
+    bloomSrc: `/landing/shop/catalog/blooms/athlete.png?v=${CATALOG_VIAL_REV}`,
     bloom: {
       groupW: 372,
       groupH: 427,
@@ -149,9 +152,9 @@ export const SHOP_PLATES: readonly ShopPlate[] = [
   },
   {
     id: "parents",
-    plateSrc: "/landing/shop/plates/parents.png",
+    plateSrc: `/landing/shop/catalog/plates/parents.png?v=${CATALOG_VIAL_REV}`,
     vialSrc: catalogVialSrc("parents"),
-    bloomSrc: "/landing/shop/blooms/parents.png",
+    bloomSrc: `/landing/shop/catalog/blooms/parents.png?v=${CATALOG_VIAL_REV}`,
     bloom: {
       groupW: 509.69,
       groupH: 537.57,
@@ -166,9 +169,9 @@ export const SHOP_PLATES: readonly ShopPlate[] = [
   },
   {
     id: "legacy",
-    plateSrc: "/landing/shop/plates/legacy.png",
+    plateSrc: `/landing/shop/catalog/plates/legacy.png?v=${CATALOG_VIAL_REV}`,
     vialSrc: catalogVialSrc("legacy"),
-    bloomSrc: "/landing/shop/blooms/legacy.png",
+    bloomSrc: `/landing/shop/catalog/blooms/legacy.png?v=${CATALOG_VIAL_REV}`,
     bloom: {
       groupW: 562.22,
       groupH: 758.04,
@@ -183,9 +186,9 @@ export const SHOP_PLATES: readonly ShopPlate[] = [
   },
   {
     id: "recovery-performance",
-    plateSrc: "/landing/shop/plates/recovery-performance.png",
+    plateSrc: `/landing/shop/catalog/plates/recovery-performance.png?v=${CATALOG_VIAL_REV}`,
     vialSrc: catalogVialSrc("recovery-performance"),
-    bloomSrc: "/landing/shop/blooms/recovery-performance.png",
+    bloomSrc: `/landing/shop/catalog/blooms/recovery-performance.png?v=${CATALOG_VIAL_REV}`,
     bloom: {
       groupW: 508.18,
       groupH: 731.07,
@@ -200,9 +203,9 @@ export const SHOP_PLATES: readonly ShopPlate[] = [
   },
   {
     id: "womens-balance",
-    plateSrc: "/landing/shop/plates/womens-balance.png",
+    plateSrc: `/landing/shop/catalog/plates/womens-balance.png?v=${CATALOG_VIAL_REV}`,
     vialSrc: catalogVialSrc("womens-balance"),
-    bloomSrc: "/landing/shop/blooms/womens-balance.png",
+    bloomSrc: `/landing/shop/catalog/blooms/womens-balance.png?v=${CATALOG_VIAL_REV}`,
     bloom: {
       groupW: 461.02,
       groupH: 497.28,
@@ -217,14 +220,16 @@ export const SHOP_PLATES: readonly ShopPlate[] = [
   },
   {
     id: "sexual-health",
-    plateSrc: "/landing/shop/plates/sexual-health.png",
+    plateSrc: `/landing/shop/catalog/plates/sexual-health.png?v=${CATALOG_VIAL_REV}`,
     vialSrc: catalogVialSrc("sexual-health"),
-    bloomSrc: "/landing/shop/blooms/sexual-health.png",
+    bloomSrc: `/landing/shop/catalog/blooms/sexual-health.png?v=${CATALOG_VIAL_REV}`,
     bloom: {
       groupW: 437,
       groupH: 400,
       vialX: 53.55,
       vialY: 37.5,
+      vialW: 220,
+      vialH: 220,
       rotate: 0,
       skewX: 0,
       scaleX: 1,
@@ -234,9 +239,9 @@ export const SHOP_PLATES: readonly ShopPlate[] = [
   },
   {
     id: "skin-hair",
-    plateSrc: "/landing/shop/plates/skin-hair.png",
+    plateSrc: `/landing/shop/catalog/plates/skin-hair.png?v=${CATALOG_VIAL_REV}`,
     vialSrc: catalogVialSrc("skin-hair"),
-    bloomSrc: "/landing/shop/blooms/skin-hair.png",
+    bloomSrc: `/landing/shop/catalog/blooms/skin-hair.png?v=${CATALOG_VIAL_REV}`,
     bloom: {
       groupW: 397.66,
       groupH: 486.68,
@@ -270,22 +275,34 @@ const BLOOM_CSS_SCALE: Partial<Record<ThemeId, number>> = {
  * Seated --bloom-s so the group sits past the compact plate.
  * Wide groups stay modest; small or pre-shrunk groups scale up.
  */
-export function bloomSeatScale(id: ThemeId, bloom: BloomLayout): number {
+export function bloomSeatScale(id: string, bloom: BloomLayout): number {
   const plateW = 0.87;
   const plateH = 0.94 * (430 / 300);
   const stageH = bloom.groupH / bloom.groupW;
-  const art = (bloom.imgScale ?? 1) * (BLOOM_CSS_SCALE[id] ?? 1);
+  const art =
+    (bloom.imgScale ?? 1) * (BLOOM_CSS_SCALE[id as ThemeId] ?? 1);
   const sx = plateW / Math.max(art, 0.01);
   const sy = plateH / Math.max(stageH * art, 0.01);
   return Math.max(0.86, Math.min(1.32, Math.min(sx, sy) * 1.15));
 }
 
 export function bloomStyle(bloom: BloomLayout): CSSProperties {
+  const lockVw = bloom.vialW ?? bloom.groupW * 0.36;
+  const lockVh = bloom.vialH ?? bloom.groupH * 0.72;
+  /* Single vials are ~0.44 of isolate height. Wide lockups (bundles)
+   * keep the same pad as a fraction of isolate height, not 1.7 × width. */
+  const wide = lockVw / lockVh >= 0.95;
+  const plateNw = Math.round(wide ? lockVw + lockVh * 0.3 : lockVw * 1.7);
+  const plateNh = Math.round(lockVh * 1.3);
   return {
     "--group-w": bloom.groupW,
     "--group-h": bloom.groupH,
     "--vial-x": `${bloom.vialX}%`,
     "--vial-y": `${bloom.vialY}%`,
+    "--lock-vw": lockVw,
+    "--lock-vh": lockVh,
+    "--plate-nw": plateNw,
+    "--plate-nh": plateNh,
     "--bloom-rotate": `${bloom.rotate}deg`,
     "--bloom-skew": `${bloom.skewX}deg`,
     "--bloom-scale-x": bloom.scaleX,

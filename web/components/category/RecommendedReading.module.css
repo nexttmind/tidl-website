@@ -37,14 +37,14 @@
   font-size: 14px;
 }
 
-@media (min-width: 768px) {
+@media (width >= 721px) {
   .list {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--space-6);
   }
 }
 
-@media (max-width: 720px) {
+@media (width < 721px) {
   .root {
     padding: var(--space-8) 0 var(--space-9);
   }

@@ -100,7 +100,7 @@
   }
 }
 
-@media (max-width: 520px) {
+@media (width < 721px) {
   .root {
     right: var(--layout-gutter);
     bottom: max(var(--space-4), env(safe-area-inset-bottom, 0px));
@@ -122,6 +122,18 @@
     min-height: 44px;
     padding: 0 16px;
     font-size: 14px;
+  }
+
+  .root[data-yield="true"] {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+@media (721px <= width < 1025px) {
+  .root[data-yield="true"] {
+    opacity: 0;
+    pointer-events: none;
   }
 }
 

@@ -90,8 +90,8 @@
 .spineFill {
   height: 0;
   background: var(--stage-accent, var(--text-primary));
-  transform-origin: top;
-  transition: height 220ms ease;
+  transform-origin: top center;
+  transform: scaleY(0);
 }
 
 .spineArrow {
@@ -263,9 +263,12 @@
 
 .bloomField {
   z-index: 0;
-  background-image: var(--theme-night);
   background-size: cover;
   background-position: center;
+}
+
+.bloomField:not([data-catalog-field]) {
+  background-image: var(--theme-night);
 }
 
 .bloomGrain {
@@ -279,15 +282,12 @@
 .bloomStage {
   position: relative;
   z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
   transition: transform 700ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.bloomCell[data-bloom="sexual-health"] :global([data-bloom-vial]) {
-  width: 88%;
-  height: 88%;
-  filter: url(#tidl-pill-defringe);
 }
 
 .collage .hero img,

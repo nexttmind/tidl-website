@@ -51,7 +51,7 @@
   }
 }
 
-@media (max-width: 720px) {
+@media (width < 721px) {
   .item {
     flex-basis: 120px;
   }

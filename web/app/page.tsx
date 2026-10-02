@@ -31,25 +31,20 @@ export default function HomePage() {
             promo={data.promo}
             features={data.catalogGrid.features}
             items={data.catalogGrid.items}
-            menuGuide={data.catalogGrid.menuGuide}
             slides={data.hero.slides}
             loopsBeforeAdvance={data.hero.loopsBeforeAdvance}
             startMode={data.hero.startMode}
-            afterHero={
-              <ScrollReveal threshold={0} rootMargin="0px 0px 45% 0px">
-                <LandingShop />
-              </ScrollReveal>
-            }
+            afterHero={<LandingShop />}
           />
-          <ScrollReveal>
-            <LandingSection2 />
-          </ScrollReveal>
           <ScrollReveal>
             <LandingPen
               tags={data.pen.tags}
               slides={data.pen.slides}
               details={data.pen.details}
             />
+          </ScrollReveal>
+          <ScrollReveal>
+            <LandingSection2 />
           </ScrollReveal>
         </div>
         <div className={styles.careBand}>

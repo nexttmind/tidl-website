@@ -1,6 +1,5 @@
 /** Shared catalog index. Goal framed. No molecule names. */
 
-import { TREATMENT_MENU_PILL } from "@/content/brand/pills";
 import { themeField, type ThemeId, type ThemeKind } from "@/content/brand/peptide-identity";
 import { valueFields, type ValueFieldCard } from "@/content/fixtures/value-fields";
 
@@ -52,29 +51,34 @@ export const catalogCopy = {
   heroSrc2x: "/landing/categories/header@2x.png?v=3",
   titleLead: "Built for",
   titleAccent: "how you live",
-  lede: "Pick a health goal or a treatment that matches how you live. A physician reviews what, if anything, is prescribed.",
+  lede: "Pick a product, a bundle, or a treatment. A physician reviews what, if anything, is prescribed.",
   healthGoals: {
-    id: "health-goals",
-    title: "Health Goals",
-    lede: "Start with what you want from care.",
+    id: "products",
+    title: "Products",
+    lede: "Labeled isolates and the at home kit.",
   },
   treatments: {
     id: "treatments",
     title: "Treatments",
-    lede: "Match care to the life you are already living.",
+    lede: "Goal framed care plans. A physician reviews what, if anything, is prescribed.",
+  },
+  bundles: {
+    id: "bundles",
+    title: "Bundles",
+    lede: "Stacked protocols reviewed as one visit.",
   },
   pairing: {
     title: "Complete your routine",
-    cta: { label: "Get Started" },
+    cta: { label: "Get started" },
     left: {
-      id: "recovery-performance",
+      id: "repair-mobility",
       vialSrc: "/landing/shop/pairing/recovery-upright.png",
       baseX: 0.497,
       width: 476,
       height: 986,
     },
     right: {
-      id: "athlete",
+      id: "lean-cut",
       vialSrc: "/landing/shop/pairing/athlete-lean-left.png",
       baseX: 0.629,
       width: 688,
@@ -137,14 +141,32 @@ export function catalogNotecardCopy(id: ThemeId): CatalogNotecardCopy {
   );
 }
 
-/** Cross lockup set, Figma 1120:3. Bump when isolated vials change. */
-const CATALOG_VIAL_REV = 6;
+/** Isolated fills and color fields from 2138 lockup boards. Bump when those layers change. */
+export const CATALOG_VIAL_REV = 39;
+
+export const CATALOG_CHROME = {
+  viewAll: `/landing/shop/catalog/chrome/view-all.png?v=${CATALOG_VIAL_REV}`,
+} as const;
+
+/** Theme ids that do not match the catalog filename. */
+const CATALOG_VIAL_FILE: Partial<Record<ThemeId, string>> = {
+  executive: "mens-health",
+  athlete: "athletes",
+  creative: "creators",
+  legacy: "healthspan",
+  traveler: "travelers",
+};
+
+/** Oral isolates live in catalog/pills, not catalog/vials. */
+const CATALOG_PILL_FILE = new Set(["sexual-health"]);
+
+export function catalogProductSrc(id: string): string {
+  const folder = CATALOG_PILL_FILE.has(id) ? "pills" : "vials";
+  return `/landing/shop/catalog/${folder}/${id}.png?v=${CATALOG_VIAL_REV}`;
+}
 
 export function catalogVialSrc(id: ThemeId): string {
-  if (id === "sexual-health") {
-    return TREATMENT_MENU_PILL["sexual-health"];
-  }
-  return `/landing/shop/vials/${id}.png?v=${CATALOG_VIAL_REV}`;
+  return catalogProductSrc(CATALOG_VIAL_FILE[id] ?? id);
 }
 
 export function catalogItemById(id: ThemeId): ValueFieldCard | undefined {

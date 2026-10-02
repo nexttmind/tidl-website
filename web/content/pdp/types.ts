@@ -53,9 +53,15 @@ export type CategoryPdpData = {
   metadataTitle: string;
   metadataDescription: string;
   stockLabel: string;
+  /** Set when PDP pricing/stock was merged from PrescribeRx sandbox catalog. */
+  sandboxLive?: boolean;
+  soldOut?: boolean;
   category: string;
   title: string;
   themeId: ThemeId;
+  catalogId?: string;
+  /** Shop art id for the hero plate, bloom, and cutout. Not a launch catalog id. */
+  artId?: string;
   /** Type-field graphic slug. Defaults to themeId. Pain Relief shares recovery-performance tokens. */
   barrageGraphic?: string;
   /** Optional still pack. Pain Relief PDPs each have their own mix. */
@@ -63,10 +69,12 @@ export type CategoryPdpData = {
   price: string;
   compareAtPrice: string;
   tagline: string;
-  /** True when price/stock/tagline were filled from PrescribeRx sandbox. */
-  sandboxLive?: boolean;
+  /** Two lines between the wash plate and the form. Phone and tablet only. */
+  dek?: readonly [string, string];
   primaryCta: string;
   primaryCtaHref: string;
+  /** One visible Rx line under the buy box buttons. Omit on OTC and kit. */
+  complianceLine?: string;
   body: string;
   payLine: string;
   heroSrc: string;
@@ -90,7 +98,7 @@ export type CategoryPdpData = {
   lead: {
     title: string;
     body: string;
-    cta: { label: string; href: string };
+    cta: { label: string; href: string; disabled?: boolean };
     media: {
       id: string;
       label: string;
@@ -104,7 +112,7 @@ export type CategoryPdpData = {
   benefits: {
     headline: string;
     subtitle: string;
-    cta: { label: string; href: string };
+    cta: { label: string; href: string; disabled?: boolean };
     items: readonly PdpBenefitItem[];
   };
   social: {
@@ -135,4 +143,12 @@ export type CategoryPdpData = {
     collage: StageCollage;
   };
   pairing?: CategoryPairingData;
+  /** Dual-role add on, rendered below the buy box. Price omitted when absent. */
+  addonNote?: {
+    heading: string;
+    body: string;
+    href: string;
+    hrefLabel: string;
+    price?: string;
+  };
 };

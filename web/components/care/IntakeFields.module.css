@@ -100,7 +100,7 @@
   grid-template-columns: 1fr;
 }
 
-@media (max-width: 520px) {
+@media (width < 721px) {
   .choiceGrid {
     grid-template-columns: 1fr;
   }

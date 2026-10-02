@@ -8,7 +8,22 @@ export function HashSection() {
     const scrollToHash = () => {
       const id = window.location.hash.replace(/^#/, "");
       if (!id) return;
-      document.getElementById(id)?.scrollIntoView({
+      const desktop = document.querySelector<HTMLElement>(
+        '[data-catalog="desktop"]',
+      );
+      const compact = document.querySelector<HTMLElement>(
+        '[data-catalog="compact"]',
+      );
+      const pane =
+        desktop && window.getComputedStyle(desktop).display !== "none"
+          ? desktop
+          : compact && window.getComputedStyle(compact).display !== "none"
+            ? compact
+            : desktop ?? compact;
+      const target =
+        pane?.querySelector<HTMLElement>(`#${CSS.escape(id)}`) ??
+        document.getElementById(id);
+      target?.scrollIntoView({
         behavior: "auto",
         block: "start",
       });

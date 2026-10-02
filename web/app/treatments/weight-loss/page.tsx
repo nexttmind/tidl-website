@@ -1,15 +1,15 @@
-import { CategoryPdpLive } from "@/components/pdp/CategoryPdpLive";
-import { weightLossPdp } from "@/content/fixtures/weight-loss-pdp";
-import type { CategoryPdpData } from "@/content/pdp/types";
+import { notFound } from "next/navigation";
+import { CategoryPdp } from "@/components/pdp/CategoryPdp";
+import { catalogPdp } from "@/content/pdp/catalog";
+
+const data = catalogPdp("weight-loss");
 
 export const metadata = {
-  title: "TIDL · Weight Loss",
-  description:
-    "Physician guided GLP 1 weight loss care. Available if prescribed after clinical review.",
+  title: data?.metadataTitle ?? "TIDL · Weight Loss",
+  description: data?.metadataDescription,
 };
 
 export default function WeightLossPage() {
-  return (
-    <CategoryPdpLive data={weightLossPdp as unknown as CategoryPdpData} />
-  );
+  if (!data) notFound();
+  return <CategoryPdp data={data} />;
 }

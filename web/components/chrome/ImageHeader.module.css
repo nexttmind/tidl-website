@@ -11,13 +11,13 @@
   border-radius: 0;
 }
 
-@media (min-width: 768px) {
+@media (721px <= width < 1025px) {
   .media {
     min-height: 320px;
   }
 }
 
-@media (max-width: 720px) {
+@media (width < 721px) {
   .media {
     min-height: 200px;
     aspect-ratio: 4 / 3;

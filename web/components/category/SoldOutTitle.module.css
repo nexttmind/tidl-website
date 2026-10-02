@@ -1,0 +1,45 @@
+.row {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 6px;
+  max-width: 100%;
+  vertical-align: top;
+}
+
+.name {
+  min-width: 0;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.mark {
+  flex: none;
+  margin-top: 1px;
+  font-family: var(--font-ui);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: inherit;
+}
+
+.badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 6;
+  font-family: var(--font-ui);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  pointer-events: none;
+}
+
+.badge[data-tone="inverse"] {
+  color: var(--text-inverse);
+  text-shadow: 0 1px 2px color-mix(in srgb, var(--color-night) 65%, transparent);
+}

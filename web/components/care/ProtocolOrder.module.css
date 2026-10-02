@@ -711,7 +711,7 @@
   color: var(--text-primary);
 }
 
-@media (max-width: 1023px) {
+@media (width < 1025px) {
   .split,
   .agents {
     grid-template-columns: 1fr;
@@ -761,7 +761,7 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (width < 721px) {
   .fieldRow,
   .methodRow,
   .addressRow {

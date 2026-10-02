@@ -402,13 +402,19 @@
   font-size: 13px;
 }
 
-@media (max-width: 720px) {
+@media (width < 721px) {
   .root {
     --social-row: 340px;
     --social-col: 186px;
     --social-circle: 168px;
     padding-top: var(--space-6);
     padding-bottom: var(--space-6);
+  }
+
+  .scroller {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
   }
 
   .header {
@@ -430,6 +436,24 @@
 
   .wordmark {
     width: 96px;
+  }
+}
+
+@media (721px <= width < 1025px) {
+  .root {
+    --social-row: min(48vw, 420px);
+    --social-col: min(32vw, 220px);
+    --social-circle: min(30vw, 200px);
+  }
+
+  .scroller {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+  }
+
+  .title {
+    font-size: clamp(26px, 4vw, 32px);
   }
 }
 
