@@ -133,6 +133,14 @@ const PRODUCTS: readonly OptionEItem[] = [
     "tesamorelin",
   ),
   dual(
+    groupItem("products", "testosterone"),
+    "Testosterone",
+    "Energy, drive, and training load, physician guided",
+    "Testosterone",
+    "A clinician reviewed plan for energy and drive, with labs and a video visit, if prescribed.",
+    "testosterone",
+  ),
+  dual(
     groupItem("products", "at-home-lab"),
     "MD Reviewed Blood Test",
     "Results in 72 hours",
@@ -300,8 +308,21 @@ function itemsFor(kind: "product" | "bundle" | "treatment"): readonly OptionEIte
     });
 }
 
-const PRODUCT_ITEMS = itemsFor("product");
+function leadWith(items: readonly OptionEItem[], id: string): readonly OptionEItem[] {
+  const lead = items.find((item) => item.id === id);
+  if (!lead) return items;
+  return [lead, ...items.filter((item) => item.id !== id)];
+}
+
+const PRODUCT_ITEMS = leadWith(itemsFor("product"), "testosterone");
 const BUNDLE_ITEMS = itemsFor("bundle");
+
+/** Catalog and shop keep the blood test. The Products and Bundles menu does not. */
+const PRODUCTS_BUNDLES_MENU_OMIT = new Set(["at-home-lab"]);
+
+export function productsBundlesMenuProducts(): readonly OptionEItem[] {
+  return PRODUCT_ITEMS.filter((item) => !PRODUCTS_BUNDLES_MENU_OMIT.has(item.id));
+}
 const TREATMENT_ITEMS = itemsFor("treatment");
 
 export const OPTION_E_NAV: readonly OptionENavLink[] = [

@@ -107,6 +107,7 @@ const HAS_PILL = new Set([
   "energy-lift",
   "rest-rise",
   "focus",
+  "testosterone",
 ]);
 
 function visual(kind: ShopKind, id: string, layout: BloomLayout): Visual {
@@ -150,6 +151,11 @@ const VISUAL: Record<string, Visual> = {
     "product",
     "tesamorelin",
     bloom(1113, 1256, 61.01, 39.05, 412, 925),
+  ),
+  testosterone: visual(
+    "product",
+    "testosterone",
+    bloom(1269, 1314, 45.72, 46.41, 425, 947),
   ),
   b12: visual("product", "b12", bloom(1093, 1185, 50.27, 38.99, 405, 924)),
   "lipo-c": visual(

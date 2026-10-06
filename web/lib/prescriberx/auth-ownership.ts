@@ -183,6 +183,50 @@ export async function assertChartOwnsEncounter(
   return { patientChartId };
 }
 
+function intakeEmail(encounter: Record<string, unknown>): string | null {
+  const snap = asRecord(encounter.patient_intake_snapshot);
+  const tier = asRecord(snap?.tier1_demographics);
+  return typeof tier?.email === "string" ? tier.email : null;
+}
+
+/**
+ * Same email can get a new chart on a later intake. The canonical lookup
+ * still points at the first chart, so chart-id ownership fails. If the
+ * encounter's own email matches the signed-in patient, the encounter chart
+ * is theirs.
+ */
+export async function encounterChartForSessionEmail(input: {
+  email: string;
+  encounterId: string;
+}): Promise<string | null> {
+  const email = input.email.trim();
+  const encounterId = input.encounterId.trim();
+  if (!email.includes("@") || !encounterId) return null;
+
+  let encounterEnv: unknown;
+  try {
+    encounterEnv = await prescribeRxFetch(
+      `/encounters/${encodeURIComponent(encounterId)}`,
+    );
+  } catch {
+    return null;
+  }
+  const encounter = unwrapData<Record<string, unknown>>(encounterEnv);
+  if (!encounter) return null;
+
+  const patient = asRecord(encounter.patient);
+  const onFile =
+    (typeof patient?.email === "string" && patient.email) ||
+    intakeEmail(encounter);
+  if (!emailsMatch(email, onFile)) return null;
+
+  const chart =
+    typeof encounter.patient_chart_id === "string"
+      ? encounter.patient_chart_id
+      : null;
+  return chart && chart.trim() ? chart.trim() : null;
+}
+
 /** Pure helper for unit tests — same rules without network. */
 export function evaluateOwnershipMatch(args: {
   email: string;

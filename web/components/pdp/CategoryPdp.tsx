@@ -47,6 +47,7 @@ export function CategoryPdp({ data }: { data: CategoryPdpData }) {
           tagline={data.tagline}
           dek={data.dek}
           stockLabel={data.stockLabel}
+          sandboxLive={data.sandboxLive === true}
           soldOut={data.soldOut}
           price={data.price}
           compareAtPrice={data.compareAtPrice}

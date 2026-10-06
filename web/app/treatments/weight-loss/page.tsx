@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { CategoryPdp } from "@/components/pdp/CategoryPdp";
+import { CategoryPdpLive } from "@/components/pdp/CategoryPdpLive";
 import { catalogPdp } from "@/content/pdp/catalog";
 
 const data = catalogPdp("weight-loss");
@@ -11,5 +11,5 @@ export const metadata = {
 
 export default function WeightLossPage() {
   if (!data) notFound();
-  return <CategoryPdp data={data} />;
+  return <CategoryPdpLive data={data} />;
 }

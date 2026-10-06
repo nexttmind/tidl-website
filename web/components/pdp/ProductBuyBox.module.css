@@ -1077,6 +1077,11 @@
   color: var(--text-primary);
 }
 
+.sandboxLive {
+  background: color-mix(in srgb, #ebbb3e 28%, transparent);
+  box-decoration-break: clone;
+}
+
 .splitCadence {
   margin-left: 4px;
   font-size: 14px;

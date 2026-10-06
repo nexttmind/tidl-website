@@ -2744,7 +2744,6 @@
     margin-left: calc(50% - 50vw);
     padding: 14px var(--space-7) 0;
     box-sizing: border-box;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .desktopSubTabs {

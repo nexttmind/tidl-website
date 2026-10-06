@@ -20,6 +20,7 @@ const ROUTES: readonly CatalogRoute[] = [
   { id: "methylene-blue", kind: "product", themeId: "creative", entrySlug: "creators" },
   { id: "sermorelin", kind: "product", themeId: "legacy", entrySlug: "healthspan" },
   { id: "tesamorelin", kind: "product", themeId: "legacy", entrySlug: "healthspan" },
+  { id: "testosterone", kind: "product", themeId: "mens-health", entrySlug: "testosterone" },
   {
     id: "at-home-lab",
     kind: "product",
@@ -75,7 +76,6 @@ export const CATALOG_ROUTES: Readonly<Record<string, CatalogRoute>> = Object.fro
 /** Old merchandising slugs that still need to resolve. */
 export const CATALOG_ALIASES: Readonly<Record<string, string>> = {
   "mens-health": "mens-peak-performance",
-  testosterone: "mens-peak-performance",
   "womens-balance": "womens-total-balance",
   "skin-hair": "hair-skin-nails",
   "skin-and-hair": "hair-skin-nails",

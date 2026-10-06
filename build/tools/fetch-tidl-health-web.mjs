@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { execSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-const COMMIT = "62e201e117fa73fa255ca9aa7c5291b6306f9337";
+const COMMIT = "cd90f8f8a5d598552c5582461aae63ae5dfee0ca";
 const OUT_ROOT = process.env.TIDL_UI_OUT ?? join(process.env.TEMP ?? "/tmp", "tidl-ui-fetched");
 function readTreeJson() {
   const candidates = [

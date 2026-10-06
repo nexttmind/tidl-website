@@ -771,6 +771,7 @@ export const HERO_THEME: Readonly<Record<string, ThemeId>> = {
   "methylene-blue": "creative",
   sermorelin: "legacy",
   tesamorelin: "legacy",
+  testosterone: "mens-health",
   "at-home-lab": "legacy",
   "steady-start": "transformation",
   "rest-rise": "legacy",

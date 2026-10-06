@@ -2,6 +2,7 @@ import { readSessionFromRequest, type PatientSessionPayload } from "@/lib/auth/s
 import {
   OwnershipError,
   assertChartOwnsEncounter,
+  encounterChartForSessionEmail,
 } from "@/lib/prescriberx/auth-ownership";
 import { GENERIC_UNAUTHENTICATED } from "@/lib/prescriberx/auth-errors";
 import { prescribeRxFetch } from "@/lib/prescriberx/client";
@@ -51,17 +52,24 @@ export async function requireVisitSchedulingContext(
     );
   }
 
+  let patientChartId = session.patientChartId.trim();
   try {
-    await assertChartOwnsEncounter({
-      patientChartId: session.patientChartId,
+    const owned = await assertChartOwnsEncounter({
+      patientChartId,
       encounterId,
       email: session.email ?? "",
     });
+    patientChartId = owned.patientChartId;
   } catch (err) {
-    if (err instanceof OwnershipError) {
+    if (!(err instanceof OwnershipError)) throw err;
+    const sameEmailChart = await encounterChartForSessionEmail({
+      email: session.email ?? "",
+      encounterId,
+    });
+    if (!sameEmailChart) {
       throw new VisitSchedulingError("Not allowed for this encounter.", "forbidden", 403);
     }
-    throw err;
+    patientChartId = sameEmailChart;
   }
 
   const statusRaw = await prescribeRxFetch(
@@ -88,7 +96,7 @@ export async function requireVisitSchedulingContext(
     session,
     entrySlug: entry.slug,
     encounterId,
-    patientChartId: session.patientChartId.trim(),
+    patientChartId,
     encounterTypeId: entry.encounterTypeId,
   };
 }

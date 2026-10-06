@@ -1953,7 +1953,7 @@
     ],
     "raster": [],
     "width": 240,
-    "height": 301
+    "height": 249
   },
   "/landing/catalog/blooms/tirzepatide.webp": {
     "fallback": "/_opt/landing/catalog/blooms/tirzepatide.240.webp",
@@ -8455,6 +8455,31 @@
     "width": 1200,
     "height": 1200
   },
+  "/landing/nav/fields/testosterone.jpg": {
+    "fallback": "/_opt/landing/nav/fields/testosterone.1200.jpg",
+    "webp": [
+      {
+        "src": "/_opt/landing/nav/fields/testosterone.800.webp",
+        "w": 800
+      },
+      {
+        "src": "/_opt/landing/nav/fields/testosterone.1200.webp",
+        "w": 1200
+      }
+    ],
+    "raster": [
+      {
+        "src": "/_opt/landing/nav/fields/testosterone.800.jpg",
+        "w": 800
+      },
+      {
+        "src": "/_opt/landing/nav/fields/testosterone.1200.jpg",
+        "w": 1200
+      }
+    ],
+    "width": 1200,
+    "height": 1200
+  },
   "/landing/nav/fields/tirzepatide.jpg": {
     "fallback": "/_opt/landing/nav/fields/tirzepatide.1200.jpg",
     "webp": [
@@ -11373,6 +11398,26 @@
     "width": 1113,
     "height": 1256
   },
+  "/landing/shop/catalog/blooms/testosterone.png": {
+    "fallback": "/_opt/landing/shop/catalog/blooms/testosterone.1024.webp",
+    "webp": [
+      {
+        "src": "/_opt/landing/shop/catalog/blooms/testosterone.512.webp",
+        "w": 512
+      },
+      {
+        "src": "/_opt/landing/shop/catalog/blooms/testosterone.768.webp",
+        "w": 768
+      },
+      {
+        "src": "/_opt/landing/shop/catalog/blooms/testosterone.1024.webp",
+        "w": 1024
+      }
+    ],
+    "raster": [],
+    "width": 1269,
+    "height": 1314
+  },
   "/landing/shop/catalog/blooms/tirzepatide.png": {
     "fallback": "/_opt/landing/shop/catalog/blooms/tirzepatide.1024.webp",
     "webp": [
@@ -12133,6 +12178,26 @@
     "width": 1387,
     "height": 2107
   },
+  "/landing/shop/catalog/pen-lockups/testosterone.png": {
+    "fallback": "/_opt/landing/shop/catalog/pen-lockups/testosterone.1024.webp",
+    "webp": [
+      {
+        "src": "/_opt/landing/shop/catalog/pen-lockups/testosterone.512.webp",
+        "w": 512
+      },
+      {
+        "src": "/_opt/landing/shop/catalog/pen-lockups/testosterone.768.webp",
+        "w": 768
+      },
+      {
+        "src": "/_opt/landing/shop/catalog/pen-lockups/testosterone.1024.webp",
+        "w": 1024
+      }
+    ],
+    "raster": [],
+    "width": 1509,
+    "height": 1909
+  },
   "/landing/shop/catalog/pen-lockups/tirzepatide.png": {
     "fallback": "/_opt/landing/shop/catalog/pen-lockups/tirzepatide.1024.webp",
     "webp": [
@@ -12261,6 +12326,26 @@
     "width": 903,
     "height": 903
   },
+  "/landing/shop/catalog/pills/head-start.png": {
+    "fallback": "/_opt/landing/shop/catalog/pills/head-start.1024.webp",
+    "webp": [
+      {
+        "src": "/_opt/landing/shop/catalog/pills/head-start.512.webp",
+        "w": 512
+      },
+      {
+        "src": "/_opt/landing/shop/catalog/pills/head-start.768.webp",
+        "w": 768
+      },
+      {
+        "src": "/_opt/landing/shop/catalog/pills/head-start.1024.webp",
+        "w": 1024
+      }
+    ],
+    "raster": [],
+    "width": 1024,
+    "height": 1024
+  },
   "/landing/shop/catalog/pills/lipo-c.png": {
     "fallback": "/_opt/landing/shop/catalog/pills/lipo-c.480.webp",
     "webp": [
@@ -12352,6 +12437,18 @@
     "raster": [],
     "width": 439,
     "height": 270
+  },
+  "/landing/shop/catalog/pills/testosterone.png": {
+    "fallback": "/_opt/landing/shop/catalog/pills/testosterone.480.webp",
+    "webp": [
+      {
+        "src": "/_opt/landing/shop/catalog/pills/testosterone.480.webp",
+        "w": 480
+      }
+    ],
+    "raster": [],
+    "width": 480,
+    "height": 480
   },
   "/landing/shop/catalog/pills/tirzepatide.png": {
     "fallback": "/_opt/landing/shop/catalog/pills/tirzepatide.480.webp",
@@ -13421,6 +13518,30 @@
     "width": 1920,
     "height": 2560
   },
+  "/landing/shop/catalog/plates/testosterone.png": {
+    "fallback": "/_opt/landing/shop/catalog/plates/testosterone.1920.webp",
+    "webp": [
+      {
+        "src": "/_opt/landing/shop/catalog/plates/testosterone.512.webp",
+        "w": 512
+      },
+      {
+        "src": "/_opt/landing/shop/catalog/plates/testosterone.768.webp",
+        "w": 768
+      },
+      {
+        "src": "/_opt/landing/shop/catalog/plates/testosterone.1600.webp",
+        "w": 1600
+      },
+      {
+        "src": "/_opt/landing/shop/catalog/plates/testosterone.1920.webp",
+        "w": 1920
+      }
+    ],
+    "raster": [],
+    "width": 1920,
+    "height": 2560
+  },
   "/landing/shop/catalog/plates/tirzepatide.png": {
     "fallback": "/_opt/landing/shop/catalog/plates/tirzepatide.1920.webp",
     "webp": [
@@ -14324,6 +14445,26 @@
     "raster": [],
     "width": 412,
     "height": 925
+  },
+  "/landing/shop/catalog/vials/testosterone.png": {
+    "fallback": "/_opt/landing/shop/catalog/vials/testosterone.769.webp",
+    "webp": [
+      {
+        "src": "/_opt/landing/shop/catalog/vials/testosterone.512.webp",
+        "w": 512
+      },
+      {
+        "src": "/_opt/landing/shop/catalog/vials/testosterone.768.webp",
+        "w": 768
+      },
+      {
+        "src": "/_opt/landing/shop/catalog/vials/testosterone.769.webp",
+        "w": 769
+      }
+    ],
+    "raster": [],
+    "width": 769,
+    "height": 1677
   },
   "/landing/shop/catalog/vials/tirzepatide.png": {
     "fallback": "/_opt/landing/shop/catalog/vials/tirzepatide.402.webp",

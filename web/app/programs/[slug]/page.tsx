@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { CategoryPdp } from "@/components/pdp/CategoryPdp";
+import { CategoryPdpLive } from "@/components/pdp/CategoryPdpLive";
 import { catalogHref, catalogIdFor, catalogRoute } from "@/content/catalog/routes";
 import { catalogPdp } from "@/content/pdp/catalog";
 import { PROGRAM_PDPS, PROGRAM_SLUGS } from "@/content/pdp/programs";
@@ -39,9 +39,9 @@ export default async function ProgramPage({ params }: PageProps) {
   if (route && catalogHref(id) === `/programs/${slug}`) {
     const data = catalogPdp(id);
     if (!data) notFound();
-    return <CategoryPdp data={data} />;
+    return <CategoryPdpLive data={data} />;
   }
   const data = PROGRAM_PDPS[slug];
   if (!data) notFound();
-  return <CategoryPdp data={data} />;
+  return <CategoryPdpLive data={data} />;
 }

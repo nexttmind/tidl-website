@@ -80,6 +80,20 @@ export const landing = {
     startMode: "fixed" as const,
     slides: [
       {
+        id: "testosterone",
+        themeId: "mens-health",
+        railLabel: "Testosterone",
+        headline: "Testosterone",
+        subtext: "Physician guided care, with labs and a video visit, if prescribed.",
+        cta: {
+          label: "Shop Testosterone",
+          href: "/products/testosterone",
+        },
+        secondaryCta: openCareCta,
+        mediaSrc: "/landing/hero/recovery-and-performance.mp4?v=2",
+        posterSrc: "/landing/hero/recovery-and-performance.jpg?v=2",
+      },
+      {
         id: "rest-rebuild",
         themeId: "athlete",
         railLabel: "Rest & Rebuild",
@@ -106,20 +120,6 @@ export const landing = {
         secondaryCta: openCareCta,
         mediaSrc: "/landing/hero/transformation.mp4?v=5",
         posterSrc: "/landing/hero/transformation.jpg?v=5",
-      },
-      {
-        id: "body-composition",
-        themeId: "transformation",
-        railLabel: "Body Composition",
-        headline: "Get lean\nstay strong",
-        subtext: "Physician guided care for appetite and how you carry yourself, if prescribed.",
-        cta: {
-          label: "Shop Body Composition Treatments",
-          href: "/bundles/body-composition",
-        },
-        secondaryCta: openCareCta,
-        mediaSrc: "/landing/hero/recovery-and-performance.mp4?v=2",
-        posterSrc: "/landing/hero/recovery-and-performance.jpg?v=2",
       },
       {
         id: "womens-total-balance",

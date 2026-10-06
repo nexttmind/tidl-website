@@ -84,7 +84,7 @@ export function whatsIncluded(
   const rows: IncludedRow[] = meds.map((med) => ({
     id: `med-${med.id}`,
     title: med.title,
-    detail: medicationDetail(med.form, sku.months),
+    detail: medicationDetail(catalogId, med.id, med.form, sku.months),
     thumb: med.thumb,
     contain: true,
   }));
@@ -122,8 +122,16 @@ export function whatsIncluded(
   return { rows, shipping: shippingNote(catalogId, forms) };
 }
 
-function medicationDetail(form: LaunchForm, months: number): string {
+function medicationDetail(
+  catalogId: string,
+  medId: string,
+  form: LaunchForm,
+  months: number,
+): string {
   const supply = `${months} month supply`;
+  if (catalogId === "testosterone" && medId === "testosterone" && form === "vial-pen") {
+    return `${supply}. Pen and multi dose vial.`;
+  }
   if (form === "vial") return `${supply}. Multi dose vial.`;
   if (form === "vial-pen") return `${supply}. Pre dosed, no vials or powders.`;
   if (form === "capsule") return `${supply}. Oral tablet.`;

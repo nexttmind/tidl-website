@@ -2,6 +2,7 @@ import { readSessionFromRequest } from "@/lib/auth/session";
 import {
   OwnershipError,
   assertChartOwnsEncounter,
+  encounterChartForSessionEmail,
 } from "@/lib/prescriberx/auth-ownership";
 import { GENERIC_UNAUTHENTICATED } from "@/lib/prescriberx/auth-errors";
 import { errorResponse } from "@/lib/prescriberx/client";
@@ -31,13 +32,17 @@ export async function GET(request: Request, { params }: Params) {
       email: session.email ?? "",
     });
   } catch (err) {
-    if (err instanceof OwnershipError) {
+    if (!(err instanceof OwnershipError)) return errorResponse(err);
+    const sameEmail = await encounterChartForSessionEmail({
+      email: session.email ?? "",
+      encounterId,
+    });
+    if (!sameEmail) {
       return Response.json(
         { success: false, message: "Not allowed for this encounter.", code: "forbidden" },
         { status: 403 },
       );
     }
-    return errorResponse(err);
   }
 
   try {

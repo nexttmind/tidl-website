@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { CategoryPdp } from "@/components/pdp/CategoryPdp";
+import { CategoryPdpLive } from "@/components/pdp/CategoryPdpLive";
 import { catalogHref, catalogIdFor, catalogIdsUnder, catalogRoute } from "@/content/catalog/routes";
 import { catalogPdp } from "@/content/pdp/catalog";
 
@@ -30,5 +30,5 @@ export default async function TreatmentPage({ params }: PageProps) {
   if (href && href !== `/treatments/${slug}`) redirect(href);
   const data = catalogPdp(id);
   if (!route || href !== `/treatments/${slug}` || !data) notFound();
-  return <CategoryPdp data={data} />;
+  return <CategoryPdpLive data={data} />;
 }

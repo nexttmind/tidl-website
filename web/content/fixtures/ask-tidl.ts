@@ -206,8 +206,8 @@ export const COMPOUND_VIAL = {
   "glp-1": "/landing/shop/vials/compounds/glp-1.png",
   tirzepatide: catalogProductSrc("tirzepatide"),
   semaglutide: catalogProductSrc("semaglutide"),
-  testosterone: "/landing/shop/vials/compounds/testosterone.png",
   tesamorelin: catalogProductSrc("tesamorelin"),
+  testosterone: catalogProductSrc("testosterone"),
   nad: "/landing/shop/vials/compounds/nad.png",
   sermorelin: catalogProductSrc("sermorelin"),
   glutathione: "/landing/shop/vials/compounds/glutathione.png",
@@ -289,6 +289,17 @@ const tesamorelinItem = menuLink(healthspanGoal, {
   navSubtitle: "A body composition protocol, physician guided",
   imageSrc: COMPOUND_VIAL.tesamorelin,
   keywords: [...healthspanGoal.keywords, "tesamorelin"],
+});
+
+const mensGoal = catalogById(TREATMENTS, "mens-health");
+
+const testosteroneItem = menuLink(mensGoal, {
+  id: "testosterone",
+  label: "Testosterone",
+  href: "/products/testosterone",
+  navSubtitle: "Energy, drive, and training load, physician guided",
+  imageSrc: COMPOUND_VIAL.testosterone,
+  keywords: [...mensGoal.keywords, "testosterone", "trt"],
 });
 
 const sermorelinItem: CatalogLink = {
@@ -398,6 +409,7 @@ export const MEGA_MENU_GROUPS: readonly MegaMenuGroup[] = [
       methyleneBlueItem,
       sermorelinItem,
       tesamorelinItem,
+      testosteroneItem,
       bloodTestItem,
     ],
   },
@@ -499,6 +511,7 @@ export const HEADER_NOTECARDS: readonly CatalogLink[] = [
   methyleneBlueItem,
   sermorelinItem,
   tesamorelinItem,
+  testosteroneItem,
   bloodTestItem,
 ];
 

@@ -24,7 +24,8 @@ const ICON = "/landing/section-2/icons/cross.svg";
 const LINE = "Available if prescribed after clinical review.";
 
 function field(id: string) {
-  return `/landing/nav/fields/${id}.jpg`;
+  const rev = id === "testosterone" ? "?v=4" : "";
+  return `/landing/nav/fields/${id}.jpg${rev}`;
 }
 
 function card(
@@ -135,6 +136,18 @@ export const landingNotecards: readonly LandingNotecard[] = [
       { chip: "Strength", title: "Power that lasts" },
     ],
     "Shop Tesamorelin",
+  ),
+  card(
+    "testosterone",
+    "Testosterone",
+    "Testosterone",
+    "Physician guided testosterone, with labs and a video visit, if prescribed.",
+    [
+      { chip: "Energy", title: "When the day starts flat" },
+      { chip: "Drive", title: "Purposefully motivated" },
+      { chip: "Strength", title: "Vitality all day long" },
+    ],
+    "Shop Testosterone",
   ),
   card(
     "at-home-lab",

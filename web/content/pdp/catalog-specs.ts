@@ -289,6 +289,32 @@ export const CATALOG_PDP_SPECS: readonly CatalogPdpSpec[] = [
     form: "pen",
   },
   {
+    id: "testosterone",
+    title: "Testosterone",
+    tagline: "Energy, drive, and training load, if prescribed",
+    metadataDescription:
+      "Physician guided testosterone care for energy, drive, and training load. A video visit is required. Available if prescribed after clinical review.",
+    body: "A clinician reviewed plan for energy, drive, and the training you already do, if prescribed after clinical review. Filled by a US compounding pharmacy. A video visit is required.",
+    leadTitle: "Energy, drive,\nand training load\nin one clinical brief",
+    whatIs:
+      "Testosterone is a physician guided plan. The visit covers energy, drive, and how training is landing. Labs are part of the review. Available if prescribed after a video visit.",
+    chips: ["Energy", "Drive", "Strength"],
+    callouts: [
+      "When the day starts flat",
+      "Purposefully motivated",
+      "Vitality all day long",
+    ],
+    sells: [
+      "For weeks when energy is not where you want it. A clinician decides whether this path fits.",
+      "Drive is part of the visit, reviewed in private, if prescribed.",
+      "You already train. The plan looks at how that load is landing, alongside your labs.",
+    ],
+    video: "/landing/hero/recovery-and-performance.mp4",
+    poster: "/landing/hero/recovery-and-performance.jpg",
+    stills: MENS_STILLS,
+    form: "pen",
+  },
+  {
     id: "at-home-lab",
     title: "MD Reviewed Blood Test",
     tagline: "A kit at home. Portal results in seventy two hours",

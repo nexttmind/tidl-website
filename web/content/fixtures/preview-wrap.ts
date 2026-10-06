@@ -18,7 +18,7 @@ export type PreviewWrap = {
   stageH: string;
 };
 
-const REV = 3;
+const REV = 4;
 
 const VIAL_STAGE = { shape: "vial" as const, stageW: "41.071%", stageH: "81.964%" };
 const PAIR_STAGE = { shape: "pair" as const, stageW: "90%", stageH: "81.964%" };
@@ -74,6 +74,12 @@ export const PREVIEW_WRAP: Readonly<Record<string, PreviewWrap>> = {
     { chip: "Sleep", body: "Fewer 3am wake ups" },
     { chip: "Recovery", body: "Bounce back faster" },
     { chip: "Better mornings", body: "Rested and clear headed" },
+  ),
+  testosterone: wrap(
+    "testosterone",
+    { chip: "Energy", body: "When the day starts flat" },
+    { chip: "Drive", body: "Purposefully motivated" },
+    { chip: "Strength", body: "Vitality all day long" },
   ),
   tesamorelin: wrap(
     "tesamorelin",

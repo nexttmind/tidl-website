@@ -157,6 +157,17 @@ const COPY: Readonly<Record<string, GuideCopy>> = {
       "A shot taken at night, supporting the repair work your body does while you sleep. Filled by a US pharmacy and shipped to your door.",
     fits: "You are getting the hours in and still waking up tired.",
   },
+  testosterone: {
+    tagline: "Testosterone",
+    notes: [
+      { chip: "Energy", title: "When the day starts flat" },
+      { chip: "Drive", title: "Purposefully motivated" },
+      { chip: "Strength", title: "Vitality all day long" },
+    ],
+    stack:
+      "A clinician reviewed plan for energy and drive. Labs are part of the review, and a video visit is required before anything is prescribed.",
+    fits: "Energy and drive are the reason for the visit, and you want a clinician reading the labs with you.",
+  },
   tesamorelin: {
     tagline: "Look as fit as you are",
     notes: [
@@ -397,6 +408,7 @@ const RELATED: Readonly<Record<string, readonly string[]>> = {
   "methylene-blue": ["focus", "stress-mood", "b12"],
   sermorelin: ["rest-rise", "rest-rebuild", "longevity"],
   tesamorelin: ["body-composition", "lean-cut", "longevity"],
+  testosterone: ["mens-peak-performance", "tesamorelin", "energy-lift"],
   "at-home-lab": ["longevity", "focus", "mens-peak-performance"],
   "head-start": ["tirzepatide", "semaglutide", "weight-loss"],
   "rest-rise": ["sermorelin", "b12", "rest-rebuild"],

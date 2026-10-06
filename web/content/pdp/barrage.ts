@@ -48,6 +48,23 @@ const CATALOG: Record<string, { label: string; srcs: readonly string[] }> = {
   "methylene-blue": catalogPack("methylene-blue", "Methylene Blue"),
   sermorelin: catalogPack("sermorelin", "Sermorelin"),
   tesamorelin: catalogPack("tesamorelin", "Tesamorelin"),
+  testosterone: {
+    label: "Testosterone",
+    srcs: [
+      cat("mens-peak-performance", "01"),
+      cat("mens-peak-performance", "02"),
+      cat("mens-peak-performance", "04"),
+      cat("lean-cut", "03"),
+      cat("lean-cut", "08"),
+      cat("lean-cut", "10"),
+      cat("repair-mobility", "08"),
+      cat("repair-mobility", "11"),
+      cat("tesamorelin", "04"),
+      cat("tesamorelin", "05"),
+      cat("repair-mobility", "02"),
+      cat("tesamorelin", "12"),
+    ],
+  },
   "at-home-lab": {
     label: "MD Reviewed Blood Test",
     srcs: [

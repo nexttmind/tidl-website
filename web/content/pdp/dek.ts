@@ -29,6 +29,10 @@ export const PDP_DEK: Record<string, readonly [string, string]> = {
     "For those who already train,",
     "to support lean muscle and body composition.",
   ],
+  testosterone: [
+    "Physician guided testosterone,",
+    "with labs and a video visit, if prescribed.",
+  ],
   "at-home-lab": [
     "Collect at home and see your results",
     "within 72 hours. No lab visit needed.",

@@ -30,6 +30,7 @@ import {
 import { useNavPullOpen } from "@/components/chrome/menu-compress";
 import {
   OPTION_E_NAV,
+  productsBundlesMenuProducts,
   type OptionENavLink,
 } from "@/content/fixtures/option-e-nav";
 
@@ -250,8 +251,14 @@ function scrollPreviewLink(pane: DesktopMenuTab): OptionENavLink | null {
     if (!products) return null;
     return {
       ...products,
-      bloomItems: [...products.bloomItems, ...(bundles?.bloomItems ?? [])],
-      listItems: [...products.listItems, ...(bundles?.listItems ?? [])],
+      bloomItems: [
+        ...productsBundlesMenuProducts(),
+        ...(bundles?.bloomItems ?? []),
+      ],
+      listItems: [
+        ...productsBundlesMenuProducts(),
+        ...(bundles?.listItems ?? []),
+      ],
     };
   }
   if (pane === "shop-all") return null;

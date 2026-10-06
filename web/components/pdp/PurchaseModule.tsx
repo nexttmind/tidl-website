@@ -496,7 +496,7 @@ export function PurchaseModule({
                 onClick={() => setMonths(term)}
               >
                 <span className={styles.planTerm}>
-                  {card.plan_label ?? `${term} month${term === 1 ? "" : "s"}`}
+                  {card.plan_label ?? (term === 1 ? "One time" : `${term} months`)}
                 </span>
                 <span className={styles.planMo}>
                   {mo != null ? `${formatUsd(mo)} /mo` : formatUsd(card.price_one_time)}

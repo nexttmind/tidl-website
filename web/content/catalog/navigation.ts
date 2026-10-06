@@ -32,6 +32,7 @@ const NAME_TO_ID: Readonly<Record<string, string>> = {
   "Methylene Blue": "methylene-blue",
   Sermorelin: "sermorelin",
   Tesamorelin: "tesamorelin",
+  Testosterone: "testosterone",
   "MD Reviewed Blood Test": "at-home-lab",
   "Head Start": "head-start",
   "Rest & Rise": "rest-rise",

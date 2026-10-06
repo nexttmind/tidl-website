@@ -143,6 +143,19 @@
   --glow-b: #ff70d9;
 }
 
+[data-catalog-field="testosterone"],
+[data-catalog-tokens="testosterone"] {
+  --tile-1: #132e7f;
+  --tile-2: #1a45a8;
+  --tile-3: #2253b9;
+  --tile-4: #2764d4;
+  --tile-5: #2a96db;
+  --tile-6: #2daade;
+  --well: #0a1848;
+  --glow-a: #c5e4ff;
+  --glow-b: #7ec8f0;
+}
+
 [data-catalog-field="at-home-lab"],
 [data-catalog-tokens="at-home-lab"] {
   --tile-1: #470f0f;

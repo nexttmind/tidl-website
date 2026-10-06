@@ -21,7 +21,6 @@ import {
   painReliefMenuProducts,
   painReliefPdpHref,
 } from "@/content/fixtures/pain-relief";
-import { ChromeFace } from "@/components/chrome/OptionEMega";
 import { PhoneTileTitle } from "@/components/catalog/PhoneTileTitle";
 import { LandingGlass } from "./LandingGlass";
 import {
@@ -30,37 +29,23 @@ import {
   shopCatalogItem,
   type ShopKind,
 } from "./shop-catalog";
-import { CatalogKindIcon } from "./CatalogKindIcon";
 import { ShopBloomPair } from "./ShopBloomPair";
 import { bloomStyle } from "./shop-plates";
 import shop from "./LandingShop.module.css";
 import styles from "./LandingCatalog.module.css";
 
-const TAB_KIND: Readonly<Record<string, ShopKind>> = {
-  products: "product",
-  bundles: "bundle",
-  treatments: "treatment",
-};
-
-/** Labels and order from the load-state header. */
-const TABS: readonly { kind: ShopKind; label: string }[] = OPTION_E_NAV.flatMap(
-  (link) => {
-    const kind = TAB_KIND[link.id];
-    return kind ? [{ kind, label: link.label }] : [];
-  },
-);
-
-const LEAD_ID = "body-composition";
+const LEAD_ID = "testosterone";
 
 const COMPACT_QUERY = "(width < 1025px)";
 
-const COMPACT_TABS = [
-  { id: "treatments", label: "Treatments" },
+/** Same row as the landing header dropdown. Shop All is the link, not a tab. */
+const CATALOG_TABS = [
   { id: "products-bundles", label: "Products & Bundles" },
+  { id: "treatments", label: "Treatments" },
   { id: "pain-relief", label: "Pain Relief" },
 ] as const;
 
-type CompactTab = (typeof COMPACT_TABS)[number]["id"];
+type CatalogTab = (typeof CATALOG_TABS)[number]["id"];
 
 const PAIN_IDS = new Set(painReliefMenuProducts.map((item) => item.id));
 
@@ -95,7 +80,7 @@ function useCompactCatalog() {
   );
 }
 
-function compactTabFor(id: string): CompactTab {
+function catalogTabFor(id: string): CatalogTab {
   if (PAIN_IDS.has(id)) return "pain-relief";
   const next = shopCatalogItem(id)?.kind;
   if (next === "treatment") return "treatments";
@@ -135,15 +120,24 @@ const PAIN_CARDS: readonly LandingNotecard[] = painReliefMenuProducts.flatMap(
   },
 );
 
-function tilesForCompact(tab: CompactTab) {
+function leadWith<T extends { id: string }>(items: readonly T[], id: string): T[] {
+  const lead = items.find((item) => item.id === id);
+  if (!lead) return [...items];
+  return [lead, ...items.filter((item) => item.id !== id)];
+}
+
+function tilesForTab(tab: CatalogTab) {
   if (tab === "treatments") {
     return SHOP_CATALOG.filter((item) => item.kind === "treatment");
   }
   if (tab === "products-bundles") {
-    return [
-      ...SHOP_CATALOG.filter((item) => item.kind === "product"),
-      ...SHOP_CATALOG.filter((item) => item.kind === "bundle"),
-    ].filter((item) => item.id !== "pain-relief" && !PAIN_IDS.has(item.id));
+    return leadWith(
+      [
+        ...SHOP_CATALOG.filter((item) => item.kind === "product"),
+        ...SHOP_CATALOG.filter((item) => item.kind === "bundle"),
+      ].filter((item) => item.id !== "pain-relief" && !PAIN_IDS.has(item.id)),
+      LEAD_ID,
+    );
   }
   return painReliefMenuProducts.flatMap((product) => {
     const art = shopCatalogItem(product.id);
@@ -157,13 +151,6 @@ function tilesForCompact(tab: CompactTab) {
     ];
   });
 }
-
-const CHROME_TILES = [
-  {
-    href: OPTION_E_VIEW_ALL.href,
-    label: OPTION_E_VIEW_ALL.label,
-  },
-] as const;
 
 const SUBTITLE: Readonly<Record<string, string>> = Object.fromEntries(
   OPTION_E_NAV.flatMap((link) =>
@@ -247,32 +234,30 @@ function mixCatalog(cards: readonly LandingNotecard[]): LandingNotecard[] {
   return mixed;
 }
 
-function leadKind(): ShopKind {
-  return shopCatalogItem(LEAD_ID)?.kind ?? "bundle";
-}
-
-function leadFirst<T extends { id: string }>(items: readonly T[]): T[] {
-  const lead = items.find((item) => item.id === LEAD_ID);
-  if (!lead) return [...items];
-  return [lead, ...items.filter((item) => item.id !== LEAD_ID)];
-}
-
 function isolateSrc(id: string) {
   return catalogTileSrc(id);
 }
 
+function openingId(tab: CatalogTab, list: readonly { id: string }[]) {
+  const deckIds = new Set(
+    (tab === "pain-relief" ? PAIN_CARDS : DECK).map((card) => card.id),
+  );
+  if (tab === "products-bundles" && list.some((item) => item.id === LEAD_ID)) {
+    return LEAD_ID;
+  }
+  return (list.find((item) => deckIds.has(item.id)) ?? list[0])?.id;
+}
+
 export function LandingCatalog() {
   const compact = useCompactCatalog();
-  const [kind, setKind] = useState<ShopKind>(leadKind);
-  const [compactTab, setCompactTab] = useState<CompactTab>("products-bundles");
+  const [tab, setTab] = useState<CatalogTab>("products-bundles");
   const [activeId, setActiveId] = useState(LEAD_ID);
   const [pressedId, setPressedId] = useState(LEAD_ID);
   const [compactDeck, setCompactDeck] =
     useState<readonly LandingNotecard[]>(ROTATION_DECK);
 
   const showLead = useCallback(() => {
-    setKind(leadKind());
-    setCompactTab("products-bundles");
+    setTab("products-bundles");
     setActiveId(LEAD_ID);
     setPressedId(LEAD_ID);
   }, []);
@@ -282,52 +267,34 @@ export function LandingCatalog() {
     setCompactDeck(mixCatalog(ROTATION_DECK));
   }, [compact]);
 
-  const tiles = useMemo(
-    () =>
-      leadFirst(
-        compact
-          ? tilesForCompact(compactTab)
-          : SHOP_CATALOG.filter((item) => item.kind === kind),
-      ),
-    [compact, compactTab, kind],
-  );
+  const tiles = useMemo(() => tilesForTab(tab), [tab]);
 
-  const onTab = (next: ShopKind) => {
-    if (next === kind) return;
-    const pick =
-      DECK.find((card) => shopCatalogItem(card.id)?.kind === next) ??
-      SHOP_CATALOG.find((item) => item.kind === next);
-    setKind(next);
-    if (pick) {
-      setActiveId(pick.id);
-      setPressedId(pick.id);
-    }
-  };
+  const glassItems = useMemo(() => {
+    if (tab === "pain-relief") return PAIN_CARDS;
+    const ids = new Set(tiles.map((item) => item.id));
+    const matched = (compact ? compactDeck : DECK).filter((card) => ids.has(card.id));
+    return matched.length > 0 ? matched : DECK;
+  }, [compact, compactDeck, tab, tiles]);
 
-  const onCompactTab = (next: CompactTab) => {
-    if (next === compactTab) return;
-    const list = tilesForCompact(next);
-    setCompactTab(next);
-    const pick = list[0];
+  const onTab = (next: CatalogTab) => {
+    if (next === tab) return;
+    const list = tilesForTab(next);
+    const pick = openingId(next, list);
+    setTab(next);
     if (!pick) return;
-    setActiveId(pick.id);
-    setPressedId(pick.id);
-    setKind(pick.kind);
+    setActiveId(pick);
+    setPressedId(pick);
   };
 
   const onActiveIdChange = useCallback((id: string) => {
     setActiveId(id);
     setPressedId(id);
-    const nextKind = shopCatalogItem(id)?.kind;
-    if (nextKind) setKind(nextKind);
-    setCompactTab(compactTabFor(id));
+    setTab(catalogTabFor(id));
   }, []);
 
   const onSlideStart = useCallback((id: string) => {
     setPressedId(id);
-    const nextKind = shopCatalogItem(id)?.kind;
-    if (nextKind) setKind(nextKind);
-    setCompactTab(compactTabFor(id));
+    setTab(catalogTabFor(id));
   }, []);
 
   const cardRef = useRef<HTMLDivElement>(null);
@@ -335,11 +302,6 @@ export function LandingCatalog() {
   const railRef = useRef<HTMLUListElement>(null);
   const thumbRef = useRef<HTMLSpanElement>(null);
   const [artNear, setArtNear] = useState(false);
-
-  useEffect(() => {
-    if (compact || !PAIN_IDS.has(activeId)) return;
-    showLead();
-  }, [compact, activeId, showLead]);
 
   useEffect(() => {
     const root = cardRef.current;
@@ -402,7 +364,7 @@ export function LandingCatalog() {
       rail.removeEventListener("scroll", sync);
       observer.disconnect();
     };
-  }, [compact, compactTab, kind, tiles]);
+  }, [tab, tiles]);
 
   useLayoutEffect(() => {
     const card = cardRef.current;
@@ -421,59 +383,64 @@ export function LandingCatalog() {
     }
     if (Math.abs(delta) < 1) return;
     scroller.scrollTo({ left: scroller.scrollLeft + delta, behavior: "auto" });
-  }, [activeId, pressedId, kind, compactTab]);
+  }, [activeId, pressedId, tab]);
 
   return (
     <div className={styles.root}>
       <div className={styles.notecard} ref={cardRef}>
         <div className={styles.chrome} ref={chromeRef}>
-          <div className={styles.tabs} role="tablist" aria-label="Catalog">
-            {compact
-              ? COMPACT_TABS.map((tab) => {
-                  const selected = tab.id === compactTab;
-                  return (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      role="tab"
-                      id={`landing-catalog-${tab.id}`}
-                      aria-selected={selected}
-                      aria-controls="landing-catalog-panel"
-                      className={styles.tab}
-                      tabIndex={selected ? 0 : -1}
-                      onClick={() => onCompactTab(tab.id)}
-                    >
-                      {tab.label}
-                    </button>
-                  );
-                })
-              : TABS.map((tab) => {
-                  const selected = tab.kind === kind;
-                  return (
-                    <button
-                      key={tab.kind}
-                      type="button"
-                      role="tab"
-                      id={`landing-catalog-${tab.kind}`}
-                      aria-selected={selected}
-                      aria-controls="landing-catalog-panel"
-                      className={styles.tab}
-                      tabIndex={selected ? 0 : -1}
-                      onClick={() => onTab(tab.kind)}
-                    >
-                      <CatalogKindIcon kind={tab.kind} className={styles.tabIcon} />
-                      {tab.label}
-                    </button>
-                  );
-                })}
+          <div className={styles.tabRow}>
+            <div className={styles.tabs}>
+              <div className={styles.tabList} role="tablist" aria-label="Catalog">
+              {CATALOG_TABS.map((row) => {
+                const selected = row.id === tab;
+                return (
+                  <button
+                    key={row.id}
+                    type="button"
+                    role="tab"
+                    id={`landing-catalog-${row.id}`}
+                    aria-selected={selected}
+                    aria-controls="landing-catalog-panel"
+                    className={styles.tab}
+                    tabIndex={selected ? 0 : -1}
+                    onClick={() => onTab(row.id)}
+                  >
+                    <span className={styles.tabLabel} data-label={row.label}>
+                      <span>{row.label}</span>
+                    </span>
+                  </button>
+                );
+              })}
+              </div>
+              <Link href={OPTION_E_VIEW_ALL.href} className={styles.shopAll}>
+                Shop All
+                <svg
+                  className={styles.shopAllArrow}
+                  width="8"
+                  height="8"
+                  viewBox="0 0 10 10"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M2.2 7.8 L7.8 2.2 M4.6 2.2 H7.8 V5.4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.25"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </Link>
+            </div>
           </div>
           <div
             id="landing-catalog-panel"
             className={styles.tileRail}
             role="tabpanel"
-            aria-labelledby={`landing-catalog-${compact ? compactTab : kind}`}
+            aria-labelledby={`landing-catalog-${tab}`}
           >
-            <ul className={styles.grid} data-kind={kind} ref={railRef}>
+            <ul className={styles.grid} ref={railRef}>
               {tiles.map((item) => {
                 const current = item.id === (compact ? pressedId : activeId);
                 const isolate = isolateSrc(item.id);
@@ -527,18 +494,6 @@ export function LandingCatalog() {
                   </li>
                 );
               })}
-              {compact || kind === "treatment"
-                ? CHROME_TILES.map((tile) => (
-                    <li key={tile.href} className={styles.viewAllItem}>
-                      <Link href={tile.href} className={styles.viewAll}>
-                        <span className={styles.viewAllPlate}>
-                          <ChromeFace />
-                        </span>
-                        <span className={styles.viewAllName}>Shop All</span>
-                      </Link>
-                    </li>
-                  ))
-                : null}
             </ul>
             <div className={styles.tileScroll} aria-hidden="true">
               <span className={styles.tileScrollThumb} ref={thumbRef} />
@@ -546,13 +501,7 @@ export function LandingCatalog() {
           </div>
         </div>
         <LandingGlass
-          items={
-            compact
-              ? compactTab === "pain-relief"
-                ? PAIN_CARDS
-                : compactDeck
-              : DECK
-          }
+          items={glassItems}
           activeId={activeId}
           autoMs={0}
           onActiveIdChange={onActiveIdChange}

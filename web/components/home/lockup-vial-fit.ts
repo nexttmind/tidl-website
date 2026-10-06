@@ -33,6 +33,7 @@ export const LOCKUP_VIAL_FIT: Record<string, readonly [number, number, number]> 
   "steady-start": [0.388, 0.828, 0.964],
   "stress-mood": [0.371, 0.851, 0.938],
   tesamorelin: [0.408, 0.849, 0.978],
+  testosterone: [0.398, 0.882, 0.973],
   tirzepatide: [0.438, 0.888, 0.963],
   "weight-loss": [0.391, 0.891, 0.976],
   "womens-total-balance": [0.353, 0.813, 0.958],

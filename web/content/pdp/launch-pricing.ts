@@ -83,6 +83,7 @@ const FILE_SLUG_TO_ID: Readonly<Record<string, string>> = {
   semaglutide: "semaglutide",
   tirzepatide: "tirzepatide",
   tesamorelin: "tesamorelin",
+  testosterone: "testosterone",
   sermorelin: "sermorelin",
   "methylene-blue": "methylene-blue",
   b12: "b12",

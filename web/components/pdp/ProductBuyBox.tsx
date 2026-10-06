@@ -119,6 +119,8 @@ type ProductBuyBoxProps = {
   tagline?: string;
   dek?: readonly [string, string];
   payLine?: string;
+  /** Price, stock, and tagline came from the PrescribeRx sandbox catalog. */
+  sandboxLive?: boolean;
 };
 
 function clamp01(n: number) {
@@ -259,6 +261,7 @@ function SplitDecision({
   tagline,
   dek,
   body,
+  sandboxLive = false,
   planLabel,
   planOptions,
   primaryCta,
@@ -277,6 +280,7 @@ function SplitDecision({
   tagline?: string;
   dek?: readonly [string, string];
   body: string;
+  sandboxLive?: boolean;
   planLabel: string;
   planOptions: readonly PlanOption[];
   primaryCta: string;
@@ -317,7 +321,13 @@ function SplitDecision({
         ) : null}
         {launch ? null : (
           <div className={styles.splitPriceRow} aria-live="polite">
-            <p className={styles.splitPrice}>
+            <p
+              className={
+                sandboxLive
+                  ? `${styles.splitPrice} ${styles.sandboxLive}`
+                  : styles.splitPrice
+              }
+            >
               {offerPrice}
               {cadence ? (
                 <span className={styles.splitCadence}>{cadence}</span>
@@ -340,7 +350,15 @@ function SplitDecision({
       {media}
       <div className={styles.splitRest}>
         {tagline ? (
-          <p className={styles.splitTagline}>{onceOnGrid(tagline)}</p>
+          <p
+            className={
+              sandboxLive
+                ? `${styles.splitTagline} ${styles.sandboxLive}`
+                : styles.splitTagline
+            }
+          >
+            {onceOnGrid(tagline)}
+          </p>
         ) : null}
         <p className={styles.splitBody}>{onceOnGrid(body)}</p>
 
@@ -448,6 +466,7 @@ export function ProductBuyBox({
   tagline,
   dek,
   payLine,
+  sandboxLive = false,
 }: ProductBuyBoxProps) {
   const scrollRootRef = useRef<HTMLElement>(null);
   const splitMediaRef = useRef<HTMLDivElement>(null);
@@ -988,6 +1007,7 @@ export function ProductBuyBox({
             tagline={tagline}
             dek={dek}
             body={body}
+            sandboxLive={sandboxLive}
             planLabel={planLabel}
             planOptions={planOptions}
             primaryCta={primaryCta}

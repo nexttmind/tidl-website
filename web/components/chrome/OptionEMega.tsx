@@ -24,6 +24,7 @@ import {
   OPTION_E_NAV,
   OPTION_E_VIEW_ALL,
   bloomLink,
+  productsBundlesMenuProducts,
   type OptionEItem,
   type OptionENavId,
   type OptionENavLink,
@@ -57,7 +58,7 @@ function shopIdFor(item: CatalogLink): string {
 /** Last two words stay together so a paragraph cannot end on a widow. */
 function splitWidow(text: string): { head: string; tail: string | null } {
   const parts = text.trim().split(/\s+/);
-  if (parts.length < 2) return { head: text, tail: null };
+  if (parts.length < 3) return { head: text, tail: null };
   const last = parts.pop() as string;
   const prev = parts.pop() as string;
   return {
@@ -510,11 +511,11 @@ function DesktopLoadCatalog({
       ? {
           ...productsLink,
           bloomItems: [
-            ...productsLink.bloomItems,
+            ...productsBundlesMenuProducts(),
             ...(bundlesLink?.bloomItems ?? []),
           ],
           listItems: [
-            ...productsLink.listItems,
+            ...productsBundlesMenuProducts(),
             ...(bundlesLink?.listItems ?? []),
           ],
         }
@@ -1157,7 +1158,7 @@ export function OptionEListPreview({
     pain
       ? (painProducts[0]?.id ?? "")
       : link.id === "products"
-        ? "lipo-c"
+        ? "testosterone"
         : (items[0]?.id ?? ""),
   );
   const tileRows = items.map((item) => bloomLink(item));
@@ -1193,7 +1194,7 @@ export function OptionEListPreview({
       pain
         ? (painProducts[0]?.id ?? "")
         : link.id === "products"
-          ? "lipo-c"
+          ? "testosterone"
           : (items[0]?.id ?? ""),
     );
   }, [link.id]);
@@ -1512,14 +1513,12 @@ export function OptionEMobileMenu({
             aria-hidden={active === "products-bundles" ? undefined : true}
           >
             <MenuTileRow label="Products & Bundles">
-              {products
-                ? bloomCards(
-                    products.bloomItems,
-                    "products",
-                    tileMedia("products-bundles"),
-                    onCatalogTap,
-                  )
-                : null}
+              {bloomCards(
+                productsBundlesMenuProducts(),
+                "products",
+                tileMedia("products-bundles"),
+                onCatalogTap,
+              )}
               {bundles
                 ? bloomCards(
                     bundles.bloomItems,

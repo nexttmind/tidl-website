@@ -1,6 +1,6 @@
 # Download web/ tree from TIDL-Health/website at a fixed commit (Windows-safe; no full git checkout).
 param(
-  [string]$Commit = "62e201e117fa73fa255ca9aa7c5291b6306f9337",
+  [string]$Commit = "cd90f8f8a5d598552c5582461aae63ae5dfee0ca",
   [string]$OutRoot = "$env:TEMP\tidl-ui-fetched",
   [int]$BatchSize = 40,
   [switch]$ImportPathsOnly
