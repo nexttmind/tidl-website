@@ -1,4 +1,5 @@
-import { getPrescribeRxEnv } from "./env";
+import { getPrescribeRxEnv, isDemoPrescribeRxBase } from "./env";
+import { refreshSandboxPlaygroundToken } from "./sandbox-token-refresh";
 
 export class PrescribeRxError extends Error {
   status: number;
@@ -35,21 +36,17 @@ function buildUrl(
   return url.toString();
 }
 
-/** Thin server gateway to PrescribeRx /api/v1. Token never leaves the server. */
-export async function prescribeRxFetch<T = unknown>(
+async function prescribeRxFetchOnce<T>(
+  env: NonNullable<ReturnType<typeof getPrescribeRxEnv>>,
   path: string,
-  options: RequestOptions = {},
-): Promise<T> {
-  const env = getPrescribeRxEnv();
-  if (!env) {
-    throw new PrescribeRxError("PrescribeRx env not configured", 503, null);
-  }
-
+  options: RequestOptions,
+  token: string,
+): Promise<{ ok: true; data: T } | { ok: false; status: number; parsed: unknown }> {
   const method = options.method ?? "GET";
   const url = buildUrl(env.baseUrl, path, options.query);
   const headers: Record<string, string> = {
     Accept: "application/json",
-    Authorization: `Bearer ${env.token}`,
+    Authorization: `Bearer ${token}`,
   };
   let body: string | undefined;
   if (options.body !== undefined) {
@@ -75,14 +72,48 @@ export async function prescribeRxFetch<T = unknown>(
   }
 
   if (!res.ok) {
+    return { ok: false, status: res.status, parsed };
+  }
+
+  return { ok: true, data: parsed as T };
+}
+
+/** Thin server gateway to PrescribeRx /api/v1. Token never leaves the server. */
+export async function prescribeRxFetch<T = unknown>(
+  path: string,
+  options: RequestOptions = {},
+): Promise<T> {
+  const env = getPrescribeRxEnv();
+  if (!env) {
+    throw new PrescribeRxError("PrescribeRx env not configured", 503, null);
+  }
+
+  const method = options.method ?? "GET";
+  let token = env.token;
+  let result = await prescribeRxFetchOnce<T>(env, path, options, token);
+
+  if (
+    !result.ok &&
+    result.status === 401 &&
+    env.sandbox &&
+    isDemoPrescribeRxBase(env.baseUrl)
+  ) {
+    const refreshed = await refreshSandboxPlaygroundToken();
+    if (refreshed) {
+      token = refreshed;
+      result = await prescribeRxFetchOnce<T>(env, path, options, token);
+    }
+  }
+
+  if (!result.ok) {
     throw new PrescribeRxError(
       `PrescribeRx ${method} ${path} failed`,
-      res.status,
-      parsed,
+      result.status,
+      result.parsed,
     );
   }
 
-  return parsed as T;
+  return result.data;
 }
 
 export function errorResponse(err: unknown) {

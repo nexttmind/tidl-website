@@ -1,4 +1,6 @@
+import { CLINICAL_ENTRIES } from "@/content/clinical/entry-map";
 import { buildUnifiedIntakePayload } from "@/lib/prescriberx/build-intake-payload";
+import { resolveProductIdsForEntryServer } from "@/lib/prescriberx/resolve-product-ids-server";
 import {
   clientIpFromRequest,
   consumeRateLimit,
@@ -74,6 +76,22 @@ export async function POST(request: Request) {
     if (env.salesOrgId) {
       if (payload.sales_org_id == null) payload.sales_org_id = env.salesOrgId;
       delete payload.client_id;
+    }
+    const hasProducts =
+      Array.isArray(payload.products) && payload.products.length > 0;
+    if (!hasProducts && payload.encounter_type_id) {
+      const entry = CLINICAL_ENTRIES.find(
+        (e) => e.encounterTypeId === payload.encounter_type_id,
+      );
+      if (entry) {
+        const ids = await resolveProductIdsForEntryServer(entry);
+        if (ids.length) {
+          payload.products = ids.map((product_id) => ({
+            product_id,
+            quantity: 1,
+          }));
+        }
+      }
     }
     try {
       const data = await prescribeRxFetch("/telehealth/intake/unified", {

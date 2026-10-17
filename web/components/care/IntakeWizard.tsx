@@ -236,6 +236,18 @@ export function IntakeWizard({ entrySlug }: Props) {
           message?: string;
         };
         if (!schemaRes.ok) {
+          const upstream =
+            json && typeof json === "object" && "upstream" in json
+              ? (json as { upstream?: { message?: string } }).upstream
+              : undefined;
+          if (
+            schemaRes.status === 401 ||
+            upstream?.message?.toLowerCase().includes("unauthenticated")
+          ) {
+            throw new Error(
+              "We could not reach the clinical system. If you are on the sandbox, refresh the PrescribeRx API token in web/.env.local (or restart dev after it auto-refreshes) and try again.",
+            );
+          }
           throw new Error(json.message || `Schema failed (${schemaRes.status})`);
         }
         const data = json.data;

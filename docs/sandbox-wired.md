@@ -9,6 +9,14 @@ API actually contains, and what is still a sandbox/tenant gap (not a site bug).
 
 ---
 
+## Team repo (sandbox not shared with TIDL client)
+
+PrescribeRx sandbox code ships on **`nexttmind/tidl-website` only**. Do not push
+integration to `TIDL-Health/website`. See [`team-repo-policy.md`](team-repo-policy.md)
+and backend sign-off [`sandbox-backend-signoff.md`](sandbox-backend-signoff.md).
+
+---
+
 ## Quick start
 
 1. Env lives in `web/.env.local` (gitignored). Keys: `PRESCRIBERX_API_BASE`,

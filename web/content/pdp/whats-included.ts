@@ -39,11 +39,10 @@ const AMBIENT_SHIP = new Set([
   "methylene-blue",
 ]);
 
-type SupplyKey = "syringes" | "bacteriostatic-water" | "alcohol-wipes" | "pen-needles";
+type SupplyKey = "syringes" | "alcohol-wipes" | "pen-needles";
 
 const SUPPLY_BY_LABEL: Record<string, SupplyKey> = {
   Syringes: "syringes",
-  "Bacteriostatic water": "bacteriostatic-water",
   "Pen needles": "pen-needles",
   "Alcohol wipes": "alcohol-wipes",
 };
@@ -196,7 +195,6 @@ function thumbFor(pageId: string, artId: string, form: LaunchForm): string {
 
 const SUPPLY_TITLE: Record<SupplyKey, string> = {
   syringes: "Syringes",
-  "bacteriostatic-water": "Bacteriostatic water",
   "pen-needles": "Pen needles",
   "alcohol-wipes": "Alcohol wipes",
 };

@@ -15,6 +15,7 @@
     "smoke:phase-l": "tsx scripts/smoke-phase-l.ts",
     "smoke:phase-m": "tsx scripts/smoke-phase-m.ts",
     "smoke:phase-n": "tsx scripts/smoke-phase-n.ts",
+    "audit:care-home-symptoms": "tsx scripts/audit-care-home-symptoms.ts",
     "typecheck": "tsc --noEmit",
     "check:visual": "node scripts/check-visual-residue.mjs",
     "media:opt": "node scripts/optimize-marketing-media.mjs",

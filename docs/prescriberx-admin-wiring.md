@@ -2,7 +2,7 @@
 
 **Audience:** engineers verifying nothing is missed between `demo.prescribe-rx.com` admin and the TIDL Next app (`web/`).  
 **TIDL Sandbox org:** `ORG-7144184834`, UUID `019f3d35-afc4-72f8-b055-6c86c27ac1b3`.  
-**Verified:** 2026-09-25 (platform admin session on demo).
+**Verified:** 2026-09-25 (platform admin session on demo); **2026-10-13** TIDL Sandbox sales login (`tidl@prescribe-rx.com`) — org edit URL works; see counts/merchant/webhook notes in [`open-questions.md`](open-questions.md).
 
 This is not an exhaustive PRX product manual. It maps **each admin area that touches the headless TIDL journey** to what we call from `/api/prescriberx/*`, what patients see on `/care/*`, and what is intentionally out of scope.
 
@@ -69,9 +69,9 @@ Legend: **Wired** = TIDL app calls PRX API for this journey. **Admin-only** = op
 | **Patients → All Patients** | Charts created by intake | **Wired** — patient block on unified intake; register uses `/patients/lookup` + `GET /encounters/{id}` | `/care/account`, ownership in `auth-ownership.ts` |
 | **Products → All Products / Packages** | Catalog SKUs | **Wired** — `GET /api/prescriberx/catalog`, `products` | PDP overlay, intake product attach |
 | **Orders → All Orders** | Fulfillment orders | **Partial** — created after payment path on PRX | Patient: `GET /api/prescriberx/patient/orders`, tracking proxy |
-| **Finance → All Merchant Accts** | Authorize.net / etc. | **Partial** — `GET /api/prescriberx/merchant-accounts`; TIDL org has **no active merchant** | Checkout: record-only `reference_captured` / external transaction; live Accept.js when keys exist |
+| **Finance → All Merchant Accts** | Authorize.net / etc. | **Partial** — `GET /api/prescriberx/merchant-accounts`; TIDL org has **active** Auth.Net **Sandbox** merchant (2026-10-13) | Checkout: record-only still works; wire Accept.js when API login + client key are in env |
 | **Finance → All Transactions** | Payment audit | **Wired** on protocol pay — `POST /transactions/external`, optional capture | `POST /api/prescriberx/protocol/payment` |
-| **Webhooks → Create Subscription** | Outbound events | **Receiver** — `POST /api/webhooks/prescriberx` (HMAC); **no TIDL subscription yet** | Waiting still **polls**; webhooks optional enhancement |
+| **Webhooks → Create Subscription** | Outbound events | **Receiver** — `POST /api/webhooks/prescriberx` (HMAC); **active** subscription to staging (2026-10-13) | Waiting still **polls**; confirm staging secret + consider prod URL at cutover |
 | **Sales Organizations → TIDL Sandbox → Settings** | Webhook integration toggle | **Already enabled** (2026-09-25) — do not ask ops to “turn on” | Subscription + public URL is TIDL eng |
 | **Prescriptions → All Prescriptions** | Rx records | **Wired** (read) — patient `prescriptions` proxy | `/care/home` data feeds |
 

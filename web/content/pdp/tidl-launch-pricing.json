@@ -22,7 +22,7 @@
     "rules": [
       "8 products, 6 bundles, 11 treatments, plus the Pain Relief OTC category; components are prescribed inside treatments and never named on the front of the site",
       "Cellular Health removed; Fast Start and Steady Start merged into Head Start with a molecule choice",
-      "every vial ships with syringes, bacteriostatic water and alcohol wipes; every pen ships with pen needles and alcohol wipes",
+      "every vial ships with syringes and alcohol wipes; every pen ships with pen needles and alcohol wipes",
       "1 month: one time purchase; the blood panel is an optional add on at the per kit price",
       "3 months and longer: one time or monthly billing; baseline panel inside the price; retests bill as they ship",
       "monthly installment = one time price x 1.05 / months, rounded up to the dollar",
@@ -243,7 +243,7 @@
     {
       "name": "Vial Supply Refill",
       "slug": "vial-supply-refill",
-      "contents": "100 syringes, 100 alcohol wipes, 30 mL bacteriostatic water",
+      "contents": "100 syringes, 100 alcohol wipes",
       "price_with_reorder": 35,
       "price_alone": 55,
       "who": "Active patients with a vial prescription on file",
@@ -470,10 +470,9 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Semaglutide + B12 MDV, provider titrates; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Semaglutide + B12 MDV, provider titrates; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Provider titrates 0.25 to 2.4 mg weekly; one pen or vial per month",
@@ -508,10 +507,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Semaglutide + B12 MDV, provider titrates, baseline panel included, 1 retest on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Semaglutide + B12 MDV, provider titrates, baseline panel included, 1 retest on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Provider titrates 0.25 to 2.4 mg weekly; one pen or vial per month",
@@ -546,10 +544,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Semaglutide + B12 MDV, provider titrates, baseline panel included, 2 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Semaglutide + B12 MDV, provider titrates, baseline panel included, 2 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Provider titrates 0.25 to 2.4 mg weekly; one pen or vial per month",
@@ -584,10 +581,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Semaglutide + B12 MDV, provider titrates, baseline panel included, 3 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Semaglutide + B12 MDV, provider titrates, baseline panel included, 3 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Provider titrates 0.25 to 2.4 mg weekly; one pen or vial per month",
@@ -622,10 +618,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Semaglutide + B12 MDV, provider titrates, baseline panel included, 4 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Semaglutide + B12 MDV, provider titrates, baseline panel included, 4 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Provider titrates 0.25 to 2.4 mg weekly; one pen or vial per month",
@@ -845,10 +840,9 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Tirzepatide + B12 MDV, provider titrates; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tirzepatide + B12 MDV, provider titrates; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Provider titrates 2.5 to 15 mg weekly; one pen or vial per month",
@@ -883,10 +877,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Tirzepatide + B12 MDV, provider titrates, baseline panel included, 1 retest on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tirzepatide + B12 MDV, provider titrates, baseline panel included, 1 retest on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Provider titrates 2.5 to 15 mg weekly; one pen or vial per month",
@@ -921,10 +914,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Tirzepatide + B12 MDV, provider titrates, baseline panel included, 2 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tirzepatide + B12 MDV, provider titrates, baseline panel included, 2 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Provider titrates 2.5 to 15 mg weekly; one pen or vial per month",
@@ -959,10 +951,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Tirzepatide + B12 MDV, provider titrates, baseline panel included, 3 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tirzepatide + B12 MDV, provider titrates, baseline panel included, 3 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Provider titrates 2.5 to 15 mg weekly; one pen or vial per month",
@@ -997,10 +988,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Tirzepatide + B12 MDV, provider titrates, baseline panel included, 4 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tirzepatide + B12 MDV, provider titrates, baseline panel included, 4 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Provider titrates 2.5 to 15 mg weekly; one pen or vial per month",
@@ -1220,10 +1210,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Tesamorelin 10 mg MDV, three per month; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tesamorelin 10 mg MDV, three per month; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "1 mg daily; three 10 mg vials per month",
@@ -1258,10 +1247,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Tesamorelin 10 mg MDV, three per month, baseline panel included, 1 retest on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tesamorelin 10 mg MDV, three per month, baseline panel included, 1 retest on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "1 mg daily; three 10 mg vials per month",
@@ -1296,10 +1284,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Tesamorelin 10 mg MDV, three per month, baseline panel included, 2 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tesamorelin 10 mg MDV, three per month, baseline panel included, 2 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "1 mg daily; three 10 mg vials per month",
@@ -1334,10 +1321,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Tesamorelin 10 mg MDV, three per month, baseline panel included, 3 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tesamorelin 10 mg MDV, three per month, baseline panel included, 3 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "1 mg daily; three 10 mg vials per month",
@@ -1372,10 +1358,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Tesamorelin 10 mg MDV, three per month, baseline panel included, 4 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tesamorelin 10 mg MDV, three per month, baseline panel included, 4 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "1 mg daily; three 10 mg vials per month",
@@ -1595,10 +1580,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ 1000 mg MDV, half a vial per month; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "NAD+ 1000 mg MDV, half a vial per month; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "NAD+ 500 mg per month (two 250 mg injections weekly); P3 pen labelled 100 mg, confirm the fill",
@@ -1633,10 +1617,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ 1000 mg MDV, half a vial per month, baseline panel included, 1 retest on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "NAD+ 1000 mg MDV, half a vial per month, baseline panel included, 1 retest on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "NAD+ 500 mg per month (two 250 mg injections weekly); P3 pen labelled 100 mg, confirm the fill",
@@ -1671,10 +1654,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ 1000 mg MDV, half a vial per month, baseline panel included, 2 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "NAD+ 1000 mg MDV, half a vial per month, baseline panel included, 2 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "NAD+ 500 mg per month (two 250 mg injections weekly); P3 pen labelled 100 mg, confirm the fill",
@@ -1709,10 +1691,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ 1000 mg MDV, half a vial per month, baseline panel included, 3 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "NAD+ 1000 mg MDV, half a vial per month, baseline panel included, 3 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "NAD+ 500 mg per month (two 250 mg injections weekly); P3 pen labelled 100 mg, confirm the fill",
@@ -1747,10 +1728,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ 1000 mg MDV, half a vial per month, baseline panel included, 4 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "NAD+ 1000 mg MDV, half a vial per month, baseline panel included, 4 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "NAD+ 500 mg per month (two 250 mg injections weekly); P3 pen labelled 100 mg, confirm the fill",
@@ -1970,10 +1950,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "BPC-157 10 mg MDV; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "BPC-157 10 mg MDV; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "BPC-157 about 330 mcg daily; one 10 mg vial per month",
@@ -2008,10 +1987,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "BPC-157 10 mg MDV, baseline panel included, 1 retest on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "BPC-157 10 mg MDV, baseline panel included, 1 retest on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "BPC-157 about 330 mcg daily; one 10 mg vial per month",
@@ -2046,10 +2024,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "BPC-157 10 mg MDV, baseline panel included, 2 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "BPC-157 10 mg MDV, baseline panel included, 2 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "BPC-157 about 330 mcg daily; one 10 mg vial per month",
@@ -2084,10 +2061,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "BPC-157 10 mg MDV, baseline panel included, 3 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "BPC-157 10 mg MDV, baseline panel included, 3 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "BPC-157 about 330 mcg daily; one 10 mg vial per month",
@@ -2122,10 +2098,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "BPC-157 10 mg MDV, baseline panel included, 4 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "BPC-157 10 mg MDV, baseline panel included, 4 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "BPC-157 about 330 mcg daily; one 10 mg vial per month",
@@ -2345,10 +2320,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "TB-500 10 mg MDV; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "TB-500 10 mg MDV; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "TB-500 2.5 mg weekly; one 10 mg vial per month",
@@ -2383,10 +2357,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "TB-500 10 mg MDV, baseline panel included, 1 retest on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "TB-500 10 mg MDV, baseline panel included, 1 retest on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "TB-500 2.5 mg weekly; one 10 mg vial per month",
@@ -2421,10 +2394,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "TB-500 10 mg MDV, baseline panel included, 2 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "TB-500 10 mg MDV, baseline panel included, 2 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "TB-500 2.5 mg weekly; one 10 mg vial per month",
@@ -2459,10 +2431,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "TB-500 10 mg MDV, baseline panel included, 3 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "TB-500 10 mg MDV, baseline panel included, 3 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "TB-500 2.5 mg weekly; one 10 mg vial per month",
@@ -2497,10 +2468,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "TB-500 10 mg MDV, baseline panel included, 4 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "TB-500 10 mg MDV, baseline panel included, 4 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "TB-500 2.5 mg weekly; one 10 mg vial per month",
@@ -2720,10 +2690,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin 10 mg MDV; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin 10 mg MDV; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "200 to 300 mcg nightly; one 10 mg vial per month",
@@ -2758,10 +2727,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin 10 mg MDV, baseline panel included, 1 retest on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin 10 mg MDV, baseline panel included, 1 retest on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "200 to 300 mcg nightly; one 10 mg vial per month",
@@ -2796,10 +2764,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin 10 mg MDV, baseline panel included, 2 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin 10 mg MDV, baseline panel included, 2 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "200 to 300 mcg nightly; one 10 mg vial per month",
@@ -2834,10 +2801,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin 10 mg MDV, baseline panel included, 3 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin 10 mg MDV, baseline panel included, 3 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "200 to 300 mcg nightly; one 10 mg vial per month",
@@ -2872,10 +2838,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin 10 mg MDV, baseline panel included, 4 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin 10 mg MDV, baseline panel included, 4 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "200 to 300 mcg nightly; one 10 mg vial per month",
@@ -3095,10 +3060,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Glutathione 200 mg/mL 10 mL MDV; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Glutathione 200 mg/mL 10 mL MDV; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "200 mg two to three times weekly; one 10 mL vial (2,000 mg) per month",
@@ -3133,10 +3097,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Glutathione 200 mg/mL 10 mL MDV, baseline panel included, 1 retest on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Glutathione 200 mg/mL 10 mL MDV, baseline panel included, 1 retest on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "200 mg two to three times weekly; one 10 mL vial (2,000 mg) per month",
@@ -3171,10 +3134,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Glutathione 200 mg/mL 10 mL MDV, baseline panel included, 2 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Glutathione 200 mg/mL 10 mL MDV, baseline panel included, 2 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "200 mg two to three times weekly; one 10 mL vial (2,000 mg) per month",
@@ -3209,10 +3171,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Glutathione 200 mg/mL 10 mL MDV, baseline panel included, 3 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Glutathione 200 mg/mL 10 mL MDV, baseline panel included, 3 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "200 mg two to three times weekly; one 10 mL vial (2,000 mg) per month",
@@ -3247,10 +3208,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Glutathione 200 mg/mL 10 mL MDV, baseline panel included, 4 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Glutathione 200 mg/mL 10 mL MDV, baseline panel included, 4 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "200 mg two to three times weekly; one 10 mL vial (2,000 mg) per month",
@@ -3285,10 +3245,9 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "Schedule III controlled substance. DEA telemedicine flexibilities (through Dec 31, 2026) allow prescribing without an in person exam only through an audio video encounter; audio only is not permitted for testosterone. Permanent DEA rules pending.",
-      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "100 mg weekly; one third of a 6 mL vial per month",
@@ -3323,10 +3282,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Schedule III controlled substance. DEA telemedicine flexibilities (through Dec 31, 2026) allow prescribing without an in person exam only through an audio video encounter; audio only is not permitted for testosterone. Permanent DEA rules pending.",
-      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month, day 0 hormone panel included, 1 on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month, day 0 hormone panel included, 1 on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "100 mg weekly; one third of a 6 mL vial per month",
@@ -3361,10 +3319,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Schedule III controlled substance. DEA telemedicine flexibilities (through Dec 31, 2026) allow prescribing without an in person exam only through an audio video encounter; audio only is not permitted for testosterone. Permanent DEA rules pending.",
-      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month, day 0 hormone panel included, 2 on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month, day 0 hormone panel included, 2 on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "100 mg weekly; one third of a 6 mL vial per month",
@@ -3399,10 +3356,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Schedule III controlled substance. DEA telemedicine flexibilities (through Dec 31, 2026) allow prescribing without an in person exam only through an audio video encounter; audio only is not permitted for testosterone. Permanent DEA rules pending.",
-      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month, day 0 hormone panel included, 3 on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month, day 0 hormone panel included, 3 on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "100 mg weekly; one third of a 6 mL vial per month",
@@ -3437,10 +3393,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Schedule III controlled substance. DEA telemedicine flexibilities (through Dec 31, 2026) allow prescribing without an in person exam only through an audio video encounter; audio only is not permitted for testosterone. Permanent DEA rules pending.",
-      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month, day 0 hormone panel included, 4 on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month, day 0 hormone panel included, 4 on schedule; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "100 mg weekly; one third of a 6 mL vial per month",
@@ -3475,11 +3430,10 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "Schedule III controlled substance. DEA telemedicine flexibilities (through Dec 31, 2026) allow prescribing without an in person exam only through an audio video encounter; audio only is not permitted for testosterone. Permanent DEA rules pending.",
-      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month; ships with the pen, pen needles, syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month; ships with the pen, pen needles, syringes and alcohol wipes",
       "ships_with": [
         "Pen needles",
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "100 mg weekly; one third of a 6 mL vial per month",
@@ -3514,11 +3468,10 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Schedule III controlled substance. DEA telemedicine flexibilities (through Dec 31, 2026) allow prescribing without an in person exam only through an audio video encounter; audio only is not permitted for testosterone. Permanent DEA rules pending.",
-      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month, day 0 hormone panel included, 1 on schedule; ships with the pen, pen needles, syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month, day 0 hormone panel included, 1 on schedule; ships with the pen, pen needles, syringes and alcohol wipes",
       "ships_with": [
         "Pen needles",
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "100 mg weekly; one third of a 6 mL vial per month",
@@ -3553,11 +3506,10 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Schedule III controlled substance. DEA telemedicine flexibilities (through Dec 31, 2026) allow prescribing without an in person exam only through an audio video encounter; audio only is not permitted for testosterone. Permanent DEA rules pending.",
-      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month, day 0 hormone panel included, 2 on schedule; ships with the pen, pen needles, syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month, day 0 hormone panel included, 2 on schedule; ships with the pen, pen needles, syringes and alcohol wipes",
       "ships_with": [
         "Pen needles",
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "100 mg weekly; one third of a 6 mL vial per month",
@@ -3592,11 +3544,10 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Schedule III controlled substance. DEA telemedicine flexibilities (through Dec 31, 2026) allow prescribing without an in person exam only through an audio video encounter; audio only is not permitted for testosterone. Permanent DEA rules pending.",
-      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month, day 0 hormone panel included, 3 on schedule; ships with the pen, pen needles, syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month, day 0 hormone panel included, 3 on schedule; ships with the pen, pen needles, syringes and alcohol wipes",
       "ships_with": [
         "Pen needles",
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "100 mg weekly; one third of a 6 mL vial per month",
@@ -3631,11 +3582,10 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Schedule III controlled substance. DEA telemedicine flexibilities (through Dec 31, 2026) allow prescribing without an in person exam only through an audio video encounter; audio only is not permitted for testosterone. Permanent DEA rules pending.",
-      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month, day 0 hormone panel included, 4 on schedule; ships with the pen, pen needles, syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Testosterone Cypionate/Propionate MDV, one third of a 6 mL vial per month, day 0 hormone panel included, 4 on schedule; ships with the pen, pen needles, syringes and alcohol wipes",
       "ships_with": [
         "Pen needles",
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "100 mg weekly; one third of a 6 mL vial per month",
@@ -4520,10 +4470,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled oral medication. Async intake review; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Methylcobalamin 1,000 mcg/mL MDV, about ten weeks per vial; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Methylcobalamin 1,000 mcg/mL MDV, about ten weeks per vial; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Methylcobalamin 1,000 mcg weekly; a 10 mL vial covers about ten weeks",
@@ -4558,10 +4507,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled oral medication. Async intake review; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Methylcobalamin 1,000 mcg/mL MDV, about ten weeks per vial; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Methylcobalamin 1,000 mcg/mL MDV, about ten weeks per vial; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Methylcobalamin 1,000 mcg weekly; a 10 mL vial covers about ten weeks",
@@ -4596,10 +4544,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled oral medication. Async intake review; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Methylcobalamin 1,000 mcg/mL MDV, about ten weeks per vial; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Methylcobalamin 1,000 mcg/mL MDV, about ten weeks per vial; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Methylcobalamin 1,000 mcg weekly; a 10 mL vial covers about ten weeks",
@@ -4634,10 +4581,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled oral medication. Async intake review; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Methylcobalamin 1,000 mcg/mL MDV, about ten weeks per vial; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Methylcobalamin 1,000 mcg/mL MDV, about ten weeks per vial; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Methylcobalamin 1,000 mcg weekly; a 10 mL vial covers about ten weeks",
@@ -4672,10 +4618,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled oral medication. Async intake review; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Methylcobalamin 1,000 mcg/mL MDV, about ten weeks per vial; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Methylcobalamin 1,000 mcg/mL MDV, about ten weeks per vial; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Methylcobalamin 1,000 mcg weekly; a 10 mL vial covers about ten weeks",
@@ -4710,10 +4655,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled oral medication. Async intake review; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "MIC plus B12, 2 mL weekly; one 10 mL vial per month",
@@ -4748,10 +4692,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled oral medication. Async intake review; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "MIC plus B12, 2 mL weekly; one 10 mL vial per month",
@@ -4786,10 +4729,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled oral medication. Async intake review; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "MIC plus B12, 2 mL weekly; one 10 mL vial per month",
@@ -4824,10 +4766,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled oral medication. Async intake review; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "MIC plus B12, 2 mL weekly; one 10 mL vial per month",
@@ -4862,10 +4803,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled oral medication. Async intake review; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "MIC plus B12, 2 mL weekly; one 10 mL vial per month",
@@ -5110,10 +5050,9 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + NAD+ (Pen) + Lipo C (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + NAD+ (Pen) + Lipo C (MDV); vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -5149,10 +5088,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + NAD+ (Pen) + Lipo C (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + NAD+ (Pen) + Lipo C (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -5188,10 +5126,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + NAD+ (Pen) + Lipo C (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + NAD+ (Pen) + Lipo C (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -5227,10 +5164,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + NAD+ (Pen) + Lipo C (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + NAD+ (Pen) + Lipo C (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -5266,10 +5202,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + NAD+ (Pen) + Lipo C (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + NAD+ (Pen) + Lipo C (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -5305,10 +5240,9 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + NAD+ (MDV) + Lipo C (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + NAD+ (MDV) + Lipo C (MDV); vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -5343,10 +5277,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + NAD+ (MDV) + Lipo C (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + NAD+ (MDV) + Lipo C (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -5381,10 +5314,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + NAD+ (MDV) + Lipo C (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + NAD+ (MDV) + Lipo C (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -5419,10 +5351,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + NAD+ (MDV) + Lipo C (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + NAD+ (MDV) + Lipo C (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -5457,10 +5388,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + NAD+ (MDV) + Lipo C (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + NAD+ (MDV) + Lipo C (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -5495,10 +5425,9 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Testosterone requires a live visit",
-      "products_included": "Testosterone (MDV) + NAD+ (Pen) + B12 (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Testosterone (MDV) + NAD+ (Pen) + B12 (MDV); vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -5534,10 +5463,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Testosterone requires a live visit",
-      "products_included": "Testosterone (MDV) + NAD+ (Pen) + B12 (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Testosterone (MDV) + NAD+ (Pen) + B12 (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -5573,10 +5501,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Testosterone requires a live visit",
-      "products_included": "Testosterone (MDV) + NAD+ (Pen) + B12 (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Testosterone (MDV) + NAD+ (Pen) + B12 (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -5612,10 +5539,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Testosterone requires a live visit",
-      "products_included": "Testosterone (MDV) + NAD+ (Pen) + B12 (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Testosterone (MDV) + NAD+ (Pen) + B12 (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -5651,10 +5577,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Testosterone requires a live visit",
-      "products_included": "Testosterone (MDV) + NAD+ (Pen) + B12 (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Testosterone (MDV) + NAD+ (Pen) + B12 (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -5690,10 +5615,9 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Testosterone requires a live visit",
-      "products_included": "Testosterone (MDV) + NAD+ (MDV) + B12 (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Testosterone (MDV) + NAD+ (MDV) + B12 (MDV); vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -5728,10 +5652,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Testosterone requires a live visit",
-      "products_included": "Testosterone (MDV) + NAD+ (MDV) + B12 (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Testosterone (MDV) + NAD+ (MDV) + B12 (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -5766,10 +5689,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Testosterone requires a live visit",
-      "products_included": "Testosterone (MDV) + NAD+ (MDV) + B12 (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Testosterone (MDV) + NAD+ (MDV) + B12 (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -5804,10 +5726,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Testosterone requires a live visit",
-      "products_included": "Testosterone (MDV) + NAD+ (MDV) + B12 (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Testosterone (MDV) + NAD+ (MDV) + B12 (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -5842,10 +5763,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Testosterone requires a live visit",
-      "products_included": "Testosterone (MDV) + NAD+ (MDV) + B12 (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Testosterone (MDV) + NAD+ (MDV) + B12 (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -6065,10 +5985,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Repair (MDV) + Mobility (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Repair (MDV) + Mobility (MDV); vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -6103,10 +6022,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Repair (MDV) + Mobility (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Repair (MDV) + Mobility (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -6141,10 +6059,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Repair (MDV) + Mobility (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Repair (MDV) + Mobility (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -6179,10 +6096,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Repair (MDV) + Mobility (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Repair (MDV) + Mobility (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -6217,10 +6133,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Repair (MDV) + Mobility (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Repair (MDV) + Mobility (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -6425,10 +6340,9 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (Pen) + NAD+ (Pen) + Lipo C (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss (Pen) + NAD+ (Pen) + Lipo C (MDV); vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -6464,10 +6378,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (Pen) + NAD+ (Pen) + Lipo C (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss (Pen) + NAD+ (Pen) + Lipo C (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -6503,10 +6416,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (Pen) + NAD+ (Pen) + Lipo C (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss (Pen) + NAD+ (Pen) + Lipo C (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -6542,10 +6454,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (Pen) + NAD+ (Pen) + Lipo C (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss (Pen) + NAD+ (Pen) + Lipo C (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -6581,10 +6492,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (Pen) + NAD+ (Pen) + Lipo C (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss (Pen) + NAD+ (Pen) + Lipo C (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -6620,10 +6530,9 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (MDV) + NAD+ (MDV) + Lipo C (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss (MDV) + NAD+ (MDV) + Lipo C (MDV); vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -6658,10 +6567,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (MDV) + NAD+ (MDV) + Lipo C (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss (MDV) + NAD+ (MDV) + Lipo C (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -6696,10 +6604,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (MDV) + NAD+ (MDV) + Lipo C (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss (MDV) + NAD+ (MDV) + Lipo C (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -6734,10 +6641,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (MDV) + NAD+ (MDV) + Lipo C (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss (MDV) + NAD+ (MDV) + Lipo C (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -6772,10 +6678,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (MDV) + NAD+ (MDV) + Lipo C (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss (MDV) + NAD+ (MDV) + Lipo C (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -6810,10 +6715,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Hair (Topical) + Glutathione (MDV) + B12 (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Hair (Topical) + Glutathione (MDV) + B12 (MDV); vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -6848,10 +6752,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Hair (Topical) + Glutathione (MDV) + B12 (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Hair (Topical) + Glutathione (MDV) + B12 (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -6886,10 +6789,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Hair (Topical) + Glutathione (MDV) + B12 (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Hair (Topical) + Glutathione (MDV) + B12 (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -6924,10 +6826,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Hair (Topical) + Glutathione (MDV) + B12 (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Hair (Topical) + Glutathione (MDV) + B12 (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -6962,10 +6863,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Hair (Topical) + Glutathione (MDV) + B12 (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Hair (Topical) + Glutathione (MDV) + B12 (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -7000,10 +6900,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (Pen) + Tesamorelin (Pen) + Glutathione (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "NAD+ (Pen) + Tesamorelin (Pen) + Glutathione (MDV); vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -7039,10 +6938,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (Pen) + Tesamorelin (Pen) + Glutathione (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "NAD+ (Pen) + Tesamorelin (Pen) + Glutathione (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -7078,10 +6976,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (Pen) + Tesamorelin (Pen) + Glutathione (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "NAD+ (Pen) + Tesamorelin (Pen) + Glutathione (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -7117,10 +7014,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (Pen) + Tesamorelin (Pen) + Glutathione (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "NAD+ (Pen) + Tesamorelin (Pen) + Glutathione (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -7156,10 +7052,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (Pen) + Tesamorelin (Pen) + Glutathione (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "NAD+ (Pen) + Tesamorelin (Pen) + Glutathione (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -7195,10 +7090,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (MDV) + Tesamorelin (MDV) + Glutathione (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "NAD+ (MDV) + Tesamorelin (MDV) + Glutathione (MDV); vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -7233,10 +7127,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (MDV) + Tesamorelin (MDV) + Glutathione (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "NAD+ (MDV) + Tesamorelin (MDV) + Glutathione (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -7271,10 +7164,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (MDV) + Tesamorelin (MDV) + Glutathione (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "NAD+ (MDV) + Tesamorelin (MDV) + Glutathione (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -7309,10 +7201,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (MDV) + Tesamorelin (MDV) + Glutathione (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "NAD+ (MDV) + Tesamorelin (MDV) + Glutathione (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -7347,10 +7238,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (MDV) + Tesamorelin (MDV) + Glutathione (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "NAD+ (MDV) + Tesamorelin (MDV) + Glutathione (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -7570,10 +7460,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Repair (MDV) + Sermorelin (MDV) + NAD+ (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Repair (MDV) + Sermorelin (MDV) + NAD+ (MDV); vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -7608,10 +7497,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Repair (MDV) + Sermorelin (MDV) + NAD+ (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Repair (MDV) + Sermorelin (MDV) + NAD+ (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -7646,10 +7534,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Repair (MDV) + Sermorelin (MDV) + NAD+ (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Repair (MDV) + Sermorelin (MDV) + NAD+ (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -7684,10 +7571,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Repair (MDV) + Sermorelin (MDV) + NAD+ (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Repair (MDV) + Sermorelin (MDV) + NAD+ (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -7722,10 +7608,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Repair (MDV) + Sermorelin (MDV) + NAD+ (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Repair (MDV) + Sermorelin (MDV) + NAD+ (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -7760,10 +7645,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (Pen) + Sermorelin (Pen) + Methylene Blue (Oral) + B12 (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "NAD+ (Pen) + Sermorelin (Pen) + Methylene Blue (Oral) + B12 (MDV); vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -7799,10 +7683,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (Pen) + Sermorelin (Pen) + Methylene Blue (Oral) + B12 (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "NAD+ (Pen) + Sermorelin (Pen) + Methylene Blue (Oral) + B12 (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -7838,10 +7721,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (Pen) + Sermorelin (Pen) + Methylene Blue (Oral) + B12 (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "NAD+ (Pen) + Sermorelin (Pen) + Methylene Blue (Oral) + B12 (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -7877,10 +7759,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (Pen) + Sermorelin (Pen) + Methylene Blue (Oral) + B12 (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "NAD+ (Pen) + Sermorelin (Pen) + Methylene Blue (Oral) + B12 (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -7916,10 +7797,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (Pen) + Sermorelin (Pen) + Methylene Blue (Oral) + B12 (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "NAD+ (Pen) + Sermorelin (Pen) + Methylene Blue (Oral) + B12 (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -7955,10 +7835,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (MDV) + Sermorelin (MDV) + Methylene Blue (Oral) + B12 (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "NAD+ (MDV) + Sermorelin (MDV) + Methylene Blue (Oral) + B12 (MDV); vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -7993,10 +7872,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (MDV) + Sermorelin (MDV) + Methylene Blue (Oral) + B12 (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "NAD+ (MDV) + Sermorelin (MDV) + Methylene Blue (Oral) + B12 (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -8031,10 +7909,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (MDV) + Sermorelin (MDV) + Methylene Blue (Oral) + B12 (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "NAD+ (MDV) + Sermorelin (MDV) + Methylene Blue (Oral) + B12 (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -8069,10 +7946,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (MDV) + Sermorelin (MDV) + Methylene Blue (Oral) + B12 (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "NAD+ (MDV) + Sermorelin (MDV) + Methylene Blue (Oral) + B12 (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -8107,10 +7983,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "NAD+ (MDV) + Sermorelin (MDV) + Methylene Blue (Oral) + B12 (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "NAD+ (MDV) + Sermorelin (MDV) + Methylene Blue (Oral) + B12 (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -8330,10 +8205,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Methylene Blue (Oral) + Sermorelin (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Methylene Blue (Oral) + Sermorelin (MDV); vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -8368,10 +8242,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Methylene Blue (Oral) + Sermorelin (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Methylene Blue (Oral) + Sermorelin (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -8406,10 +8279,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Methylene Blue (Oral) + Sermorelin (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Methylene Blue (Oral) + Sermorelin (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -8444,10 +8316,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Methylene Blue (Oral) + Sermorelin (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Methylene Blue (Oral) + Sermorelin (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -8482,10 +8353,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Methylene Blue (Oral) + Sermorelin (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Methylene Blue (Oral) + Sermorelin (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -8705,10 +8575,9 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Tesamorelin (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Tesamorelin (MDV); vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -8743,10 +8612,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Tesamorelin (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Tesamorelin (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -8781,10 +8649,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Tesamorelin (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Tesamorelin (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -8819,10 +8686,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Tesamorelin (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Tesamorelin (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -8857,10 +8723,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Tesamorelin (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Tesamorelin (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -8895,10 +8760,9 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + Repair (Pen) + NAD+ (Pen) + Testosterone (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + Repair (Pen) + NAD+ (Pen) + Testosterone (MDV); vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -8934,10 +8798,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + Repair (Pen) + NAD+ (Pen) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + Repair (Pen) + NAD+ (Pen) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -8973,10 +8836,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + Repair (Pen) + NAD+ (Pen) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + Repair (Pen) + NAD+ (Pen) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -9012,10 +8874,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + Repair (Pen) + NAD+ (Pen) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + Repair (Pen) + NAD+ (Pen) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -9051,10 +8912,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + Repair (Pen) + NAD+ (Pen) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + Repair (Pen) + NAD+ (Pen) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -9090,10 +8950,9 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Repair (MDV) + NAD+ (MDV) + Testosterone (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Repair (MDV) + NAD+ (MDV) + Testosterone (MDV); vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -9128,10 +8987,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Repair (MDV) + NAD+ (MDV) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Repair (MDV) + NAD+ (MDV) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -9166,10 +9024,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Repair (MDV) + NAD+ (MDV) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Repair (MDV) + NAD+ (MDV) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -9204,10 +9061,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Repair (MDV) + NAD+ (MDV) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Repair (MDV) + NAD+ (MDV) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -9242,10 +9098,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Repair (MDV) + NAD+ (MDV) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Repair (MDV) + NAD+ (MDV) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -9280,10 +9135,9 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + Testosterone (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + Testosterone (MDV); vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -9319,10 +9173,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -9358,10 +9211,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -9397,10 +9249,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -9436,10 +9287,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -9475,10 +9325,9 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Testosterone (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Testosterone (MDV); vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -9513,10 +9362,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -9551,10 +9399,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -9589,10 +9436,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -9627,10 +9473,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit; Testosterone requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Testosterone (MDV), day 0 hormone panel included, later panels billed as they ship; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -9850,10 +9695,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Tesamorelin (MDV) + Sermorelin (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tesamorelin (MDV) + Sermorelin (MDV); vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -9888,10 +9732,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Tesamorelin (MDV) + Sermorelin (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tesamorelin (MDV) + Sermorelin (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -9926,10 +9769,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Tesamorelin (MDV) + Sermorelin (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tesamorelin (MDV) + Sermorelin (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -9964,10 +9806,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Tesamorelin (MDV) + Sermorelin (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tesamorelin (MDV) + Sermorelin (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -10002,10 +9843,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Tesamorelin (MDV) + Sermorelin (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tesamorelin (MDV) + Sermorelin (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -10040,10 +9880,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin (Pen) + B12 (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Sermorelin (Pen) + B12 (MDV); vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -10079,10 +9918,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin (Pen) + B12 (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Sermorelin (Pen) + B12 (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -10118,10 +9956,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin (Pen) + B12 (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Sermorelin (Pen) + B12 (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -10157,10 +9994,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin (Pen) + B12 (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Sermorelin (Pen) + B12 (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -10196,10 +10032,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin (Pen) + B12 (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Sermorelin (Pen) + B12 (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -10235,10 +10070,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin (MDV) + B12 (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin (MDV) + B12 (MDV); vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -10273,10 +10107,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin (MDV) + B12 (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin (MDV) + B12 (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -10311,10 +10144,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin (MDV) + B12 (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin (MDV) + B12 (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -10349,10 +10181,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin (MDV) + B12 (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin (MDV) + B12 (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -10387,10 +10218,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin (MDV) + B12 (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin (MDV) + B12 (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -10425,10 +10255,9 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "B12 (MDV) + Lipo C (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "B12 (MDV) + Lipo C (MDV); vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -10463,10 +10292,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "B12 (MDV) + Lipo C (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "B12 (MDV) + Lipo C (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -10501,10 +10329,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "B12 (MDV) + Lipo C (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "B12 (MDV) + Lipo C (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -10539,10 +10366,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "B12 (MDV) + Lipo C (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "B12 (MDV) + Lipo C (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -10577,10 +10403,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "B12 (MDV) + Lipo C (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "B12 (MDV) + Lipo C (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -10615,10 +10440,9 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + Lipo C (MDV) + B12 (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + Lipo C (MDV) + B12 (MDV); vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -10654,10 +10478,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + Lipo C (MDV) + B12 (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + Lipo C (MDV) + B12 (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -10693,10 +10516,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + Lipo C (MDV) + B12 (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + Lipo C (MDV) + B12 (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -10732,10 +10554,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + Lipo C (MDV) + B12 (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + Lipo C (MDV) + B12 (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -10771,10 +10592,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (Pen) + Lipo C (MDV) + B12 (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss Plus (Pen) + Lipo C (MDV) + B12 (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -10810,10 +10630,9 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Lipo C (MDV) + B12 (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Lipo C (MDV) + B12 (MDV); vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -10848,10 +10667,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Lipo C (MDV) + B12 (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Lipo C (MDV) + B12 (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -10886,10 +10704,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Lipo C (MDV) + B12 (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Lipo C (MDV) + B12 (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -10924,10 +10741,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Lipo C (MDV) + B12 (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Lipo C (MDV) + B12 (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -10962,10 +10778,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss Plus requires a live visit",
-      "products_included": "Weight Loss Plus (MDV) + Lipo C (MDV) + B12 (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss Plus (MDV) + Lipo C (MDV) + B12 (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -11000,10 +10815,9 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (Pen) + Lipo C (MDV) + B12 (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss (Pen) + Lipo C (MDV) + B12 (MDV); vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -11039,10 +10853,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (Pen) + Lipo C (MDV) + B12 (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss (Pen) + Lipo C (MDV) + B12 (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -11078,10 +10891,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (Pen) + Lipo C (MDV) + B12 (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss (Pen) + Lipo C (MDV) + B12 (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -11117,10 +10929,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (Pen) + Lipo C (MDV) + B12 (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss (Pen) + Lipo C (MDV) + B12 (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -11156,10 +10967,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (Pen) + Lipo C (MDV) + B12 (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes; pens ship with pen needles and alcohol wipes",
+      "products_included": "Weight Loss (Pen) + Lipo C (MDV) + B12 (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes; pens ship with pen needles and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes",
         "Pen needles"
       ],
@@ -11195,10 +11005,9 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (MDV); vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -11233,10 +11042,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -11271,10 +11079,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -11309,10 +11116,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -11347,10 +11153,9 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": [
         "Syringes",
-        "Bacteriostatic water",
         "Alcohol wipes"
       ],
       "protocol_dose": "Component protocol doses apply",
@@ -12125,7 +11930,7 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Semaglutide + B12 MDV, provider titrates; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Semaglutide + B12 MDV, provider titrates; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Provider titrates 0.25 to 2.4 mg weekly; one pen or vial per month",
       "labs_included": "No",
@@ -12159,7 +11964,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Semaglutide + B12 MDV, provider titrates, baseline panel included, 1 retest on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Semaglutide + B12 MDV, provider titrates, baseline panel included, 1 retest on schedule; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Provider titrates 0.25 to 2.4 mg weekly; one pen or vial per month",
       "labs_included": "Yes",
@@ -12193,7 +11998,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Semaglutide + B12 MDV, provider titrates, baseline panel included, 2 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Semaglutide + B12 MDV, provider titrates, baseline panel included, 2 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Provider titrates 0.25 to 2.4 mg weekly; one pen or vial per month",
       "labs_included": "Yes",
@@ -12227,7 +12032,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Semaglutide + B12 MDV, provider titrates, baseline panel included, 3 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Semaglutide + B12 MDV, provider titrates, baseline panel included, 3 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Provider titrates 0.25 to 2.4 mg weekly; one pen or vial per month",
       "labs_included": "Yes",
@@ -12261,7 +12066,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Semaglutide + B12 MDV, provider titrates, baseline panel included, 4 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Semaglutide + B12 MDV, provider titrates, baseline panel included, 4 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Provider titrates 0.25 to 2.4 mg weekly; one pen or vial per month",
       "labs_included": "Yes",
@@ -12295,7 +12100,7 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Tirzepatide + B12 MDV, provider titrates; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tirzepatide + B12 MDV, provider titrates; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Provider titrates 2.5 to 15 mg weekly; one pen or vial per month",
       "labs_included": "No",
@@ -12329,7 +12134,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Tirzepatide + B12 MDV, provider titrates, baseline panel included, 1 retest on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tirzepatide + B12 MDV, provider titrates, baseline panel included, 1 retest on schedule; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Provider titrates 2.5 to 15 mg weekly; one pen or vial per month",
       "labs_included": "Yes",
@@ -12363,7 +12168,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Tirzepatide + B12 MDV, provider titrates, baseline panel included, 2 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tirzepatide + B12 MDV, provider titrates, baseline panel included, 2 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Provider titrates 2.5 to 15 mg weekly; one pen or vial per month",
       "labs_included": "Yes",
@@ -12397,7 +12202,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Tirzepatide + B12 MDV, provider titrates, baseline panel included, 3 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tirzepatide + B12 MDV, provider titrates, baseline panel included, 3 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Provider titrates 2.5 to 15 mg weekly; one pen or vial per month",
       "labs_included": "Yes",
@@ -12431,7 +12236,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "Audio video required in CA, TX and FL under the 2026 GLP 1 telehealth rules (follow up every 90 days in year one) and in NY for all telehealth prescribing; async permitted in most other states. Modelled synchronous.",
-      "products_included": "Tirzepatide + B12 MDV, provider titrates, baseline panel included, 4 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Tirzepatide + B12 MDV, provider titrates, baseline panel included, 4 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Provider titrates 2.5 to 15 mg weekly; one pen or vial per month",
       "labs_included": "Yes",
@@ -12635,7 +12440,7 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled oral medication. Async intake review; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "MIC plus B12, 2 mL weekly; one 10 mL vial per month",
       "labs_included": "No",
@@ -12669,7 +12474,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled oral medication. Async intake review; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "MIC plus B12, 2 mL weekly; one 10 mL vial per month",
       "labs_included": "No",
@@ -12703,7 +12508,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled oral medication. Async intake review; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "MIC plus B12, 2 mL weekly; one 10 mL vial per month",
       "labs_included": "No",
@@ -12737,7 +12542,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled oral medication. Async intake review; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "MIC plus B12, 2 mL weekly; one 10 mL vial per month",
       "labs_included": "No",
@@ -12771,7 +12576,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled oral medication. Async intake review; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Lipo C (methionine, inositol, choline, B12) MDV, one 10 mL vial per month; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "MIC plus B12, 2 mL weekly; one 10 mL vial per month",
       "labs_included": "No",
@@ -12839,7 +12644,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin 10 mg MDV, baseline panel included, 1 retest on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin 10 mg MDV, baseline panel included, 1 retest on schedule; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "200 to 300 mcg nightly; one 10 mg vial per month",
       "labs_included": "Yes",
@@ -12873,7 +12678,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin 10 mg MDV, baseline panel included, 2 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin 10 mg MDV, baseline panel included, 2 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "200 to 300 mcg nightly; one 10 mg vial per month",
       "labs_included": "Yes",
@@ -12907,7 +12712,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin 10 mg MDV, baseline panel included, 3 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin 10 mg MDV, baseline panel included, 3 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "200 to 300 mcg nightly; one 10 mg vial per month",
       "labs_included": "Yes",
@@ -12941,7 +12746,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "Non controlled compounded medication. A licensed provider reviews a structured intake asynchronously; NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin 10 mg MDV, baseline panel included, 4 retests on schedule; ships with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin 10 mg MDV, baseline panel included, 4 retests on schedule; ships with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "200 to 300 mcg nightly; one 10 mg vial per month",
       "labs_included": "Yes",
@@ -12975,7 +12780,7 @@
       "billing": "One time",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (Oral); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (Oral); vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "No",
@@ -13009,7 +12814,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (Oral), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (Oral), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "Yes",
@@ -13043,7 +12848,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (Oral), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (Oral), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "Yes",
@@ -13077,7 +12882,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (Oral), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (Oral), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "Yes",
@@ -13111,7 +12916,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Synchronous",
       "visit_requirement": "One audio video intake covers every program: Weight Loss requires a live visit",
-      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (Oral), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Weight Loss (MDV) + Lipo C (MDV) + B12 (Oral), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "Yes",
@@ -13145,7 +12950,7 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "B12 (Oral) + Lipo C (MDV); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "B12 (Oral) + Lipo C (MDV); vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "No",
@@ -13179,7 +12984,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "B12 (Oral) + Lipo C (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "B12 (Oral) + Lipo C (MDV), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "Yes",
@@ -13213,7 +13018,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "B12 (Oral) + Lipo C (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "B12 (Oral) + Lipo C (MDV), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "Yes",
@@ -13247,7 +13052,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "B12 (Oral) + Lipo C (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "B12 (Oral) + Lipo C (MDV), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "Yes",
@@ -13281,7 +13086,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "B12 (Oral) + Lipo C (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "B12 (Oral) + Lipo C (MDV), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "Yes",
@@ -13315,7 +13120,7 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin (Oral) + B12 (Oral); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin (Oral) + B12 (Oral); vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "No",
@@ -13349,7 +13154,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin (Oral) + B12 (Oral), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin (Oral) + B12 (Oral), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "Yes",
@@ -13383,7 +13188,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin (Oral) + B12 (Oral), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin (Oral) + B12 (Oral), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "Yes",
@@ -13417,7 +13222,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin (Oral) + B12 (Oral), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin (Oral) + B12 (Oral), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "Yes",
@@ -13451,7 +13256,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Sermorelin (Oral) + B12 (Oral), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Sermorelin (Oral) + B12 (Oral), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "Yes",
@@ -13485,7 +13290,7 @@
       "billing": "One time",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Methylene Blue (Oral) + Sermorelin (Oral); vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Methylene Blue (Oral) + Sermorelin (Oral); vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "No",
@@ -13519,7 +13324,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Methylene Blue (Oral) + Sermorelin (Oral), baseline panel included, 1 retest on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Methylene Blue (Oral) + Sermorelin (Oral), baseline panel included, 1 retest on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "Yes",
@@ -13553,7 +13358,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Methylene Blue (Oral) + Sermorelin (Oral), baseline panel included, 2 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Methylene Blue (Oral) + Sermorelin (Oral), baseline panel included, 2 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "Yes",
@@ -13587,7 +13392,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Methylene Blue (Oral) + Sermorelin (Oral), baseline panel included, 3 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Methylene Blue (Oral) + Sermorelin (Oral), baseline panel included, 3 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "Yes",
@@ -13621,7 +13426,7 @@
       "billing": "One time or monthly",
       "visit_mode": "Async",
       "visit_requirement": "One async intake covers every program; no component requires a live visit. NY requires audio video for all telehealth prescribing.",
-      "products_included": "Methylene Blue (Oral) + Sermorelin (Oral), baseline panel included, 4 retests on schedule; vials ship with syringes, bacteriostatic water and alcohol wipes",
+      "products_included": "Methylene Blue (Oral) + Sermorelin (Oral), baseline panel included, 4 retests on schedule; vials ship with syringes and alcohol wipes",
       "ships_with": null,
       "protocol_dose": "Component protocol doses apply",
       "labs_included": "Yes",

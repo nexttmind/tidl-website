@@ -10,6 +10,7 @@
  */
 
 import type { ClinicalEntry } from "@/content/clinical/entry-map";
+import { SYMPTOMS_ENTRY_SLUG } from "@/content/clinical/entry-map";
 import {
   fetchCatalogSnapshot,
   fetchTelehealthProducts,
@@ -45,7 +46,8 @@ const PREFERRED_KEYWORDS: Partial<Record<string, readonly string[]>> = {
   parents: ["bpc-157", "nad+", "nad "],
   creators: ["nad+", "nad ", "semax"],
   travelers: ["nad+", "nad ", "bpc-157"],
-  // symptoms / open path: no preferred SKU — leave empty if encounter has none
+  // Universal-encounter still requires a product on PRX; attach a common catalog SKU.
+  [SYMPTOMS_ENTRY_SLUG]: ["semaglutide", "tirzepatide", "nad+", "glp"],
 };
 
 function haystack(p: TelehealthProduct): string {
@@ -118,6 +120,19 @@ export async function resolveProductIdsForEntry(
     return first ? [first] : [];
   }
 
-  // Encounter has 0 linked products — use catalog when we have a map for this entry.
-  return resolveFromCatalog(entry.slug);
+  const fromCatalog = await resolveFromCatalog(entry.slug);
+  if (fromCatalog.length) return fromCatalog;
+
+  // Last resort: universal / open-care must not submit empty products (PRX 422).
+  if (entry.slug === SYMPTOMS_ENTRY_SLUG) {
+    try {
+      const snap = await fetchCatalogSnapshot();
+      const first = snap.products.find((p) => p.is_active !== false && p.id);
+      if (first?.id) return [first.id];
+    } catch {
+      /* keep empty */
+    }
+  }
+
+  return [];
 }

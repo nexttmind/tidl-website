@@ -7,7 +7,7 @@ import { EmailCaptureProvider } from "@/components/marketing/EmailCaptureProvide
 import { optImgSrc } from "@/lib/media/opt-manifest";
 import "./globals.css";
 
-const ogImage = "/og/complete-stack.jpg";
+const ogImage = "/og/preview.jpg";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -30,16 +30,16 @@ export const metadata: Metadata = {
   openGraph: {
     images: [
       {
-        url: optImgSrc(ogImage, 1200),
-        width: 1200,
-        height: 1500,
-        alt: "TIDL Complete Stack",
+        url: optImgSrc(ogImage, 1600),
+        width: 1024,
+        height: 537,
+        alt: "TIDL",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    images: [optImgSrc(ogImage, 1200)],
+    images: [optImgSrc(ogImage, 1600)],
   },
 };
 

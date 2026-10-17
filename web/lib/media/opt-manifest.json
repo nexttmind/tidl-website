@@ -32689,6 +32689,31 @@
     "width": 1200,
     "height": 1500
   },
+  "/og/preview.jpg": {
+    "fallback": "/_opt/og/preview.1024.jpg",
+    "webp": [
+      {
+        "src": "/_opt/og/preview.800.webp",
+        "w": 800
+      },
+      {
+        "src": "/_opt/og/preview.1024.webp",
+        "w": 1024
+      }
+    ],
+    "raster": [
+      {
+        "src": "/_opt/og/preview.800.jpg",
+        "w": 800
+      },
+      {
+        "src": "/_opt/og/preview.1024.jpg",
+        "w": 1024
+      }
+    ],
+    "width": 1024,
+    "height": 537
+  },
   "/pain-relief/clinical-gallon.jpg": {
     "fallback": "/_opt/pain-relief/clinical-gallon.1600.jpg",
     "webp": [
