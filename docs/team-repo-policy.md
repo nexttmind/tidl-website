@@ -17,5 +17,5 @@
 ## Onboarding
 
 1. Clone `nexttmind/tidl-website`.
-2. Copy `web/.env.local` from team vault (or `.env.example` + demo token).
-3. Follow [`sandbox-backend-signoff.md`](sandbox-backend-signoff.md).
+2. Copy `web/.env.local` from team vault (or `.env.example` + demo token). Staging keys: [`shared-env-staging.md`](shared-env-staging.md).
+3. Follow [`sandbox-backend-signoff.md`](sandbox-backend-signoff.md) (`npm run signoff:local`).

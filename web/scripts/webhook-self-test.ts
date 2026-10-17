@@ -1,10 +1,36 @@
 /**
  * HMAC POST against the local webhook receiver. No PrescribeRx round-trip.
  *
- *   PRESCRIBERX_WEBHOOK_SECRET=dev-secret npx tsx scripts/webhook-self-test.ts
+ *   npx tsx scripts/webhook-self-test.ts
  *
+ * Reads PRESCRIBERX_WEBHOOK_SECRET from web/.env.local when unset.
  * SMOKE_BASE defaults to http://localhost:3000
  */
+import fs from "node:fs";
+import path from "node:path";
+
+function loadEnvLocal() {
+  const p = path.join(process.cwd(), ".env.local");
+  if (!fs.existsSync(p)) return;
+  for (const line of fs.readFileSync(p, "utf8").split(/\r?\n/)) {
+    const t = line.trim();
+    if (!t || t.startsWith("#")) continue;
+    const i = t.indexOf("=");
+    if (i === -1) continue;
+    let v = t.slice(i + 1);
+    if (
+      (v.startsWith('"') && v.endsWith('"')) ||
+      (v.startsWith("'") && v.endsWith("'"))
+    ) {
+      v = v.slice(1, -1);
+    }
+    const key = t.slice(0, i);
+    if (!process.env[key]) process.env[key] = v;
+  }
+}
+
+loadEnvLocal();
+
 const SECRET = process.env.PRESCRIBERX_WEBHOOK_SECRET;
 const BASE = (process.env.SMOKE_BASE || "http://localhost:3000").replace(
   /\/$/,

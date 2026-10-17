@@ -20,6 +20,7 @@ type HealthData = {
   issueToken?: boolean;
   warnings?: string[];
   code?: string;
+  checks?: Record<string, { ok?: boolean }>;
 };
 
 async function fetchJson(path: string, init?: RequestInit) {
@@ -46,15 +47,30 @@ async function main() {
     throw new Error(`health failed http=${health.res.status}`);
   }
 
-  const required: [string, boolean][] = [
-    ["sandboxHostConsistent", h.sandboxHostConsistent === true],
-    ["sessionSecretConfigured", h.sessionSecretConfigured === true],
-    ["issueToken", h.issueToken === true],
-    ["healthy", h.healthy === true],
-    ["sandbox", h.sandbox === true],
-  ];
+  const authMeOk = h.checks?.["/auth/me"]?.ok === true;
+  const legacyShape =
+    h.sandboxHostConsistent === undefined &&
+    h.sessionSecretConfigured === undefined &&
+    h.issueToken === undefined;
 
-  if (process.env.PRESCRIBERX_WEBHOOK_SECRET?.trim()) {
+  const required: [string, boolean][] = legacyShape
+    ? [
+        ["healthy", h.healthy === true],
+        ["sandbox", h.sandbox === true],
+        ["/auth/me check", authMeOk],
+      ]
+    : [
+        ["sandboxHostConsistent", h.sandboxHostConsistent === true],
+        ["sessionSecretConfigured", h.sessionSecretConfigured === true],
+        ["issueToken", h.issueToken === true],
+        ["healthy", h.healthy === true],
+        ["sandbox", h.sandbox === true],
+      ];
+
+  if (
+    !legacyShape &&
+    process.env.PRESCRIBERX_WEBHOOK_SECRET?.trim()
+  ) {
     required.push([
       "webhookSecretConfigured",
       h.webhookSecretConfigured === true,
@@ -77,9 +93,15 @@ async function main() {
     }
   }
 
+  const warnings = [...(h.warnings ?? [])];
+  if (legacyShape) {
+    warnings.push(
+      "legacy /health shape — redeploy staging for sandboxHostConsistent + webhook flags",
+    );
+  }
   console.log("smoke-phase-e OK", {
     base: BASE,
-    warnings: h.warnings ?? [],
+    warnings,
   });
 }
 

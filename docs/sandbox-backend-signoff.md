@@ -7,11 +7,25 @@
 
 ## Prerequisites
 
-1. Copy env shape from repo root `.env.example` into `web/.env.local` (never commit).
+1. Copy env shape from repo root `.env.example` into `web/.env.local` (never commit). Staging/Vercel: see [`shared-env-staging.md`](shared-env-staging.md).
 2. Valid demo org token in `PRESCRIBERX_API_TOKEN` (refresh from demo docs when expired).
 3. `TIDL_SESSION_SECRET` ≥ 32 characters.
 4. `PRESCRIBERX_SALES_ORG_ID` = TIDL Sandbox org (`019f3d35-afc4-72f8-b055-6c86c27ac1b3`).
 5. From `web/`: `npm install`, then `npm run dev` on port 3000 for browser/smoke routes.
+
+---
+
+## One command (recommended)
+
+From `web/` with `npm run dev` running for **local** live checks:
+
+```bash
+npm run signoff:local      # typecheck, test, phase E/F/L/M/N/D, webhook
+npm run signoff:static     # typecheck + test only
+npm run signoff:staging    # typecheck, test, phase E/F/L/M/N against staging.tidlll.com
+```
+
+Staging webhook HMAC: set `PRESCRIBERX_WEBHOOK_SECRET` from team vault, then `SMOKE_BASE=https://staging.tidlll.com npm run smoke:webhook`.
 
 ---
 
@@ -102,9 +116,18 @@ Pinned UI fetch commit: see `build/tools/fetch-tidl-health-web.ps1` parameter de
 
 ## Sign-off checklist
 
-- [ ] `typecheck` + `test` pass
-- [ ] Phase E/F/L/M/N/D smokes pass with dev server
-- [ ] `verify-sandbox-intake-once` OK
-- [ ] `audit:care-home-symptoms` backend actions OK (HTML section checks may fail on SSR; ignore if API rows pass)
-- [ ] Staging env + webhook secret documented in team password store
-- [ ] No secrets committed; `.env.local` gitignored
+Locked **2026-10-17** (commit on `nexttmind/tidl-website` main):
+
+- [x] `typecheck` + `test` pass (`npm run signoff:static`)
+- [x] Phase E/F/L/M/N/D smokes pass with dev server (`npm run signoff:local`; refresh `PRESCRIBERX_API_TOKEN` from [demo tokens](https://demo.prescribe-rx.com/api/docs/tokens) if phase-d `/auth/me` is 401)
+- [x] `smoke:webhook` OK locally (reads `PRESCRIBERX_WEBHOOK_SECRET` from `.env.local`)
+- [ ] `verify-sandbox-intake-once` / `verify-patient-reads-once` — run ad hoc before demos (creates patients)
+- [x] `audit:care-home-symptoms` — run before care-home demos (`npm run audit:care-home-symptoms`)
+- [x] Staging health OK: `GET https://staging.tidlll.com/api/prescriberx/health` → `healthy: true`
+- [ ] `npm run signoff:staging` phase F/L/M/N (staging still on pre–patient-portal deploy → **404** on `/api/prescriberx/auth/*`; phase **E** OK with legacy `/health` warning)
+- [ ] Redeploy `staging.tidlll.com` from latest `main`, then re-run `signoff:staging` + optional `SMOKE_BASE=… audit:care-home-symptoms`
+- [x] Staging webhook receiver live: unsigned POST → **401**; signed test needs vault `PRESCRIBERX_WEBHOOK_SECRET`
+- [x] Shared env + staging webhook/Accept.js documented in [`shared-env-staging.md`](shared-env-staging.md) (vault values not in repo)
+- [x] No secrets committed; `.env.local` gitignored
+
+Re-run before release: `npm run signoff:local` and `npm run signoff:staging`.
